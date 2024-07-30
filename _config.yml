@@ -12,9 +12,9 @@ title                    : "Xuanhao"
 title_separator          : "-"
 name                     : &name "Xuanhao Huang"
 description              : &description "personal description"
-url                      : https://oldhuntor.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
+url                      : https://Oldhuntor.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
-repository               : "oldhuntor/oldhuntor.github.io"
+repository               : "Oldhuntor/Oldhuntor.github.io"
 
 # Site Author - The following control what appear as part of the author content on the side bar.
 #               If a field is blank the icon and link will not appear, otherwise it will be shown.
@@ -22,7 +22,7 @@ repository               : "oldhuntor/oldhuntor.github.io"
 author:
   # Biographic information
   avatar           : "profile.png"
-  name             : "Your Sidebar Name"
+  name             : "Xuanhao"
   pronouns         : # example: "she/her"  
   bio              : "Short biography for the left-hand sidebar"
   location         : "Earth"
@@ -43,7 +43,7 @@ author:
   bitbucket        : # Username - Update with your username on the site
   codepen          : # Username
   dribbble         : # Username
-  github           : "academicpages"
+  github           : "Oldhuntor"
   kaggle           : # Username  
   stackoverflow    : # User number or user number and name (i.e., use "1" or "1/jeff-atwood")    
 
