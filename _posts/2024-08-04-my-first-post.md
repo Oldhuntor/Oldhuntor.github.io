@@ -1,9 +1,11 @@
 ---
-layout: post
-title: "My First Post"
-date: 2024-08-04 10:00:00 +0800
-categories: [blog, jekyll]
-tags: [example, first-post]
+title: 'Blog Post number 4'
+date: 2024-08-04
+permalink: /posts/2024/08/blog-post-4/
+tags:
+  - cool posts
+  - category1
+  - category2
 ---
 
 # 基于贝叶斯理论的交易策略 （三）
