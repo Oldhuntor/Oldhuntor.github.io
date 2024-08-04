@@ -1,3 +1,11 @@
+---
+layout: post
+title: "My First Post"
+date: 2024-08-04 10:00:00 +0800
+categories: [blog, jekyll]
+tags: [example, first-post]
+---
+
 # 基于贝叶斯理论的交易策略 （三）
 
 上一篇[文章](https://zhuanlan.zhihu.com/p/672525412)我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。
