@@ -1,7 +1,7 @@
 ---
-title: 'Blog Post number 4'
+title: 'Bayesian trading'
 date: 2024-08-04
-permalink: /posts/2024/08/blog-post-4/
+permalink: /posts/2024/08/my-first-post/
 tags:
   - cool posts
   - category1
