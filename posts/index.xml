@@ -2,11 +2,26 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on My New Hugo Site</title>
-    <link>https://oldhuntor.github.io/posts/</link>
+    <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on My New Hugo Site</description>
     <generator>Hugo -- 0.138.0</generator>
     <language>en-us</language>
-    <lastBuildDate></lastBuildDate>
-    <atom:link href="https://oldhuntor.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 13 Nov 2024 18:59:16 +0100</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Backtest</title>
+      <link>http://localhost:1313/posts/backtest/</link>
+      <pubDate>Wed, 13 Nov 2024 18:59:16 +0100</pubDate>
+      <guid>http://localhost:1313/posts/backtest/</guid>
+      <description>&lt;p&gt;my first posts&lt;/p&gt;
+&lt;p&gt;testing&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Mypost</title>
+      <link>http://localhost:1313/posts/mypost/</link>
+      <pubDate>Wed, 13 Nov 2024 18:46:31 +0100</pubDate>
+      <guid>http://localhost:1313/posts/mypost/</guid>
+      <description>&lt;p&gt;asldfjaslkdjflaskd&lt;/p&gt;</description>
+    </item>
   </channel>
 </rss>
