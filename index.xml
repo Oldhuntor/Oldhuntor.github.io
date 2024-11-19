@@ -6,15 +6,8 @@
     <description>Recent content on Xuanhao&#39;s Blog</description>
     <generator>Hugo -- 0.138.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 19 Nov 2024 18:46:31 +0100</lastBuildDate>
+    <lastBuildDate>Wed, 13 Nov 2024 19:12:16 +0100</lastBuildDate>
     <atom:link href="https://oldhuntor.github.io/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>My CV</title>
-      <link>https://oldhuntor.github.io/posts/my-cv/</link>
-      <pubDate>Tue, 19 Nov 2024 18:46:31 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/my-cv/</guid>
-      <description>&lt;iframe src=&#34;https://oldhuntor.github.io/pdfs/CV-HUANG.pdf&#34; width=&#34;100%&#34; height=&#34;600px&#34;&gt;&lt;/iframe&gt;</description>
-    </item>
     <item>
       <title>Backtest</title>
       <link>https://oldhuntor.github.io/posts/dirichletmultinominal/</link>
@@ -44,21 +37,6 @@ $$&lt;p&gt;其中$\mathbf{x} = (x_1, \ldots, x_K)$是一个 K 维向量，表示
 $$P(X = x) = \frac{n!}{x_1! x_2! \ldots x_K!} p_1^{x_1} p_2^{x_2} \ldots p_K^{x_K}
 $$&lt;p&gt;
 其中，$x_i$为$i$类别的计数，且 $\sum_{i=1}^{K} x_{i} = n$。&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Backtest</title>
-      <link>https://oldhuntor.github.io/posts/backtest/</link>
-      <pubDate>Wed, 13 Nov 2024 18:59:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/backtest/</guid>
-      <description>&lt;p&gt;my first posts&lt;/p&gt;
-&lt;p&gt;testing&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Mypost</title>
-      <link>https://oldhuntor.github.io/posts/mypost/</link>
-      <pubDate>Wed, 13 Nov 2024 18:46:31 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/mypost/</guid>
-      <description>&lt;p&gt;asldfjaslkdjflaskd&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
