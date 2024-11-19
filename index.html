@@ -2,25 +2,25 @@
 <html lang="en" dir="auto">
 
 <head>
-	<meta name="generator" content="Hugo 0.138.0"><meta charset="utf-8">
+	<meta name="generator" content="Hugo 0.138.0"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="noindex, nofollow">
 <title>My New Hugo Site</title>
 
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="canonical" href="https://oldhuntor.github.io/">
+<link rel="canonical" href="http://localhost:1313/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.d6fcd20a4fb86efa4dfac8ec95da60244cc8871042183da1ef28e3a762ad79c8.css" integrity="sha256-1vzSCk&#43;4bvpN&#43;sjsldpgJEzIhxBCGD2h7yjjp2Ktecg=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://oldhuntor.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://oldhuntor.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://oldhuntor.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://oldhuntor.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://oldhuntor.github.io/safari-pinned-tab.svg">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" type="application/rss+xml" href="https://oldhuntor.github.io/index.xml">
-<link rel="alternate" hreflang="en" href="https://oldhuntor.github.io/">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/index.xml">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/">
 <noscript>
     <style>
         #theme-toggle,
@@ -57,28 +57,22 @@
         }
 
     </style>
-</noscript><meta property="og:url" content="https://oldhuntor.github.io/">
-  <meta property="og:site_name" content="My New Hugo Site">
-  <meta property="og:title" content="My New Hugo Site">
-  <meta property="og:locale" content="en-us">
-  <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="My New Hugo Site">
-<meta name="twitter:description" content="">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "My New Hugo Site",
-  "url": "https://oldhuntor.github.io/",
-  "description": "",
-  "logo": "https://oldhuntor.github.io/favicon.ico",
-  "sameAs": [
-      
-  ]
-}
-</script>
+</noscript>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/katex.min.css">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/katex.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "$", right: "$", display: false}
+          ]
+        });
+      });
+    </script>
 </head>
 
 <body class="list" id="top">
@@ -96,7 +90,7 @@
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://oldhuntor.github.io/" accesskey="h" title="My New Hugo Site (Alt + H)">My New Hugo Site</a>
+            <a href="http://localhost:1313/" accesskey="h" title="My New Hugo Site (Alt + H)">My New Hugo Site</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -134,18 +128,17 @@
   <div class="entry-content">
     <p>基于贝叶斯理论的交易策略 （三） 上一篇文章我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。
 什么是Dirichlet分布 Dirichlet分布是由正实数向量参数化的一系列连续多元概率分布。 它经常在贝叶斯统计中用作多项分布的先验分布。 Dirichlet分布的概率密度函数的公式如下：
-$$ P(\mathbf{x} \mid \boldsymbol{\alpha}) = \frac{1}{B(\boldsymbol{\alpha})} \prod_{i=1}^{K} x_i^{\alpha_i - 1} $$
-其中$\mathbf{x} = (x_1, \ldots, x_K)$是一个 K 维向量，表示 K 个不同类别或事件的概率。 这些概率之和必须为 1，
+$$ P(\mathbf{x} \mid \boldsymbol{\alpha}) = \frac{1}{B(\boldsymbol{\alpha})} \prod_{i=1}^{K} x_i^{\alpha_i - 1} $$其中$\mathbf{x} = (x_1, \ldots, x_K)$是一个 K 维向量，表示 K 个不同类别或事件的概率。 这些概率之和必须为 1，
 $\boldsymbol{\alpha} = (\alpha_1, \ldots, \alpha_K)$是一个正参数向量，$\alpha_i$代表了第$i$个类别的先验，或者说计数。
-$\beta(\alpha)$是多项式Beta函数，作为归一化常数，保证总概率积分为1。定义为：$B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^{K} \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^{K} \alpha_i\right)}$，在这个公式中$\Γ$表示Gamma函数，它是阶乘函数（其参数向下移动 1）到实数和复数的扩展。
+$\beta(\alpha)$是多项式Beta函数，作为归一化常数，保证总概率积分为1。定义为：$B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^{K} \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^{K} \alpha_i\right)}$，在这个公式中$\Gamma$表示Gamma函数，它是阶乘函数（其参数向下移动 1）到实数和复数的扩展。
 Dirichlet分布是 Beta 分布向更高维度的推广。 在二维情况下（K=2），Dirichlet分布简化为 Beta 分布。
 什么是Multinomial(多项分布) 多项分布是二项分布对两个以上类别的推广。 它描述了滚动 n 次 K 面骰子每一面可能计数的概率。 简单来说，它是固定次数试验中多个类别计数的分布。
 特点：
-类别：有 K 种可能的结果或类别。 试验：有 n 个独立试验。 概率：每次试验都恰好产生 K 个类别中的一个。 每次试验的每个类别的概率都是固定的，并表示为：$p_1,p_2,\dots,p_k$，其中$∑p_i=1$ Probability Mass Function(PMF): 给定结果$x=(x_1,x_2,\dots,x_K)$的多项分布的pmf为： $$P(X = x) = \frac{n!}{x_1! x_2! \ldots x_K!} p_1^{x_1} p_2^{x_2} \ldots p_K^{x_K} $$ 其中，$x_i$为$i$类别的计数，且$\sum^{K}{i=1} x{i}=n$。
+类别：有 K 种可能的结果或类别。 试验：有 n 个独立试验。 概率：每次试验都恰好产生 K 个类别中的一个。 每次试验的每个类别的概率都是固定的，并表示为：$p_1,p_2,\dots,p_k$，其中$∑p_i=1$ Probability Mass Function(PMF): 给定结果$x=(x_1,x_2,\dots,x_K)$的多项分布的pmf为： $$P(X = x) = \frac{n!}{x_1! x_2! \ldots x_K!} p_1^{x_1} p_2^{x_2} \ldots p_K^{x_K} $$ 其中，$x_i$为$i$类别的计数，且 $\sum_{i=1}^{K} x_{i} = n$。
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2024-11-13 19:12:16 +0100 CET'>November 13, 2024</span></footer>
-  <a class="entry-link" aria-label="post link to Backtest" href="https://oldhuntor.github.io/posts/dirichletmultinominal/"></a>
+  <a class="entry-link" aria-label="post link to Backtest" href="http://localhost:1313/posts/dirichletmultinominal/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -159,7 +152,7 @@ testing
 </p>
   </div>
   <footer class="entry-footer"><span title='2024-11-13 18:59:16 +0100 CET'>November 13, 2024</span></footer>
-  <a class="entry-link" aria-label="post link to Backtest" href="https://oldhuntor.github.io/posts/backtest/"></a>
+  <a class="entry-link" aria-label="post link to Backtest" href="http://localhost:1313/posts/backtest/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -172,12 +165,12 @@ testing
 </p>
   </div>
   <footer class="entry-footer"><span title='2024-11-13 18:46:31 +0100 CET'>November 13, 2024</span></footer>
-  <a class="entry-link" aria-label="post link to Mypost" href="https://oldhuntor.github.io/posts/mypost/"></a>
+  <a class="entry-link" aria-label="post link to Mypost" href="http://localhost:1313/posts/mypost/"></a>
 </article>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2024 <a href="https://oldhuntor.github.io/">My New Hugo Site</a></span> · 
+        <span>&copy; 2024 <a href="http://localhost:1313/">My New Hugo Site</a></span> · 
 
     <span>
         Powered by
