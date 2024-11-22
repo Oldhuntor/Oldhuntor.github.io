@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on Xuanhao&#39;s Blog</title>
-    <link>https://oldhuntor.github.io/posts/</link>
+    <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on Xuanhao&#39;s Blog</description>
     <generator>Hugo -- 0.138.0</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 21 Nov 2024 08:12:16 +0100</lastBuildDate>
-    <atom:link href="https://oldhuntor.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>DirichletMultinominal</title>
-      <link>https://oldhuntor.github.io/posts/runstest_strategy/</link>
+      <link>http://localhost:1313/posts/runstest_strategy/</link>
       <pubDate>Thu, 21 Nov 2024 08:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/runstest_strategy/</guid>
+      <guid>http://localhost:1313/posts/runstest_strategy/</guid>
       <description>&lt;h1 id=&#34;runstest-基于游程检验的交易策略&#34;&gt;runstest 基于游程检验的交易策略&lt;/h1&gt;
 &lt;h1 id=&#34;游程的定义&#34;&gt;游程的定义&lt;/h1&gt;
 &lt;p&gt;所谓游程可以理解为&lt;/p&gt;
@@ -23,9 +23,9 @@
     </item>
     <item>
       <title>DirichletMultinominal</title>
-      <link>https://oldhuntor.github.io/posts/non_conjugation/</link>
+      <link>http://localhost:1313/posts/non_conjugation/</link>
       <pubDate>Wed, 20 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/non_conjugation/</guid>
+      <guid>http://localhost:1313/posts/non_conjugation/</guid>
       <description>&lt;h1 id=&#34;基于贝叶斯理论的交易策略四&#34;&gt;基于贝叶斯理论的交易策略（四）&lt;/h1&gt;
 &lt;p&gt;前几期的文章都是用共轭先验分布来制定交易策略，本期文章将采用非共轭分布来制定交易策略。
 一般情况下我们用正太分布可以拟合大部分类型的数据：
@@ -73,9 +73,9 @@ Gaussian mixture distribution 即是不同参数的高斯分布相加在一起�
     </item>
     <item>
       <title>BetaBinomial</title>
-      <link>https://oldhuntor.github.io/posts/betabinomial/</link>
+      <link>http://localhost:1313/posts/betabinomial/</link>
       <pubDate>Wed, 13 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/betabinomial/</guid>
+      <guid>http://localhost:1313/posts/betabinomial/</guid>
       <description>&lt;h1 id=&#34;基于贝叶斯理论的交易策略&#34;&gt;基于贝叶斯理论的交易策略&lt;/h1&gt;
 &lt;p&gt;@&lt;a href=&#34;%E7%9B%AE%E5%BD%95&#34;&gt;TOC&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;模型逻辑&#34;&gt;模型逻辑&lt;/h2&gt;
@@ -108,9 +108,9 @@ $$ \alpha_{\text{post}} = \alpha + k, \beta_{\text{post}} = \beta + n - k$$&lt;p
     </item>
     <item>
       <title>DirichletMultinominal</title>
-      <link>https://oldhuntor.github.io/posts/dirichletmultinominal/</link>
+      <link>http://localhost:1313/posts/dirichletmultinominal/</link>
       <pubDate>Wed, 13 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/dirichletmultinominal/</guid>
+      <guid>http://localhost:1313/posts/dirichletmultinominal/</guid>
       <description>&lt;h1 id=&#34;基于贝叶斯理论的交易策略-三&#34;&gt;基于贝叶斯理论的交易策略 （三）&lt;/h1&gt;
 &lt;p&gt;上一篇&lt;a href=&#34;https://zhuanlan.zhihu.com/p/672525412&#34;&gt;文章&lt;/a&gt;我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。&lt;/p&gt;
 &lt;h2 id=&#34;什么是dirichlet分布&#34;&gt;什么是Dirichlet分布&lt;/h2&gt;
@@ -138,9 +138,9 @@ $$&lt;p&gt;
     </item>
     <item>
       <title>PoissonGamma</title>
-      <link>https://oldhuntor.github.io/posts/poissongamma/</link>
+      <link>http://localhost:1313/posts/poissongamma/</link>
       <pubDate>Wed, 13 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/poissongamma/</guid>
+      <guid>http://localhost:1313/posts/poissongamma/</guid>
       <description>&lt;p&gt;@&lt;a href=&#34;%E7%94%A8%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%90%86%E8%AE%BA%E6%9D%A5%E5%81%9A%E4%BA%A4%E6%98%93%E7%AD%96%E7%95%A5%EF%BC%88%E4%BA%8C%EF%BC%89&#34;&gt;TOC&lt;/a&gt;
 &lt;a href=&#34;https://editor.csdn.net/md/?articleId=134902631&#34;&gt;上一篇文章&lt;/a&gt;我们将了如何利用beta- binomial共轭分布来设计交易策略。那我们是否可以用伽马和柏松（gamma- poisson）共轭来设计交易策略呢？本文将展示一种交易策略例子。&lt;/p&gt;
 &lt;h2 id=&#34;模型&#34;&gt;模型&lt;/h2&gt;
