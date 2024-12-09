@@ -2,34 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/posts/bayesian_cointegration/</loc>
+    <loc>https://oldhuntor.github.io/posts/bayesian_cointegration/</loc>
     <lastmod>2024-12-08T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/</loc>
+    <loc>https://oldhuntor.github.io/posts/</loc>
     <lastmod>2024-12-08T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/</loc>
+    <loc>https://oldhuntor.github.io/</loc>
     <lastmod>2024-12-08T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/runstest_strategy/</loc>
+    <loc>https://oldhuntor.github.io/posts/runstest_strategy/</loc>
     <lastmod>2024-11-21T08:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/non_conjugation/</loc>
+    <loc>https://oldhuntor.github.io/posts/non_conjugation/</loc>
     <lastmod>2024-11-20T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/betabinomial/</loc>
+    <loc>https://oldhuntor.github.io/posts/betabinomial/</loc>
     <lastmod>2024-11-13T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/dirichletmultinominal/</loc>
+    <loc>https://oldhuntor.github.io/posts/dirichletmultinominal/</loc>
     <lastmod>2024-11-13T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/poissongamma/</loc>
+    <loc>https://oldhuntor.github.io/posts/poissongamma/</loc>
     <lastmod>2024-11-13T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/archives/</loc>
+    <loc>https://oldhuntor.github.io/archives/</loc>
   </url><url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://oldhuntor.github.io/categories/</loc>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>https://oldhuntor.github.io/tags/</loc>
   </url>
 </urlset>
