@@ -125,8 +125,8 @@ Bayesian Modeling of Cointegration:">
   "keywords": [
     
   ],
-  "articleBody": "Bayesian Approach to Cointegration Pair Trading Methodology In this research, a Bayesian framework is utilized to model the dynamic relationship between two assets to identify profitable pair trading opportunities. The methodology consists of the following steps:\nIdentifying Cointegrated Pairs:\nUse historical price data to test for cointegration between asset pairs using statistical tests such as the Engle-Granger test or Johansen test. Select pairs that demonstrate a strong cointegration relationship. Bayesian Modeling of Cointegration:\nEmploy a dynamic model to account for time-varying cointegration parameters. The model allows the cointegration parameter (β) and intercept (α) to evolve over time.\nUsing the historical large time scale data(e.g. daily or weekly Kline) to find the prior distribution of parameters\nUpdate the prior using newly small time scale data (mintues or hourly Kline)\nThe general state-space model can be expressed as:\n\\[ y_t = \\alpha_t + \\beta_t x_t + \\epsilon_t, \\]\nwhere \\( y_t \\) and \\( x_t \\) are the observed price series at time \\( t \\), \\( \\alpha_t \\) is the intercept, \\( \\beta_t \\) is the time-varying cointegration parameter, and \\( \\epsilon_t \\) is Gaussian noise with variance \\( \\sigma^2 \\).\nThe prior distributions for \\( \\alpha_t \\), \\( \\beta_t \\), and \\( \\sigma^2 \\) are specified as follows:\n\\[ \\alpha_t \\sim \\mathcal{N}(\\alpha_0, \\tau^2), \\]\\[ \\beta_t \\sim \\mathcal{N}(\\beta_0, \\delta^2), \\]\\[ \\sigma^2 \\sim \\text{Inverse-Gamma}(a, b). \\] Posterior distribution would be calculated using MCMC.\nSpread Calculation and Normalization:\nCalculate the spread as a linear combination of the two assets based on the estimated cointegration relationship:\n\\[ \\text{Spread}_t = y_t - \\beta_t x_t. \\] Normalize the spread using a z-score transformation to detect deviations from the mean:\n\\[ z_t = \\frac{\\text{Spread}_t - \\mu}{\\sigma}, \\] where \\( \\mu = \\text{mean of spread over a rolling window} \\) and \\( \\sigma = \\text{standard deviation of spread over a rolling window}. \\)\nTrading Strategy:\nDefine trading thresholds based on the normalized spread. For example:\nOpen Position: When the z-score exceeds a threshold (e.g., +2 or -2), initiate a long-short position. Close Position: When the z-score reverts to zero or a predetermined range. Use Bayesian updates to adjust the thresholds dynamically based on market conditions. The Bayesian posterior updates follow:\n\\[ P(\\theta | D) \\propto P(D | \\theta) P(\\theta), \\] where \\( D \\) represents observed data, \\( \\theta \\) represents model parameters, and \\( P(\\theta) \\) represents the prior.\nPerformance Evaluation:\nBacktest the strategy on historical data and evaluate metrics such as Sharpe ratio, maximum drawdown, and profitability. Use pareto front to analysis the performance of different model : Doing comparsion regarding the original Frequentist method. Data The data used in this research includes:\nHistorical Price Data: Daily closing prices of financial instruments (e.g. US stocks or cryptocurrencies). Sources: Bloomberg, Yahoo Finance, Binance, or other publicly available APIs. Group Xuanhao Huang (242974)\n",
-  "wordCount" : "465",
+  "articleBody": "Bayesian Approach to Cointegration Pair Trading Methodology In this research, a Bayesian framework is utilized to model the dynamic relationship between two assets to identify profitable pair trading opportunities. The methodology consists of the following steps:\nIdentifying Cointegrated Pairs:\nUse historical price data to test for cointegration between asset pairs using statistical tests such as the Engle-Granger test or Johansen test. Select pairs that demonstrate a strong cointegration relationship. Bayesian Modeling of Cointegration:\nEmploy a dynamic model to account for time-varying cointegration parameters. The model allows the cointegration parameter (β) and intercept (α) to evolve over time.\nUsing the historical large time scale data(e.g. daily or weekly Kline) to find the prior distribution of parameters\nUpdate the prior using newly small time scale data (mintues or hourly Kline)\nThe general state-space model can be expressed as:\n\\[ y_t = \\alpha_t + \\beta_t x_t + \\epsilon_t, \\]\nwhere \\( y_t \\) and \\( x_t \\) are the observed price series at time \\( t \\), \\( \\alpha_t \\) is the intercept, \\( \\beta_t \\) is the time-varying cointegration parameter, and \\( \\epsilon_t \\) is Gaussian noise with variance \\( \\sigma^2 \\).\nThe prior distributions for \\( \\alpha_t \\), \\( \\beta_t \\), and \\( \\sigma^2 \\) are specified as follows:\n\\[ \\alpha_t \\sim \\mathcal{N}(\\alpha_0, \\tau^2), \\]\\[ \\beta_t \\sim \\mathcal{N}(\\beta_0, \\delta^2), \\]\\[ \\sigma^2 \\sim \\text{Inverse-Gamma}(a, b). \\] Posterior distribution would be calculated using MCMC.\nSpread Calculation and Normalization:\nCalculate the spread as a linear combination of the two assets based on the estimated cointegration relationship:\n\\[ \\text{Spread}_t = y_t - \\beta_t x_t. \\] Normalize the spread using a z-score transformation to detect deviations from the mean:\n\\[ z_t = \\frac{\\text{Spread}_t - \\mu}{\\sigma}, \\] Trading Strategy Based on GPs uncertainty quantification:\nDefine trading thresholds based on the uncertainty evaluated by the GPs (Gaussian process): A GP model doesn’t just estimate the mean of the spread—it also provides a predictive distribution (mean and variance). This can help in several ways:\nMean Prediction: The mean of the GP gives the expected future value of the spread.\nTrading Signal: Enter a trade when the observed spread deviates significantly (e.g., \u003e2 standard deviations) from the predicted mean, indicating a reversion opportunity.\nUncertainty Quantification:\nUse the GP’s variance to measure the confidence of your predictions.\nOpening positions in regions with high uncertainty (the larger the spread volatility the higher the gain per trade). Performance Evaluation:\nBacktest the strategy on historical data and evaluate metrics such as Sharpe ratio, maximum drawdown, and profitability. Use pareto front to analysis the performance of different model : Doing comparsion regarding the original Frequentist method. Data The data used in this research includes:\nHistorical Price Data: Daily weekly and hourly closing prices of financial instruments (e.g. US stocks or cryptocurrencies). Sources: Bloomberg, Yahoo Finance, Binance, or other publicly available APIs. Group Xuanhao Huang (242974)\n",
+  "wordCount" : "470",
   "inLanguage": "en",
   "datePublished": "2024-12-08T19:12:16+01:00",
   "dateModified": "2024-12-08T19:12:16+01:00",
@@ -277,27 +277,31 @@ where \( y_t \) and \( x_t \) are the observed price series at time \( t \), \( 
 <p>Normalize the spread using a z-score transformation to detect deviations from the mean:</p>
 \[
      z_t = \frac{\text{Spread}_t - \mu}{\sigma},
-     \]<p>
-where \( \mu = \text{mean of spread over a rolling window} \) and \( \sigma = \text{standard deviation of spread over a rolling window}. \)</p>
-</li>
+     \]</li>
 </ul>
 </li>
 <li>
-<p><strong>Trading Strategy</strong>:</p>
+<p><strong>Trading Strategy Based on GPs uncertainty quantification</strong>:</p>
 <ul>
 <li>
-<p>Define trading thresholds based on the normalized spread. For example:</p>
-<ul>
-<li><strong>Open Position</strong>: When the z-score exceeds a threshold (e.g., +2 or -2), initiate a long-short position.</li>
-<li><strong>Close Position</strong>: When the z-score reverts to zero or a predetermined range.</li>
-</ul>
+<p>Define trading thresholds based on the uncertainty evaluated by the GPs (Gaussian process):
+A GP model doesn’t just estimate the mean of the spread—it also provides a <strong>predictive distribution</strong> (mean and variance). This can help in several ways:</p>
 </li>
 <li>
-<p>Use Bayesian updates to adjust the thresholds dynamically based on market conditions. The Bayesian posterior updates follow:</p>
-\[
-     P(\theta | D) \propto P(D | \theta) P(\theta),
-     \]<p>
-where \( D \) represents observed data, \( \theta \) represents model parameters, and \( P(\theta) \) represents the prior.</p>
+<p><strong>Mean Prediction</strong>: The mean of the GP gives the expected future value of the spread.</p>
+</li>
+<li>
+<p><strong>Trading Signal</strong>: Enter a trade when the observed spread deviates significantly (e.g., &gt;2 standard deviations) from the predicted mean, indicating a reversion opportunity.</p>
+</li>
+<li>
+<p><strong>Uncertainty Quantification</strong>:</p>
+</li>
+<li>
+<p>Use the GP’s variance to measure the confidence of your predictions.</p>
+</li>
+<li>
+<p>Opening positions in regions with high uncertainty (the larger the spread volatility the higher the gain per trade).
+<img alt="Alt text" loading="lazy" src="/images/spread.png"></p>
 </li>
 </ul>
 </li>
@@ -316,7 +320,7 @@ where \( D \) represents observed data, \( \theta \) represents model parameters
 <ol>
 <li><strong>Historical Price Data</strong>:
 <ul>
-<li>Daily closing prices of financial instruments (e.g. US stocks or cryptocurrencies).</li>
+<li>Daily weekly and hourly closing prices of financial instruments (e.g. US stocks or cryptocurrencies).</li>
 <li>Sources: Bloomberg, Yahoo Finance, Binance, or other publicly available APIs.</li>
 </ul>
 </li>
