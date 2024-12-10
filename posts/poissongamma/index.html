@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><meta charset="utf-8">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="index, follow">
+<meta name="robots" content="noindex, nofollow">
 <title>PoissonGamma | Xuanhao&#39;s Blog</title>
 <meta name="keywords" content="">
 <meta name="description" content="@TOC
@@ -49,16 +49,16 @@ $$\alpha&#39; = \alpha &#43; \sum_{i=1}^{n} x_i,\beta&#39; = \beta &#43; n$$
 计算出样本平均数和方差来估计 （Moment method, 矩估计） 先验的alpha prior 和 beta 		prior
 $\bar{x} = \frac{\alpha}{\beta}$,$s^2 = \frac{\alpha}{\beta^2}$">
 <meta name="author" content="">
-<link rel="canonical" href="https://oldhuntor.github.io/posts/poissongamma/">
+<link rel="canonical" href="http://localhost:1313/posts/poissongamma/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.d6fcd20a4fb86efa4dfac8ec95da60244cc8871042183da1ef28e3a762ad79c8.css" integrity="sha256-1vzSCk&#43;4bvpN&#43;sjsldpgJEzIhxBCGD2h7yjjp2Ktecg=" rel="preload stylesheet" as="style">
-<link rel="icon" href="https://oldhuntor.github.io/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="https://oldhuntor.github.io/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="https://oldhuntor.github.io/favicon-32x32.png">
-<link rel="apple-touch-icon" href="https://oldhuntor.github.io/apple-touch-icon.png">
-<link rel="mask-icon" href="https://oldhuntor.github.io/safari-pinned-tab.svg">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="https://oldhuntor.github.io/posts/poissongamma/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/poissongamma/">
 <noscript>
     <style>
         #theme-toggle,
@@ -95,111 +95,7 @@ $\bar{x} = \frac{\alpha}{\beta}$,$s^2 = \frac{\alpha}{\beta^2}$">
         }
 
     </style>
-</noscript><meta property="og:url" content="https://oldhuntor.github.io/posts/poissongamma/">
-  <meta property="og:site_name" content="Xuanhao&#39;s Blog">
-  <meta property="og:title" content="PoissonGamma">
-  <meta property="og:description" content="@TOC 上一篇文章我们将了如何利用beta- binomial共轭分布来设计交易策略。那我们是否可以用伽马和柏松（gamma- poisson）共轭来设计交易策略呢？本文将展示一种交易策略例子。
-模型 目标：模拟一段时间内的平均上涨次数 先验分布：gamma分布，以下是gamma分布的分布函数： $$ f(x; \alpha, \beta) = \frac{\beta^{\alpha} x^{\alpha - 1} e^{-\beta x}}{\Gamma(\alpha)} $$ 以下是gamma分布函数在不同参数下的图像： 可以看出，gamma分布的定义域是[0, &#43;$\infty$]，这说明，我们不能再选择研究上涨概率$\theta$这种0到1的参数了，我们可以研究一段时间内平均上涨次数$\lambda$，这也是为什么需要选择柏松分布来计算likelihood的原因。
-柏松分布似然函数： 柏松分布只有一个参数$\lambda$， 我们把它定义为一段时间内的上涨次数。 以下是柏松分布的概率密度函数： $$L(\lambda; k) = \frac{e^{-\lambda} \lambda^k}{k!}$$ 以下是柏松分布概率密度图像： 可以看出柏松分布是一个离散分布，这种离散分布正好可以用来模拟上涨次数这种离散值。 如果我们假定每一段时间的上涨次数是相互独立的，我们就可以使用柏松的似然函数。 以下是柏松分布的似然函数： $$L(\lambda; x_1, x_2, \ldots, x_n) = e^{-n\lambda} \lambda^{\sum_{i=1}^{n}x_i} \prod_{i=1}^{n} \frac{1}{x_i!} $$ 后验分布 在有了先验分布和似然函数之后，我们就可以计算后验分布了，后验分布如下： $$p(\lambda | x_1, x_2, \ldots, x_n; \alpha&#39;, \beta&#39;) = \frac{{\beta&#39;}^{\alpha&#39;}}{\Gamma(\alpha&#39;)} \lambda^{\alpha&#39; - 1} e^{-\beta&#39; \lambda} $$ $$\alpha&#39; = \alpha &#43; \sum_{i=1}^{n} x_i,\beta&#39; = \beta &#43; n$$ 可以发现，后验分布也是gamma分布，并且后验分布的$\alpha$与$\beta$可以直接通过观测样本的信息得到，这个计算提供了极大便利。 应用例子 长周期 长周期决定gamma分布先验。 长周期的单位为小时k。 长周期的序列是 n天的小时k，由 7 * 24 * 60 = 10080 条分钟k合成 然后计算24 小时中， 每天的上涨次数 ，{“day1”: 13, “day2”: 6, “day3”: 8….“dayn”: x} 计算出样本平均数和方差来估计 （Moment method, 矩估计） 先验的alpha prior 和 beta prior $\bar{x} = \frac{\alpha}{\beta}$,$s^2 = \frac{\alpha}{\beta^2}$">
-  <meta property="og:locale" content="en-us">
-  <meta property="og:type" content="article">
-    <meta property="article:section" content="posts">
-    <meta property="article:published_time" content="2024-11-13T19:12:16+01:00">
-    <meta property="article:modified_time" content="2024-11-13T19:12:16+01:00">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PoissonGamma">
-<meta name="twitter:description" content="@TOC
-上一篇文章我们将了如何利用beta- binomial共轭分布来设计交易策略。那我们是否可以用伽马和柏松（gamma- poisson）共轭来设计交易策略呢？本文将展示一种交易策略例子。
-模型
-
-目标：模拟一段时间内的平均上涨次数
-先验分布：gamma分布，以下是gamma分布的分布函数：
-
-$$ f(x; \alpha, \beta) = \frac{\beta^{\alpha} x^{\alpha - 1} e^{-\beta x}}{\Gamma(\alpha)}
-$$
-以下是gamma分布函数在不同参数下的图像：
-
-可以看出，gamma分布的定义域是[0, &#43;$\infty$]，这说明，我们不能再选择研究上涨概率$\theta$这种0到1的参数了，我们可以研究一段时间内平均上涨次数$\lambda$，这也是为什么需要选择柏松分布来计算likelihood的原因。
-
-柏松分布似然函数：
-柏松分布只有一个参数$\lambda$， 我们把它定义为一段时间内的上涨次数。
-以下是柏松分布的概率密度函数：
-$$L(\lambda; k) = \frac{e^{-\lambda} \lambda^k}{k!}$$
-以下是柏松分布概率密度图像：
-
-可以看出柏松分布是一个离散分布，这种离散分布正好可以用来模拟上涨次数这种离散值。
-如果我们假定每一段时间的上涨次数是相互独立的，我们就可以使用柏松的似然函数。
-以下是柏松分布的似然函数：
-$$L(\lambda; x_1, x_2, \ldots, x_n) = e^{-n\lambda} \lambda^{\sum_{i=1}^{n}x_i} \prod_{i=1}^{n} \frac{1}{x_i!}
-$$
-后验分布
-在有了先验分布和似然函数之后，我们就可以计算后验分布了，后验分布如下：
-$$p(\lambda | x_1, x_2, \ldots, x_n; \alpha&#39;, \beta&#39;) = \frac{{\beta&#39;}^{\alpha&#39;}}{\Gamma(\alpha&#39;)} \lambda^{\alpha&#39; - 1} e^{-\beta&#39; \lambda}
-$$
-$$\alpha&#39; = \alpha &#43; \sum_{i=1}^{n} x_i,\beta&#39; = \beta &#43; n$$
-可以发现，后验分布也是gamma分布，并且后验分布的$\alpha$与$\beta$可以直接通过观测样本的信息得到，这个计算提供了极大便利。
-
-应用例子
-
-
-长周期
-长周期决定gamma分布先验。
-长周期的单位为小时k。
-长周期的序列是 n天的小时k，由 7 * 24 * 60 = 10080 条分钟k合成
-然后计算24 小时中， 每天的上涨次数 ，{&ldquo;day1&rdquo;: 13, &ldquo;day2&rdquo;: 6, &ldquo;day3&rdquo;: 8&hellip;.&ldquo;dayn&rdquo;: x}
-计算出样本平均数和方差来估计 （Moment method, 矩估计） 先验的alpha prior 和 beta 		prior
-$\bar{x} = \frac{\alpha}{\beta}$,$s^2 = \frac{\alpha}{\beta^2}$">
-
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position":  1 ,
-      "name": "Posts",
-      "item": "https://oldhuntor.github.io/posts/"
-    }, 
-    {
-      "@type": "ListItem",
-      "position":  2 ,
-      "name": "PoissonGamma",
-      "item": "https://oldhuntor.github.io/posts/poissongamma/"
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "PoissonGamma",
-  "name": "PoissonGamma",
-  "description": "@TOC 上一篇文章我们将了如何利用beta- binomial共轭分布来设计交易策略。那我们是否可以用伽马和柏松（gamma- poisson）共轭来设计交易策略呢？本文将展示一种交易策略例子。\n模型 目标：模拟一段时间内的平均上涨次数 先验分布：gamma分布，以下是gamma分布的分布函数： $$ f(x; \\alpha, \\beta) = \\frac{\\beta^{\\alpha} x^{\\alpha - 1} e^{-\\beta x}}{\\Gamma(\\alpha)} $$ 以下是gamma分布函数在不同参数下的图像： 可以看出，gamma分布的定义域是[0, +$\\infty$]，这说明，我们不能再选择研究上涨概率$\\theta$这种0到1的参数了，我们可以研究一段时间内平均上涨次数$\\lambda$，这也是为什么需要选择柏松分布来计算likelihood的原因。\n柏松分布似然函数： 柏松分布只有一个参数$\\lambda$， 我们把它定义为一段时间内的上涨次数。 以下是柏松分布的概率密度函数： $$L(\\lambda; k) = \\frac{e^{-\\lambda} \\lambda^k}{k!}$$ 以下是柏松分布概率密度图像： 可以看出柏松分布是一个离散分布，这种离散分布正好可以用来模拟上涨次数这种离散值。 如果我们假定每一段时间的上涨次数是相互独立的，我们就可以使用柏松的似然函数。 以下是柏松分布的似然函数： $$L(\\lambda; x_1, x_2, \\ldots, x_n) = e^{-n\\lambda} \\lambda^{\\sum_{i=1}^{n}x_i} \\prod_{i=1}^{n} \\frac{1}{x_i!} $$ 后验分布 在有了先验分布和似然函数之后，我们就可以计算后验分布了，后验分布如下： $$p(\\lambda | x_1, x_2, \\ldots, x_n; \\alpha', \\beta') = \\frac{{\\beta'}^{\\alpha'}}{\\Gamma(\\alpha')} \\lambda^{\\alpha' - 1} e^{-\\beta' \\lambda} $$ $$\\alpha' = \\alpha + \\sum_{i=1}^{n} x_i,\\beta' = \\beta + n$$ 可以发现，后验分布也是gamma分布，并且后验分布的$\\alpha$与$\\beta$可以直接通过观测样本的信息得到，这个计算提供了极大便利。 应用例子 长周期 长周期决定gamma分布先验。 长周期的单位为小时k。 长周期的序列是 n天的小时k，由 7 * 24 * 60 = 10080 条分钟k合成 然后计算24 小时中， 每天的上涨次数 ，{\u0026ldquo;day1\u0026rdquo;: 13, \u0026ldquo;day2\u0026rdquo;: 6, \u0026ldquo;day3\u0026rdquo;: 8\u0026hellip;.\u0026ldquo;dayn\u0026rdquo;: x} 计算出样本平均数和方差来估计 （Moment method, 矩估计） 先验的alpha prior 和 beta prior $\\bar{x} = \\frac{\\alpha}{\\beta}$,$s^2 = \\frac{\\alpha}{\\beta^2}$\n",
-  "keywords": [
-    
-  ],
-  "articleBody": "@TOC 上一篇文章我们将了如何利用beta- binomial共轭分布来设计交易策略。那我们是否可以用伽马和柏松（gamma- poisson）共轭来设计交易策略呢？本文将展示一种交易策略例子。\n模型 目标：模拟一段时间内的平均上涨次数 先验分布：gamma分布，以下是gamma分布的分布函数： $$ f(x; \\alpha, \\beta) = \\frac{\\beta^{\\alpha} x^{\\alpha - 1} e^{-\\beta x}}{\\Gamma(\\alpha)} $$ 以下是gamma分布函数在不同参数下的图像： 可以看出，gamma分布的定义域是[0, +$\\infty$]，这说明，我们不能再选择研究上涨概率$\\theta$这种0到1的参数了，我们可以研究一段时间内平均上涨次数$\\lambda$，这也是为什么需要选择柏松分布来计算likelihood的原因。\n柏松分布似然函数： 柏松分布只有一个参数$\\lambda$， 我们把它定义为一段时间内的上涨次数。 以下是柏松分布的概率密度函数： $$L(\\lambda; k) = \\frac{e^{-\\lambda} \\lambda^k}{k!}$$ 以下是柏松分布概率密度图像： 可以看出柏松分布是一个离散分布，这种离散分布正好可以用来模拟上涨次数这种离散值。 如果我们假定每一段时间的上涨次数是相互独立的，我们就可以使用柏松的似然函数。 以下是柏松分布的似然函数： $$L(\\lambda; x_1, x_2, \\ldots, x_n) = e^{-n\\lambda} \\lambda^{\\sum_{i=1}^{n}x_i} \\prod_{i=1}^{n} \\frac{1}{x_i!} $$ 后验分布 在有了先验分布和似然函数之后，我们就可以计算后验分布了，后验分布如下： $$p(\\lambda | x_1, x_2, \\ldots, x_n; \\alpha', \\beta') = \\frac{{\\beta'}^{\\alpha'}}{\\Gamma(\\alpha')} \\lambda^{\\alpha' - 1} e^{-\\beta' \\lambda} $$ $$\\alpha' = \\alpha + \\sum_{i=1}^{n} x_i,\\beta' = \\beta + n$$ 可以发现，后验分布也是gamma分布，并且后验分布的$\\alpha$与$\\beta$可以直接通过观测样本的信息得到，这个计算提供了极大便利。 应用例子 长周期 长周期决定gamma分布先验。 长周期的单位为小时k。 长周期的序列是 n天的小时k，由 7 * 24 * 60 = 10080 条分钟k合成 然后计算24 小时中， 每天的上涨次数 ，{“day1”: 13, “day2”: 6, “day3”: 8….“dayn”: x} 计算出样本平均数和方差来估计 （Moment method, 矩估计） 先验的alpha prior 和 beta prior $\\bar{x} = \\frac{\\alpha}{\\beta}$,$s^2 = \\frac{\\alpha}{\\beta^2}$\n短周期 短周期决定似然函数。 短周期的单位为分钟k。 数周期长度 n 可以不和长周期的相等。 短周期上涨次数范围最好是能够包含长周期的上涨次数范围，即$\\lambda_{long} \\subseteq \\lambda_{short}$，因为如果短周期短最大上涨次数为3，长周期的为12时，这样后验概率分布是一定往更小的$\\lambda$值靠拢的，这样我们会损失一些信息。 所以我们假设这样短周期的每周期最大上涨次数，24，也就是说，我需要 n 个 24 个分钟k，总共 n * 24 个分钟k线。 得到短周期的数据 {“k1”: 13, “k2”: 12, “k3”:9 , …..“kn”:x}\n代码模拟以及实现 首先我按照上涨次数范围[0,24]，随机抽取50个样本，然后计算这个样本的均值以及方差。\nlong_period_data = np.random.randint(0, 25, 50) # 假设每天的最大上涨次数为24 # 计算平均值和方差 mean_long = np.mean(long_period_data) variance_long = np.var(long_period_data) # 估计伽玛分布的先验参数 alpha_prior = mean_long**2 / variance_long beta_prior = mean_long / variance_long 最后再利用矩估计计算出先验的$\\alpha$以及$\\beta$值。接下来就是模拟短周期数据，同样也是利用random函数抽样。\n# 模拟短周期（24分钟）的数据 short_period_data = np.random.randint(0, 25, size=5) # 假设每24分钟周期的最大上涨次数为24 # 更新后验分布参数 alpha_posterior = alpha_prior + sum(short_period_data) beta_posterior = beta_prior + len(short_period_data) 最后再根据前面提到的共轭后验分布的公式来计算出后验参数。 以下是图像对比： 可以看出后验分布的均值以及众数都往右边移动了，说明可能短周期观测的平均上涨次数比较高，导致分布向右移动。 先验和后验参数对比：\nAlpha Prior: 1.7518570171605738, Beta Prior: 0.16190915130874067 Alpha Posterior: 77.75185701716057, Beta Posterior: 5.16190915130874 案例完整代码：\nimport numpy as np from scipy.stats import gamma, poisson import matplotlib.pyplot as plt for i in range(5): # 模拟长周期的数据 long_period_data = np.random.randint(0, 25, 50) # 假设每天的最大上涨次数为24 # 计算平均值和方差 mean_long = np.mean(long_period_data) variance_long = np.var(long_period_data) # 估计伽玛分布的先验参数 alpha_prior = mean_long**2 / variance_long beta_prior = mean_long / variance_long # 模拟短周期的数据 short_period_data = np.random.randint(0, 25, size=5) # 假设每24分钟周期的最大上涨次数为24 # 更新后验分布参数 alpha_posterior = alpha_prior + sum(short_period_data) beta_posterior = beta_prior + len(short_period_data) # 输出结果 print(f\"Alpha Prior: {alpha_prior}, Beta Prior: {beta_prior}\") print(f\"Alpha Posterior: {alpha_posterior}, Beta Posterior: {beta_posterior}\") # 创建伽玛分布的先验和后验分布 prior_dist = gamma(alpha_prior, scale = 1/beta_prior) posterior_dist = gamma(alpha_posterior, scale = 1/beta_posterior) lambda_samples = np.random.gamma(alpha_posterior, 1/beta_posterior, 1000) # 生成伽玛分布的概率密度函数 (PDF) 数据 x = np.linspace(0, 50, 100000) y_prior = prior_dist.pdf(x) y_posterior = posterior_dist.pdf(x) # 绘制图像 plt.figure(figsize=(10, 6)) plt.plot(x, y_prior, label='Prior Distribution') plt.plot(x, y_posterior, label='Posterior Distribution') plt.title('Gamma Distribution: Prior vs Posterior') plt.xlabel('lambda') plt.ylabel('Density') plt.legend() plt.show() 策略回测 策略逻辑 逻辑一： 在得到了后验分布的参数后，计算后验众数： $$\\alpha_{mode} = \\frac{\\alpha_{post}-1}{\\beta_{post}} $$ 利用这个后验众数作为下一个短周期的上涨次数的估计。 如果$\\frac{\\alpha_{mode}}{n}\u003e$buy_threshold，则判断为做多信号，反之如果小于sell_threshold 则作为做空信号。 逻辑二： 利用后验预测分布，计算出目标上涨次数的后验概率： $$ p(\\lambda_{\\text{new}} | D) = \\int p(\\lambda_{\\text{new}} | \\theta) p(\\theta | D) d\\theta $$ 首先目标上涨次数$\\lambda_{new}$一般取一个大于$\\frac{n}2$的数（因为我们希望未来一段周期内的上涨次数是更多的），类似地，如果此概率大于buy_threshold，则为做多信号，反之如果小于sell_threshold 则作为做空信号。 以下是此公式的python代码：\n# 模拟微积分 lambda_space = np.linspace(0,30,1000) delta_lambda = lambda_space[1] - lambda_space[0] # 计算积分步长 # 遍历lambda的取值开始积分 prob_post = np.sum(poisson.pmf(target_lambda, lambda_space) * gamma.pdf(lambda_space, a=alpha_posterior, scale=1/beta_posterior)) * delta_lambda 假设$\\lambda_{new}=15$，我们还可以计算出上涨次数大于15的概率，即$P(\\lambda_{new}\u003e15)$的概率，也就是把所有大于目标值的概率都加起来：\npost_prop = [] for x_new in np.arange(target_lambda,n,1): prob_new = np.sum(poisson.pmf(x_new, lambda_space) * gamma.pdf(lambda_space, a=alpha_posterior, scale=1 / beta_posterior)) * delta_lambda post_prop.append(prob_new) post_prop = sum(post_prop) 在实战时可根据自己的需求选择不同的交易逻辑。\n策略参数 dual_side : 是否双向开仓 pyramiding：同方向最大开仓次数 long_trend_window_size：长周期序列长度 short_trend_window_size：短周期序列长度 long_trend_period：长周期粒度， short_trend_period：短周期粒度 buy_threshold：做多阈值 sell_threshold：做空阈值 fix_size：每次开仓的量 frequency：上涨次数范围 long_trend_interval：m （m分钟，h小时，d日） short_trend_interval：m 默认参数： 标的：BTCUSD 开始日期：2022-1-1 结束日期：2023-12-6 手续费率：0.002 资金：100000\n回测结果 策略曲线 总结 利用gamma-poisson共轭的贝叶斯交易策略非常灵活，本人只展示了策略逻辑中的方法一的回测结果，读者也可以根据次数来构建策略，而不是像我一样转换为概率，例如说如果后验上涨次数为15，那么我是否可以在15次上涨之后就堵反转行情？欢迎大家讨论。\n策略代码 from vnpy_ctastrategy import ( CtaTemplate, StopOrder, TickData, BarData, TradeData, OrderData, BarGenerator, ArrayManager, ) import numpy as np from vnpy.trader.object import Interval from scipy.stats import gamma, poisson interval_map = {\"m\": Interval.MINUTE, \"h\": Interval.HOUR, \"d\": Interval.DAILY} class PoissonGammaStrategy(CtaTemplate): author = \"Xuanhao\" prior = 0 pyramiding = 1 frequency = 24 long_trend_window_size = 5 short_trend_window_size = 5 long_trend_period = 1 # 1hour 2hour short_trend_period = 5 # 5 minutes long_trend_interval = \"m\" short_trend_interval = \"m\" fix_size = 1 buy_threshold = 0.55 sell_threshold = 0.45 dual_side = 1 parameters = [\"dual_side\", \"pyramiding\", \"long_trend_window_size\",\"short_trend_window_size\",\"long_trend_period\", \"short_trend_period\" ,\"fix_size\", \"buy_threshold\", \"sell_threshold\", \"frequency\", \"long_trend_interval\", \"short_trend_interval\"] variables = [\"bayesian_prob\"] def __init__(self, cta_engine, strategy_name, vt_symbol, setting): super().__init__(cta_engine, strategy_name, vt_symbol, setting) long_interval = interval_map[self.long_trend_interval] short_interval = interval_map[self.short_trend_interval] self.bg_long = BarGenerator(self.on_bar, self.long_trend_period, self.on_long_bar, interval=long_interval) self.bg_short = BarGenerator(self.on_bar, self.short_trend_period, self.on_short_bar, interval=short_interval) self.am_long = ArrayManager(self.long_trend_window_size*self.frequency) self.am_short = ArrayManager(self.short_trend_window_size*self.frequency) self.priors_inited = False def on_init(self): self.write_log(\"策略初始化\") self.load_bar(10) def on_start(self): self.write_log(\"策略启动\") self.put_event() def on_stop(self): self.write_log(\"策略停止\") self.put_event() def on_bar(self, bar: BarData): self.bg_long.update_bar(bar) self.bg_short.update_bar(bar) def on_long_bar(self, long_bar: BarData): self.am_long.update_bar(long_bar) if not self.am_long.inited: return poisson_event = [] for order in range(self.long_trend_window_size): ups = sum(1 for index in np.arange((order)*self.frequency, (order+1)*self.frequency, 1) if self.am_long.close_array[index] \u003e self.am_long.open_array[index]) poisson_event.append(ups) mean = np.mean(poisson_event) variance = np.var(poisson_event) ## MM estimator self.alpha_prior = mean ** 2 / variance self.beta_prior = mean / variance self.priors_inited = True def on_short_bar(self, short_bar: BarData): self.am_short.update_bar(short_bar) if not self.am_short.inited: return if not self.priors_inited: return poisson_event = [] for order in range(self.short_trend_window_size): ups = sum(1 for index in np.arange((order) * self.frequency, (order + 1) * self.frequency, 1) if self.am_short.close_array[index] \u003e self.am_short.open_array[index]) poisson_event.append(ups) self.alpha_post = self.alpha_prior + sum(poisson_event) self.beta_post = self.beta_prior + self.short_trend_window_size # use posterior mean or mode self.poster_mean = self.alpha_post/self.beta_post self.poster_var = self.alpha_post/(self.beta_post)**2 self.poster_mode = (self.alpha_post-1)/self.beta_post if self.dual_side: # both long and short if self.poster_mode/self.short_trend_window_size \u003e self.buy_threshold: if self.pos \u003e= 0: if abs(self.pos) \u003c self.pyramiding: self.buy(short_bar.close_price, self.fix_size) else: self.cover(short_bar.close_price, abs(self.pos)) self.buy(short_bar.close_price, self.fix_size) if self.poster_mode/self.short_trend_window_size \u003c self.sell_threshold: if self.pos \u003c= 0: if abs(self.pos) \u003c self.pyramiding: self.short(short_bar.close_price, self.fix_size) else: self.sell(short_bar.close_price, abs(self.pos)) self.short(short_bar.close_price, self.fix_size) else: if self.poster_mode/self.short_trend_window_size \u003e self.buy_threshold: if self.pos \u003e= 0 and self.pos \u003c self.pyramiding: self.buy(short_bar.close_price, self.fix_size) if self.poster_mode/self.short_trend_window_size \u003c self.sell_threshold: if self.pos != 0: self.sell(short_bar.close_price, self.pos) ",
-  "wordCount" : "792",
-  "inLanguage": "en",
-  "datePublished": "2024-11-13T19:12:16+01:00",
-  "dateModified": "2024-11-13T19:12:16+01:00",
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": "https://oldhuntor.github.io/posts/poissongamma/"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Xuanhao's Blog",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://oldhuntor.github.io/favicon.ico"
-    }
-  }
-}
-</script>
+</noscript>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/katex.min.css">
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/katex.min.js"></script>
@@ -232,7 +128,7 @@ $\bar{x} = \frac{\alpha}{\beta}$,$s^2 = \frac{\alpha}{\beta^2}$">
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="https://oldhuntor.github.io/" accesskey="h" title="Xuanhao&#39;s Blog (Alt + H)">Xuanhao&#39;s Blog</a>
+            <a href="http://localhost:1313/" accesskey="h" title="Xuanhao&#39;s Blog (Alt + H)">Xuanhao&#39;s Blog</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -258,7 +154,7 @@ $\bar{x} = \frac{\alpha}{\beta}$,$s^2 = \frac{\alpha}{\beta^2}$">
         </div>
         <ul id="menu">
             <li>
-                <a href="https://oldhuntor.github.io/pdfs/xxx.pdf" title="My CV">
+                <a href="http://localhost:1313/pdfs/xxx.pdf" title="My CV">
                     <span>My CV</span>
                 </a>
             </li>
@@ -606,7 +502,7 @@ $$<p>
 <ul class="share-buttons">
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share PoissonGamma on x"
-            href="https://x.com/intent/tweet/?text=PoissonGamma&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fpoissongamma%2f&amp;hashtags=">
+            href="https://x.com/intent/tweet/?text=PoissonGamma&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fpoissongamma%2f&amp;hashtags=">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
@@ -615,7 +511,7 @@ $$<p>
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share PoissonGamma on linkedin"
-            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fpoissongamma%2f&amp;title=PoissonGamma&amp;summary=PoissonGamma&amp;source=https%3a%2f%2foldhuntor.github.io%2fposts%2fpoissongamma%2f">
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fpoissongamma%2f&amp;title=PoissonGamma&amp;summary=PoissonGamma&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fpoissongamma%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
@@ -624,7 +520,7 @@ $$<p>
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share PoissonGamma on reddit"
-            href="https://reddit.com/submit?url=https%3a%2f%2foldhuntor.github.io%2fposts%2fpoissongamma%2f&title=PoissonGamma">
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fpoissongamma%2f&title=PoissonGamma">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
@@ -633,7 +529,7 @@ $$<p>
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share PoissonGamma on facebook"
-            href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2foldhuntor.github.io%2fposts%2fpoissongamma%2f">
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fpoissongamma%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
@@ -642,7 +538,7 @@ $$<p>
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share PoissonGamma on whatsapp"
-            href="https://api.whatsapp.com/send?text=PoissonGamma%20-%20https%3a%2f%2foldhuntor.github.io%2fposts%2fpoissongamma%2f">
+            href="https://api.whatsapp.com/send?text=PoissonGamma%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fpoissongamma%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
@@ -651,7 +547,7 @@ $$<p>
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share PoissonGamma on telegram"
-            href="https://telegram.me/share/url?text=PoissonGamma&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fpoissongamma%2f">
+            href="https://telegram.me/share/url?text=PoissonGamma&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fpoissongamma%2f">
             <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
@@ -660,7 +556,7 @@ $$<p>
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share PoissonGamma on ycombinator"
-            href="https://news.ycombinator.com/submitlink?t=PoissonGamma&u=https%3a%2f%2foldhuntor.github.io%2fposts%2fpoissongamma%2f">
+            href="https://news.ycombinator.com/submitlink?t=PoissonGamma&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fpoissongamma%2f">
             <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
                 xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
                 <path
@@ -675,7 +571,7 @@ $$<p>
     </main>
     
 <footer class="footer">
-        <span>&copy; 2024 <a href="https://oldhuntor.github.io/">Xuanhao&#39;s Blog</a></span> · 
+        <span>&copy; 2024 <a href="http://localhost:1313/">Xuanhao&#39;s Blog</a></span> · 
 
     <span>
         Powered by

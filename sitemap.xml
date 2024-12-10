@@ -2,31 +2,31 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://oldhuntor.github.io/posts/bayesian_cointegration/</loc>
+    <loc>http://localhost:1313/posts/bayesian_cointegration/</loc>
     <lastmod>2024-12-08T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>https://oldhuntor.github.io/posts/</loc>
+    <loc>http://localhost:1313/posts/</loc>
     <lastmod>2024-12-08T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>https://oldhuntor.github.io/</loc>
+    <loc>http://localhost:1313/</loc>
     <lastmod>2024-12-08T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>https://oldhuntor.github.io/posts/non_conjugation/</loc>
+    <loc>http://localhost:1313/posts/non_conjugation/</loc>
     <lastmod>2024-11-20T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>https://oldhuntor.github.io/posts/betabinomial/</loc>
+    <loc>http://localhost:1313/posts/betabinomial/</loc>
     <lastmod>2024-11-13T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>https://oldhuntor.github.io/posts/dirichletmultinominal/</loc>
+    <loc>http://localhost:1313/posts/dirichletmultinominal/</loc>
     <lastmod>2024-11-13T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>https://oldhuntor.github.io/posts/poissongamma/</loc>
+    <loc>http://localhost:1313/posts/poissongamma/</loc>
     <lastmod>2024-11-13T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>https://oldhuntor.github.io/archives/</loc>
+    <loc>http://localhost:1313/archives/</loc>
   </url><url>
-    <loc>https://oldhuntor.github.io/categories/</loc>
+    <loc>http://localhost:1313/categories/</loc>
   </url><url>
-    <loc>https://oldhuntor.github.io/tags/</loc>
+    <loc>http://localhost:1313/tags/</loc>
   </url>
 </urlset>
