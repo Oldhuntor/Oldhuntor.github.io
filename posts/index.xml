@@ -15,7 +15,7 @@
       <guid>https://oldhuntor.github.io/posts/bayesian_cointegration/</guid>
       <description>&lt;h1 id=&#34;bayesian-approach-to-cointegration-pair-trading&#34;&gt;Bayesian Approach to Cointegration Pair Trading&lt;/h1&gt;
 &lt;h2 id=&#34;methodology&#34;&gt;Methodology&lt;/h2&gt;
-&lt;p&gt;In this research, a Bayesian framework is utilized to model the dynamic relationship between two assets to identify profitable pair trading opportunities. The methodology consists of the following steps:&lt;/p&gt;
+&lt;p&gt;In this research, a Bayesian framework is utilized to model the dynamic relationship between two assets to identify profitable pair trading opportunities. The methodology consists of these steps:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;strong&gt;Identifying Cointegrated Pairs&lt;/strong&gt;:&lt;/p&gt;
