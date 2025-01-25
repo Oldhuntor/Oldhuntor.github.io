@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Bayesian Cointegration codes | Xuanhao&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="Bayesian regression
+def bayesian_rolling_window(X_t, Y_t, window_size=30):
+    T = len(X_t)
+    beta_t_est = np.zeros(T)
+    mu_t_est = np.zeros(T)
+    beta_var_est = np.zeros(T)
+    mu_var_est = np.zeros(T)
+    residual_var_est = np.zeros(T)
+    Y_pred = np.zeros(T)
+    Y_std_est = np.zeros(T)
+
+    # Prior parameters
+    beta_mean_prior = 0
+    beta_var_prior = 1
+    mu_mean_prior = 0
+    mu_var_prior = 1
+    sigma_prior = 1
+
+    for t in range(window_size, T):
+        # Get rolling window data
+        X_window = np.float64(X_t[t - window_size:t])
+        Y_window = np.float64(Y_t[t - window_size:t])
+
+        # Posterior parameters for beta
+        XTX = np.sum(X_window ** 2)
+        XTY = np.sum(X_window * (Y_window - np.mean(Y_window)))
+        beta_var_post = 1 / (1 / beta_var_prior &#43; XTX / sigma_prior)
+        beta_mean_post = beta_var_post * (beta_mean_prior / beta_var_prior &#43; XTY / sigma_prior)
+
+        # Posterior parameters for mu
+        mu_var_post = 1 / (1 / mu_var_prior &#43; window_size / sigma_prior)
+        mu_mean_post = mu_var_post * (mu_mean_prior / mu_var_prior &#43; np.sum(Y_window - beta_mean_post * X_window) / sigma_prior)
+
+        # Estimate residual variance
+        residuals_window = Y_window - (beta_mean_post * X_window &#43; mu_mean_post)
+        residual_var_est[t] = np.var(residuals_window)
+
+        # Store estimates
+        beta_t_est[t] = beta_mean_post
+        mu_t_est[t] = mu_mean_post
+        beta_var_est[t] = beta_var_post
+        mu_var_est[t] = mu_var_post
+
+        # Predict Y_t and its credible interval
+        Y_pred[t] = beta_t_est[t] * X_t[t] &#43; mu_t_est[t]
+        Y_var_est = (X_t[t] ** 2) * (beta_var_est[t]) &#43; (mu_var_est[t]) &#43; (1 / sigma_prior)
+        Y_std_est[t] = np.sqrt(Y_var_est)
+
+
+        # Prior parameters
+        beta_mean_prior = beta_mean_post
+        beta_var_prior = beta_var_post
+        mu_mean_prior = mu_mean_post
+        mu_var_prior = mu_var_post
+
+    residuals = Y_t - Y_pred
+
+    data = {
+        &#39;y&#39;: {
+            &#39;mean&#39;: Y_pred,
+            &#39;upper&#39;: Y_pred &#43; 1.96 * Y_std_est,
+            &#39;lower&#39;: Y_pred - 1.96 * Y_std_est
+        },
+        &#39;beta&#39;: {
+            &#39;mean&#39;: beta_t_est,
+            &#39;upper&#39;:  beta_t_est &#43; 1.96 * np.sqrt(beta_var_est),
+            &#39;lower&#39;: beta_t_est - 1.96 * np.sqrt(beta_var_est)
+        },
+        &#39;mu&#39;: {
+            &#39;mean&#39;: mu_t_est,
+            &#39;upper&#39;: mu_t_est &#43; 1.96 * np.sqrt(mu_var_est),
+            &#39;lower&#39;: mu_t_est - 1.96 * np.sqrt(mu_var_est)
+        },
+        &#39;epsilon&#39;: {
+            &#39;mean&#39;: residuals,
+            &#39;upper&#39;: residuals &#43; 1.96 * np.sqrt(residual_var_est),
+            &#39;lower&#39;: residuals - 1.96 * np.sqrt(residual_var_est)
+        },
+    }
+
+    return data
+Bayesian GAM
+def bayesian_gam_with_splines(X_t, Y_t, df=10):
+    T = len(X_t)
+    time = np.linspace(0, 1, T)
+
+    # Design matrices for splines
+    design_matrix = patsy.dmatrix(f&#34;bs(time, df={df}, degree=3)&#34;, {&#34;time&#34;: time}, return_type=&#39;dataframe&#39;)
+
+    # Joint Bayesian Ridge Regression for beta_t and mu_t
+    X_joint = np.hstack([np.multiply(design_matrix.values, X_t[:, None]), design_matrix.values])
+    model_joint = BayesianRidge()
+    model_joint.fit(X_joint, Y_t)
+
+    # Predict values with uncertainties
+    Y_pred, Y_std = model_joint.predict(X_joint, return_std=True)
+
+    # Separate beta_t and mu_t
+    beta_t_est = design_matrix.values @ model_joint.coef_[:design_matrix.shape[1]]
+    mu_t_est = design_matrix.values @ model_joint.coef_[design_matrix.shape[1]:]
+
+    # Compute standard deviations for beta and mu
+    coef_cov = np.linalg.inv(model_joint.alpha_ * np.eye(X_joint.shape[1]) &#43; model_joint.lambda_ * X_joint.T @ X_joint)
+    beta_std_est = np.sqrt(np.sum((design_matrix.values @ coef_cov[:design_matrix.shape[1], :design_matrix.shape[1]]) * design_matrix.values, axis=1))
+    mu_std_est = np.sqrt(np.sum((design_matrix.values @ coef_cov[design_matrix.shape[1]:, design_matrix.shape[1]:]) * design_matrix.values, axis=1))
+
+    # Posterior variance of noise
+    residual_var_est = 1 / model_joint.alpha_  # Posterior noise variance
+
+    residuals = Y_t - Y_pred
+
+    data = {
+        &#39;y&#39;: {
+            &#39;mean&#39;: Y_pred,
+            &#39;upper&#39;: Y_pred &#43; 1.96 * Y_std,
+            &#39;lower&#39;: Y_pred - 1.96 * Y_std
+        },
+        &#39;beta&#39;: {
+            &#39;mean&#39;: beta_t_est,
+            &#39;upper&#39;: beta_t_est &#43; 1.96 * beta_std_est,
+            &#39;lower&#39;: beta_t_est - 1.96 * beta_std_est
+        },
+        &#39;mu&#39;: {
+            &#39;mean&#39;: mu_t_est,
+            &#39;upper&#39;: mu_t_est &#43; 1.96 * mu_std_est,
+            &#39;lower&#39;: mu_t_est - 1.96 * mu_std_est
+        },
+        &#39;epsilon&#39;: {
+            &#39;mean&#39;: residuals,
+            &#39;upper&#39;: residuals &#43; 1.96 * np.sqrt(residual_var_est),
+            &#39;lower&#39;: residuals - 1.96 * np.sqrt(residual_var_est)
+        },
+    }
+
+    return data
+Gaussian Process
+class TimeVaryingGP(ExactGP):
+    def __init__(self, train_x, train_y, likelihood):
+        super(TimeVaryingGP, self).__init__(train_x, train_y, likelihood)
+
+        # Separate kernels for each component
+        self.beta_kernel = ScaleKernel(RBFKernel())
+        # self.beta_kernel.base_kernel.register_prior(
+        #     &#39;lengthscale_prior&#39;,
+        #     gpytorch.priors.GammaPrior(10.0, 20.0),
+        #     &#39;lengthscale&#39;
+        # )
+        self.mu_kernel = ScaleKernel(RBFKernel())
+        self.eps_kernel = ScaleKernel(RBFKernel())
+
+        self.mean = ZeroMean()
+
+    def forward(self, x):
+        # Extract time and covariates
+        t = x[:, 0]  # time index
+        X = x[:, 1]  # covariate
+
+        # Compute kernel matrices
+        K_beta = self.beta_kernel(t)
+        K_mu = self.mu_kernel(t)
+        K_eps = self.eps_kernel(t)
+
+        # Compute covariance matrix
+        covar = X.unsqueeze(1) * K_beta * X.unsqueeze(0) &#43; K_mu &#43; K_eps
+
+        mean = self.mean(x)
+        return MultivariateNormal(mean, covar)
+
+
+def train_model(X, y, n_iter=100):
+    if not isinstance(X, torch.Tensor):
+        X = torch.from_numpy(X).clone().detach().float()
+        y = torch.from_numpy(y).clone().detach().float()
+    else:
+        X = X.clone().detach().float()
+        y = y.clone().detach().float()
+
+    # Initialize model
+    likelihood = gpytorch.likelihoods.GaussianLikelihood()
+    model = TimeVaryingGP(X, y, likelihood)
+
+    # Use the adam optimizer
+    optimizer = torch.optim.Adam([
+        {&#39;params&#39;: model.parameters()},
+    ], lr=0.1)
+
+    # &#34;Loss&#34; for GPs - the marginal log likelihood
+    mll = gpytorch.mlls.ExactMarginalLogLikelihood(likelihood, model)
+
+    # Training loop
+    model.train()
+    likelihood.train()
+
+    for i in range(n_iter):
+        optimizer.zero_grad()
+        output = model(X)
+        loss = -mll(output, y)
+        loss.backward()
+        optimizer.step()
+
+    return model, likelihood
+
+
+def predict_latent(model, X_train, y_train, X_new):
+    model.eval()
+    jitter = 1e-6
+
+    with torch.no_grad():
+        t_train = X_train[:, 0]
+        x_train = X_train[:, 1]
+        t_new = X_new[:, 0]
+        x_new = X_new[:, 1]
+
+        K_beta = model.beta_kernel(t_new, t_train).evaluate()
+        K_mu = model.mu_kernel(t_new, t_train).evaluate()
+        K_eps = model.eps_kernel(t_new, t_train).evaluate()
+
+        K_total = x_train * model.beta_kernel(t_train).evaluate() * x_train.unsqueeze(-1) &#43; \
+                  model.mu_kernel(t_train).evaluate() &#43; \
+                  model.eps_kernel(t_train).evaluate() &#43; \
+                  model.likelihood.noise * torch.eye(len(t_train)) &#43; \
+                  jitter * torch.eye(len(t_train))
+
+        K_new_beta = model.beta_kernel(t_new).evaluate() &#43; jitter * torch.eye(len(t_new))
+        K_new_mu = model.mu_kernel(t_new).evaluate() &#43; jitter * torch.eye(len(t_new))
+        K_new_eps = model.eps_kernel(t_new).evaluate() &#43; jitter * torch.eye(len(t_new))
+
+        # Compute posterior mean using Cholesky
+        L = torch.linalg.cholesky(K_total)
+        alpha = torch.linalg.solve_triangular(L, y_train.unsqueeze(1), upper=False)
+        alpha = torch.linalg.solve_triangular(L.T, alpha, upper=True)
+
+        K_stacked = torch.stack([
+            x_new.unsqueeze(-1) * K_beta,
+            K_mu,
+            K_eps
+        ])
+        posterior_mean = K_stacked @ alpha
+
+        # Compute posterior variance using Cholesky
+        v_beta = torch.linalg.solve_triangular(L, (x_train * K_beta.T).T, upper=False)
+        v_mu = torch.linalg.solve_triangular(L, K_mu.T, upper=False)
+        v_eps = torch.linalg.solve_triangular(L, K_eps.T, upper=False)
+
+        post_var_beta = K_new_beta - v_beta.T @ v_beta
+        post_var_mu = K_new_mu - v_mu.T @ v_mu
+        post_var_eps = K_new_eps - v_eps.T @ v_eps
+
+        return {
+            &#39;mean&#39;: {
+                &#39;beta&#39;: posterior_mean[0].squeeze(),
+                &#39;mu&#39;: posterior_mean[1].squeeze(),
+                &#39;epsilon&#39;: posterior_mean[2].squeeze()
+            },
+            &#39;variance&#39;: {
+                &#39;beta&#39;: post_var_beta.diag(),
+                &#39;mu&#39;: post_var_mu.diag(),
+                &#39;epsilon&#39;: post_var_eps.diag()
+            }
+        }
+
+
+def predict(model, likelihood, X_new, X_train=None, y_train=None):
+    model.eval()
+    likelihood.eval()
+
+    if X_train is None:
+        X_train = model.train_inputs[0]
+    if y_train is None:
+        y_train = model.train_targets
+
+    with torch.no_grad(), gpytorch.settings.fast_pred_var():
+        observed_pred = likelihood(model(X_new))
+
+    latent_values = predict_latent(model, X_train, y_train, X_new)
+    return observed_pred.mean, observed_pred.variance, latent_values
+BSTS
+def bsts_fit(x,y):
+    with pm.Model() as model:
+        # Priors for variances
+
+        # sigma = pm.HalfCauchy(&#39;sigma&#39;, beta=1)
+        # Random walk for log volatility
+        log_sigma = pm.GaussianRandomWalk(&#39;log_sigma&#39;,
+                                          sigma=0.1,
+                                          shape=len(y),
+                                          init_dist=pm.Normal.dist(mu=0, sigma=1))
+        sigma = pm.Deterministic(&#39;sigma&#39;, pm.math.exp(log_sigma))
+
+        sigma_beta = pm.HalfCauchy(&#39;sigma_beta&#39;, beta=1)
+        sigma_mu = pm.HalfCauchy(&#39;sigma_mu&#39;, beta=1)
+
+        # Gaussian Random Walks for beta and mu
+        beta = pm.GaussianRandomWalk(&#39;beta&#39;, sigma=sigma_beta, init_dist=pm.Normal.dist(0, 10), shape=len(y))
+        mu = pm.GaussianRandomWalk(&#39;mu&#39;, sigma=sigma_mu, init_dist=pm.Normal.dist(0, 10), shape=len(y))
+
+        # Observation model
+        Y_obs = pm.Normal(&#39;Y_obs&#39;, mu=beta * x &#43; mu, sigma=sigma, observed=y)
+
+        # ---- 3. MCMC Sampling ----
+        trace = pm.sample(1000, tune=1000, chains=2, target_accept=0.9)
+        ppc = pm.sample_posterior_predictive(trace, var_names=[&#34;Y_obs&#34;], random_seed=42)
+
+        # Extract posterior mean and 95% credible intervals
+        beta_posterior = trace.posterior[&#39;beta&#39;].mean(dim=(&#34;chain&#34;, &#34;draw&#34;))
+        beta_lower = trace.posterior[&#39;beta&#39;].quantile(0.025, dim=(&#34;chain&#34;, &#34;draw&#34;))
+        beta_upper = trace.posterior[&#39;beta&#39;].quantile(0.975, dim=(&#34;chain&#34;, &#34;draw&#34;))
+
+        mu_posterior = trace.posterior[&#39;mu&#39;].mean(dim=(&#34;chain&#34;, &#34;draw&#34;))
+        mu_lower = trace.posterior[&#39;mu&#39;].quantile(0.025, dim=(&#34;chain&#34;, &#34;draw&#34;))
+        mu_upper = trace.posterior[&#39;mu&#39;].quantile(0.975, dim=(&#34;chain&#34;, &#34;draw&#34;))
+
+        # Extract posterior predictive samples
+        y_pred_samples = ppc.posterior_predictive[&#39;Y_obs&#39;]
+
+        # Calculate mean and 95% prediction interval
+        y_pred_mean = y_pred_samples.mean(dim=(&#39;chain&#39;, &#39;draw&#39;)).values
+        y_pred_lower = np.percentile(y_pred_samples.values, 2.5, axis=(0, 1))  # 2.5% quantile
+        y_pred_upper = np.percentile(y_pred_samples.values, 97.5, axis=(0, 1))  # 97.5% quantile
+
+        epsilon_samples = y - y_pred_samples.values  # Shape: (chains, draws, time)
+
+        # ---- 3. Calculate Mean and Intervals ----
+        # Mean residuals
+        epsilon_mean = epsilon_samples.mean(axis=(0, 1))  # Average over chains and draws
+
+        # 95% prediction intervals
+        epsilon_lower = np.percentile(epsilon_samples, 2.5, axis=(0, 1))
+        epsilon_upper = np.percentile(epsilon_samples, 97.5, axis=(0, 1))
+
+        data = {
+            &#39;y&#39;: {
+                &#39;mean&#39;: y_pred_mean,
+                &#39;upper&#39;: y_pred_upper,
+                &#39;lower&#39;: y_pred_lower
+            },
+            &#39;beta&#39;: {
+                &#39;mean&#39;: beta_posterior,
+                &#39;upper&#39;: beta_upper,
+                &#39;lower&#39;: beta_lower
+            },
+            &#39;mu&#39;: {
+                &#39;mean&#39;: mu_posterior,
+                &#39;upper&#39;: mu_upper,
+                &#39;lower&#39;: mu_lower
+            },
+            &#39;epsilon&#39;: {
+                &#39;mean&#39;: epsilon_mean,
+                &#39;upper&#39;: epsilon_upper,
+                &#39;lower&#39;: epsilon_lower
+            },
+        }
+
+        return data
+">
+<meta name="author" content="">
+<link rel="canonical" href="https://oldhuntor.github.io/posts/codesnippets/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d6fcd20a4fb86efa4dfac8ec95da60244cc8871042183da1ef28e3a762ad79c8.css" integrity="sha256-1vzSCk&#43;4bvpN&#43;sjsldpgJEzIhxBCGD2h7yjjp2Ktecg=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://oldhuntor.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://oldhuntor.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://oldhuntor.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://oldhuntor.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://oldhuntor.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://oldhuntor.github.io/posts/codesnippets/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://oldhuntor.github.io/posts/codesnippets/">
+  <meta property="og:site_name" content="Xuanhao&#39;s Blog">
+  <meta property="og:title" content="Bayesian Cointegration codes">
+  <meta property="og:description" content="Bayesian regression def bayesian_rolling_window(X_t, Y_t, window_size=30): T = len(X_t) beta_t_est = np.zeros(T) mu_t_est = np.zeros(T) beta_var_est = np.zeros(T) mu_var_est = np.zeros(T) residual_var_est = np.zeros(T) Y_pred = np.zeros(T) Y_std_est = np.zeros(T) # Prior parameters beta_mean_prior = 0 beta_var_prior = 1 mu_mean_prior = 0 mu_var_prior = 1 sigma_prior = 1 for t in range(window_size, T): # Get rolling window data X_window = np.float64(X_t[t - window_size:t]) Y_window = np.float64(Y_t[t - window_size:t]) # Posterior parameters for beta XTX = np.sum(X_window ** 2) XTY = np.sum(X_window * (Y_window - np.mean(Y_window))) beta_var_post = 1 / (1 / beta_var_prior &#43; XTX / sigma_prior) beta_mean_post = beta_var_post * (beta_mean_prior / beta_var_prior &#43; XTY / sigma_prior) # Posterior parameters for mu mu_var_post = 1 / (1 / mu_var_prior &#43; window_size / sigma_prior) mu_mean_post = mu_var_post * (mu_mean_prior / mu_var_prior &#43; np.sum(Y_window - beta_mean_post * X_window) / sigma_prior) # Estimate residual variance residuals_window = Y_window - (beta_mean_post * X_window &#43; mu_mean_post) residual_var_est[t] = np.var(residuals_window) # Store estimates beta_t_est[t] = beta_mean_post mu_t_est[t] = mu_mean_post beta_var_est[t] = beta_var_post mu_var_est[t] = mu_var_post # Predict Y_t and its credible interval Y_pred[t] = beta_t_est[t] * X_t[t] &#43; mu_t_est[t] Y_var_est = (X_t[t] ** 2) * (beta_var_est[t]) &#43; (mu_var_est[t]) &#43; (1 / sigma_prior) Y_std_est[t] = np.sqrt(Y_var_est) # Prior parameters beta_mean_prior = beta_mean_post beta_var_prior = beta_var_post mu_mean_prior = mu_mean_post mu_var_prior = mu_var_post residuals = Y_t - Y_pred data = { &#39;y&#39;: { &#39;mean&#39;: Y_pred, &#39;upper&#39;: Y_pred &#43; 1.96 * Y_std_est, &#39;lower&#39;: Y_pred - 1.96 * Y_std_est }, &#39;beta&#39;: { &#39;mean&#39;: beta_t_est, &#39;upper&#39;: beta_t_est &#43; 1.96 * np.sqrt(beta_var_est), &#39;lower&#39;: beta_t_est - 1.96 * np.sqrt(beta_var_est) }, &#39;mu&#39;: { &#39;mean&#39;: mu_t_est, &#39;upper&#39;: mu_t_est &#43; 1.96 * np.sqrt(mu_var_est), &#39;lower&#39;: mu_t_est - 1.96 * np.sqrt(mu_var_est) }, &#39;epsilon&#39;: { &#39;mean&#39;: residuals, &#39;upper&#39;: residuals &#43; 1.96 * np.sqrt(residual_var_est), &#39;lower&#39;: residuals - 1.96 * np.sqrt(residual_var_est) }, } return data Bayesian GAM def bayesian_gam_with_splines(X_t, Y_t, df=10): T = len(X_t) time = np.linspace(0, 1, T) # Design matrices for splines design_matrix = patsy.dmatrix(f&#34;bs(time, df={df}, degree=3)&#34;, {&#34;time&#34;: time}, return_type=&#39;dataframe&#39;) # Joint Bayesian Ridge Regression for beta_t and mu_t X_joint = np.hstack([np.multiply(design_matrix.values, X_t[:, None]), design_matrix.values]) model_joint = BayesianRidge() model_joint.fit(X_joint, Y_t) # Predict values with uncertainties Y_pred, Y_std = model_joint.predict(X_joint, return_std=True) # Separate beta_t and mu_t beta_t_est = design_matrix.values @ model_joint.coef_[:design_matrix.shape[1]] mu_t_est = design_matrix.values @ model_joint.coef_[design_matrix.shape[1]:] # Compute standard deviations for beta and mu coef_cov = np.linalg.inv(model_joint.alpha_ * np.eye(X_joint.shape[1]) &#43; model_joint.lambda_ * X_joint.T @ X_joint) beta_std_est = np.sqrt(np.sum((design_matrix.values @ coef_cov[:design_matrix.shape[1], :design_matrix.shape[1]]) * design_matrix.values, axis=1)) mu_std_est = np.sqrt(np.sum((design_matrix.values @ coef_cov[design_matrix.shape[1]:, design_matrix.shape[1]:]) * design_matrix.values, axis=1)) # Posterior variance of noise residual_var_est = 1 / model_joint.alpha_ # Posterior noise variance residuals = Y_t - Y_pred data = { &#39;y&#39;: { &#39;mean&#39;: Y_pred, &#39;upper&#39;: Y_pred &#43; 1.96 * Y_std, &#39;lower&#39;: Y_pred - 1.96 * Y_std }, &#39;beta&#39;: { &#39;mean&#39;: beta_t_est, &#39;upper&#39;: beta_t_est &#43; 1.96 * beta_std_est, &#39;lower&#39;: beta_t_est - 1.96 * beta_std_est }, &#39;mu&#39;: { &#39;mean&#39;: mu_t_est, &#39;upper&#39;: mu_t_est &#43; 1.96 * mu_std_est, &#39;lower&#39;: mu_t_est - 1.96 * mu_std_est }, &#39;epsilon&#39;: { &#39;mean&#39;: residuals, &#39;upper&#39;: residuals &#43; 1.96 * np.sqrt(residual_var_est), &#39;lower&#39;: residuals - 1.96 * np.sqrt(residual_var_est) }, } return data Gaussian Process class TimeVaryingGP(ExactGP): def __init__(self, train_x, train_y, likelihood): super(TimeVaryingGP, self).__init__(train_x, train_y, likelihood) # Separate kernels for each component self.beta_kernel = ScaleKernel(RBFKernel()) # self.beta_kernel.base_kernel.register_prior( # &#39;lengthscale_prior&#39;, # gpytorch.priors.GammaPrior(10.0, 20.0), # &#39;lengthscale&#39; # ) self.mu_kernel = ScaleKernel(RBFKernel()) self.eps_kernel = ScaleKernel(RBFKernel()) self.mean = ZeroMean() def forward(self, x): # Extract time and covariates t = x[:, 0] # time index X = x[:, 1] # covariate # Compute kernel matrices K_beta = self.beta_kernel(t) K_mu = self.mu_kernel(t) K_eps = self.eps_kernel(t) # Compute covariance matrix covar = X.unsqueeze(1) * K_beta * X.unsqueeze(0) &#43; K_mu &#43; K_eps mean = self.mean(x) return MultivariateNormal(mean, covar) def train_model(X, y, n_iter=100): if not isinstance(X, torch.Tensor): X = torch.from_numpy(X).clone().detach().float() y = torch.from_numpy(y).clone().detach().float() else: X = X.clone().detach().float() y = y.clone().detach().float() # Initialize model likelihood = gpytorch.likelihoods.GaussianLikelihood() model = TimeVaryingGP(X, y, likelihood) # Use the adam optimizer optimizer = torch.optim.Adam([ {&#39;params&#39;: model.parameters()}, ], lr=0.1) # &#34;Loss&#34; for GPs - the marginal log likelihood mll = gpytorch.mlls.ExactMarginalLogLikelihood(likelihood, model) # Training loop model.train() likelihood.train() for i in range(n_iter): optimizer.zero_grad() output = model(X) loss = -mll(output, y) loss.backward() optimizer.step() return model, likelihood def predict_latent(model, X_train, y_train, X_new): model.eval() jitter = 1e-6 with torch.no_grad(): t_train = X_train[:, 0] x_train = X_train[:, 1] t_new = X_new[:, 0] x_new = X_new[:, 1] K_beta = model.beta_kernel(t_new, t_train).evaluate() K_mu = model.mu_kernel(t_new, t_train).evaluate() K_eps = model.eps_kernel(t_new, t_train).evaluate() K_total = x_train * model.beta_kernel(t_train).evaluate() * x_train.unsqueeze(-1) &#43; \ model.mu_kernel(t_train).evaluate() &#43; \ model.eps_kernel(t_train).evaluate() &#43; \ model.likelihood.noise * torch.eye(len(t_train)) &#43; \ jitter * torch.eye(len(t_train)) K_new_beta = model.beta_kernel(t_new).evaluate() &#43; jitter * torch.eye(len(t_new)) K_new_mu = model.mu_kernel(t_new).evaluate() &#43; jitter * torch.eye(len(t_new)) K_new_eps = model.eps_kernel(t_new).evaluate() &#43; jitter * torch.eye(len(t_new)) # Compute posterior mean using Cholesky L = torch.linalg.cholesky(K_total) alpha = torch.linalg.solve_triangular(L, y_train.unsqueeze(1), upper=False) alpha = torch.linalg.solve_triangular(L.T, alpha, upper=True) K_stacked = torch.stack([ x_new.unsqueeze(-1) * K_beta, K_mu, K_eps ]) posterior_mean = K_stacked @ alpha # Compute posterior variance using Cholesky v_beta = torch.linalg.solve_triangular(L, (x_train * K_beta.T).T, upper=False) v_mu = torch.linalg.solve_triangular(L, K_mu.T, upper=False) v_eps = torch.linalg.solve_triangular(L, K_eps.T, upper=False) post_var_beta = K_new_beta - v_beta.T @ v_beta post_var_mu = K_new_mu - v_mu.T @ v_mu post_var_eps = K_new_eps - v_eps.T @ v_eps return { &#39;mean&#39;: { &#39;beta&#39;: posterior_mean[0].squeeze(), &#39;mu&#39;: posterior_mean[1].squeeze(), &#39;epsilon&#39;: posterior_mean[2].squeeze() }, &#39;variance&#39;: { &#39;beta&#39;: post_var_beta.diag(), &#39;mu&#39;: post_var_mu.diag(), &#39;epsilon&#39;: post_var_eps.diag() } } def predict(model, likelihood, X_new, X_train=None, y_train=None): model.eval() likelihood.eval() if X_train is None: X_train = model.train_inputs[0] if y_train is None: y_train = model.train_targets with torch.no_grad(), gpytorch.settings.fast_pred_var(): observed_pred = likelihood(model(X_new)) latent_values = predict_latent(model, X_train, y_train, X_new) return observed_pred.mean, observed_pred.variance, latent_values BSTS def bsts_fit(x,y): with pm.Model() as model: # Priors for variances # sigma = pm.HalfCauchy(&#39;sigma&#39;, beta=1) # Random walk for log volatility log_sigma = pm.GaussianRandomWalk(&#39;log_sigma&#39;, sigma=0.1, shape=len(y), init_dist=pm.Normal.dist(mu=0, sigma=1)) sigma = pm.Deterministic(&#39;sigma&#39;, pm.math.exp(log_sigma)) sigma_beta = pm.HalfCauchy(&#39;sigma_beta&#39;, beta=1) sigma_mu = pm.HalfCauchy(&#39;sigma_mu&#39;, beta=1) # Gaussian Random Walks for beta and mu beta = pm.GaussianRandomWalk(&#39;beta&#39;, sigma=sigma_beta, init_dist=pm.Normal.dist(0, 10), shape=len(y)) mu = pm.GaussianRandomWalk(&#39;mu&#39;, sigma=sigma_mu, init_dist=pm.Normal.dist(0, 10), shape=len(y)) # Observation model Y_obs = pm.Normal(&#39;Y_obs&#39;, mu=beta * x &#43; mu, sigma=sigma, observed=y) # ---- 3. MCMC Sampling ---- trace = pm.sample(1000, tune=1000, chains=2, target_accept=0.9) ppc = pm.sample_posterior_predictive(trace, var_names=[&#34;Y_obs&#34;], random_seed=42) # Extract posterior mean and 95% credible intervals beta_posterior = trace.posterior[&#39;beta&#39;].mean(dim=(&#34;chain&#34;, &#34;draw&#34;)) beta_lower = trace.posterior[&#39;beta&#39;].quantile(0.025, dim=(&#34;chain&#34;, &#34;draw&#34;)) beta_upper = trace.posterior[&#39;beta&#39;].quantile(0.975, dim=(&#34;chain&#34;, &#34;draw&#34;)) mu_posterior = trace.posterior[&#39;mu&#39;].mean(dim=(&#34;chain&#34;, &#34;draw&#34;)) mu_lower = trace.posterior[&#39;mu&#39;].quantile(0.025, dim=(&#34;chain&#34;, &#34;draw&#34;)) mu_upper = trace.posterior[&#39;mu&#39;].quantile(0.975, dim=(&#34;chain&#34;, &#34;draw&#34;)) # Extract posterior predictive samples y_pred_samples = ppc.posterior_predictive[&#39;Y_obs&#39;] # Calculate mean and 95% prediction interval y_pred_mean = y_pred_samples.mean(dim=(&#39;chain&#39;, &#39;draw&#39;)).values y_pred_lower = np.percentile(y_pred_samples.values, 2.5, axis=(0, 1)) # 2.5% quantile y_pred_upper = np.percentile(y_pred_samples.values, 97.5, axis=(0, 1)) # 97.5% quantile epsilon_samples = y - y_pred_samples.values # Shape: (chains, draws, time) # ---- 3. Calculate Mean and Intervals ---- # Mean residuals epsilon_mean = epsilon_samples.mean(axis=(0, 1)) # Average over chains and draws # 95% prediction intervals epsilon_lower = np.percentile(epsilon_samples, 2.5, axis=(0, 1)) epsilon_upper = np.percentile(epsilon_samples, 97.5, axis=(0, 1)) data = { &#39;y&#39;: { &#39;mean&#39;: y_pred_mean, &#39;upper&#39;: y_pred_upper, &#39;lower&#39;: y_pred_lower }, &#39;beta&#39;: { &#39;mean&#39;: beta_posterior, &#39;upper&#39;: beta_upper, &#39;lower&#39;: beta_lower }, &#39;mu&#39;: { &#39;mean&#39;: mu_posterior, &#39;upper&#39;: mu_upper, &#39;lower&#39;: mu_lower }, &#39;epsilon&#39;: { &#39;mean&#39;: epsilon_mean, &#39;upper&#39;: epsilon_upper, &#39;lower&#39;: epsilon_lower }, } return data ">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-01-25T19:12:16+01:00">
+    <meta property="article:modified_time" content="2025-01-25T19:12:16+01:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Bayesian Cointegration codes">
+<meta name="twitter:description" content="Bayesian regression
+def bayesian_rolling_window(X_t, Y_t, window_size=30):
+    T = len(X_t)
+    beta_t_est = np.zeros(T)
+    mu_t_est = np.zeros(T)
+    beta_var_est = np.zeros(T)
+    mu_var_est = np.zeros(T)
+    residual_var_est = np.zeros(T)
+    Y_pred = np.zeros(T)
+    Y_std_est = np.zeros(T)
+
+    # Prior parameters
+    beta_mean_prior = 0
+    beta_var_prior = 1
+    mu_mean_prior = 0
+    mu_var_prior = 1
+    sigma_prior = 1
+
+    for t in range(window_size, T):
+        # Get rolling window data
+        X_window = np.float64(X_t[t - window_size:t])
+        Y_window = np.float64(Y_t[t - window_size:t])
+
+        # Posterior parameters for beta
+        XTX = np.sum(X_window ** 2)
+        XTY = np.sum(X_window * (Y_window - np.mean(Y_window)))
+        beta_var_post = 1 / (1 / beta_var_prior &#43; XTX / sigma_prior)
+        beta_mean_post = beta_var_post * (beta_mean_prior / beta_var_prior &#43; XTY / sigma_prior)
+
+        # Posterior parameters for mu
+        mu_var_post = 1 / (1 / mu_var_prior &#43; window_size / sigma_prior)
+        mu_mean_post = mu_var_post * (mu_mean_prior / mu_var_prior &#43; np.sum(Y_window - beta_mean_post * X_window) / sigma_prior)
+
+        # Estimate residual variance
+        residuals_window = Y_window - (beta_mean_post * X_window &#43; mu_mean_post)
+        residual_var_est[t] = np.var(residuals_window)
+
+        # Store estimates
+        beta_t_est[t] = beta_mean_post
+        mu_t_est[t] = mu_mean_post
+        beta_var_est[t] = beta_var_post
+        mu_var_est[t] = mu_var_post
+
+        # Predict Y_t and its credible interval
+        Y_pred[t] = beta_t_est[t] * X_t[t] &#43; mu_t_est[t]
+        Y_var_est = (X_t[t] ** 2) * (beta_var_est[t]) &#43; (mu_var_est[t]) &#43; (1 / sigma_prior)
+        Y_std_est[t] = np.sqrt(Y_var_est)
+
+
+        # Prior parameters
+        beta_mean_prior = beta_mean_post
+        beta_var_prior = beta_var_post
+        mu_mean_prior = mu_mean_post
+        mu_var_prior = mu_var_post
+
+    residuals = Y_t - Y_pred
+
+    data = {
+        &#39;y&#39;: {
+            &#39;mean&#39;: Y_pred,
+            &#39;upper&#39;: Y_pred &#43; 1.96 * Y_std_est,
+            &#39;lower&#39;: Y_pred - 1.96 * Y_std_est
+        },
+        &#39;beta&#39;: {
+            &#39;mean&#39;: beta_t_est,
+            &#39;upper&#39;:  beta_t_est &#43; 1.96 * np.sqrt(beta_var_est),
+            &#39;lower&#39;: beta_t_est - 1.96 * np.sqrt(beta_var_est)
+        },
+        &#39;mu&#39;: {
+            &#39;mean&#39;: mu_t_est,
+            &#39;upper&#39;: mu_t_est &#43; 1.96 * np.sqrt(mu_var_est),
+            &#39;lower&#39;: mu_t_est - 1.96 * np.sqrt(mu_var_est)
+        },
+        &#39;epsilon&#39;: {
+            &#39;mean&#39;: residuals,
+            &#39;upper&#39;: residuals &#43; 1.96 * np.sqrt(residual_var_est),
+            &#39;lower&#39;: residuals - 1.96 * np.sqrt(residual_var_est)
+        },
+    }
+
+    return data
+Bayesian GAM
+def bayesian_gam_with_splines(X_t, Y_t, df=10):
+    T = len(X_t)
+    time = np.linspace(0, 1, T)
+
+    # Design matrices for splines
+    design_matrix = patsy.dmatrix(f&#34;bs(time, df={df}, degree=3)&#34;, {&#34;time&#34;: time}, return_type=&#39;dataframe&#39;)
+
+    # Joint Bayesian Ridge Regression for beta_t and mu_t
+    X_joint = np.hstack([np.multiply(design_matrix.values, X_t[:, None]), design_matrix.values])
+    model_joint = BayesianRidge()
+    model_joint.fit(X_joint, Y_t)
+
+    # Predict values with uncertainties
+    Y_pred, Y_std = model_joint.predict(X_joint, return_std=True)
+
+    # Separate beta_t and mu_t
+    beta_t_est = design_matrix.values @ model_joint.coef_[:design_matrix.shape[1]]
+    mu_t_est = design_matrix.values @ model_joint.coef_[design_matrix.shape[1]:]
+
+    # Compute standard deviations for beta and mu
+    coef_cov = np.linalg.inv(model_joint.alpha_ * np.eye(X_joint.shape[1]) &#43; model_joint.lambda_ * X_joint.T @ X_joint)
+    beta_std_est = np.sqrt(np.sum((design_matrix.values @ coef_cov[:design_matrix.shape[1], :design_matrix.shape[1]]) * design_matrix.values, axis=1))
+    mu_std_est = np.sqrt(np.sum((design_matrix.values @ coef_cov[design_matrix.shape[1]:, design_matrix.shape[1]:]) * design_matrix.values, axis=1))
+
+    # Posterior variance of noise
+    residual_var_est = 1 / model_joint.alpha_  # Posterior noise variance
+
+    residuals = Y_t - Y_pred
+
+    data = {
+        &#39;y&#39;: {
+            &#39;mean&#39;: Y_pred,
+            &#39;upper&#39;: Y_pred &#43; 1.96 * Y_std,
+            &#39;lower&#39;: Y_pred - 1.96 * Y_std
+        },
+        &#39;beta&#39;: {
+            &#39;mean&#39;: beta_t_est,
+            &#39;upper&#39;: beta_t_est &#43; 1.96 * beta_std_est,
+            &#39;lower&#39;: beta_t_est - 1.96 * beta_std_est
+        },
+        &#39;mu&#39;: {
+            &#39;mean&#39;: mu_t_est,
+            &#39;upper&#39;: mu_t_est &#43; 1.96 * mu_std_est,
+            &#39;lower&#39;: mu_t_est - 1.96 * mu_std_est
+        },
+        &#39;epsilon&#39;: {
+            &#39;mean&#39;: residuals,
+            &#39;upper&#39;: residuals &#43; 1.96 * np.sqrt(residual_var_est),
+            &#39;lower&#39;: residuals - 1.96 * np.sqrt(residual_var_est)
+        },
+    }
+
+    return data
+Gaussian Process
+class TimeVaryingGP(ExactGP):
+    def __init__(self, train_x, train_y, likelihood):
+        super(TimeVaryingGP, self).__init__(train_x, train_y, likelihood)
+
+        # Separate kernels for each component
+        self.beta_kernel = ScaleKernel(RBFKernel())
+        # self.beta_kernel.base_kernel.register_prior(
+        #     &#39;lengthscale_prior&#39;,
+        #     gpytorch.priors.GammaPrior(10.0, 20.0),
+        #     &#39;lengthscale&#39;
+        # )
+        self.mu_kernel = ScaleKernel(RBFKernel())
+        self.eps_kernel = ScaleKernel(RBFKernel())
+
+        self.mean = ZeroMean()
+
+    def forward(self, x):
+        # Extract time and covariates
+        t = x[:, 0]  # time index
+        X = x[:, 1]  # covariate
+
+        # Compute kernel matrices
+        K_beta = self.beta_kernel(t)
+        K_mu = self.mu_kernel(t)
+        K_eps = self.eps_kernel(t)
+
+        # Compute covariance matrix
+        covar = X.unsqueeze(1) * K_beta * X.unsqueeze(0) &#43; K_mu &#43; K_eps
+
+        mean = self.mean(x)
+        return MultivariateNormal(mean, covar)
+
+
+def train_model(X, y, n_iter=100):
+    if not isinstance(X, torch.Tensor):
+        X = torch.from_numpy(X).clone().detach().float()
+        y = torch.from_numpy(y).clone().detach().float()
+    else:
+        X = X.clone().detach().float()
+        y = y.clone().detach().float()
+
+    # Initialize model
+    likelihood = gpytorch.likelihoods.GaussianLikelihood()
+    model = TimeVaryingGP(X, y, likelihood)
+
+    # Use the adam optimizer
+    optimizer = torch.optim.Adam([
+        {&#39;params&#39;: model.parameters()},
+    ], lr=0.1)
+
+    # &#34;Loss&#34; for GPs - the marginal log likelihood
+    mll = gpytorch.mlls.ExactMarginalLogLikelihood(likelihood, model)
+
+    # Training loop
+    model.train()
+    likelihood.train()
+
+    for i in range(n_iter):
+        optimizer.zero_grad()
+        output = model(X)
+        loss = -mll(output, y)
+        loss.backward()
+        optimizer.step()
+
+    return model, likelihood
+
+
+def predict_latent(model, X_train, y_train, X_new):
+    model.eval()
+    jitter = 1e-6
+
+    with torch.no_grad():
+        t_train = X_train[:, 0]
+        x_train = X_train[:, 1]
+        t_new = X_new[:, 0]
+        x_new = X_new[:, 1]
+
+        K_beta = model.beta_kernel(t_new, t_train).evaluate()
+        K_mu = model.mu_kernel(t_new, t_train).evaluate()
+        K_eps = model.eps_kernel(t_new, t_train).evaluate()
+
+        K_total = x_train * model.beta_kernel(t_train).evaluate() * x_train.unsqueeze(-1) &#43; \
+                  model.mu_kernel(t_train).evaluate() &#43; \
+                  model.eps_kernel(t_train).evaluate() &#43; \
+                  model.likelihood.noise * torch.eye(len(t_train)) &#43; \
+                  jitter * torch.eye(len(t_train))
+
+        K_new_beta = model.beta_kernel(t_new).evaluate() &#43; jitter * torch.eye(len(t_new))
+        K_new_mu = model.mu_kernel(t_new).evaluate() &#43; jitter * torch.eye(len(t_new))
+        K_new_eps = model.eps_kernel(t_new).evaluate() &#43; jitter * torch.eye(len(t_new))
+
+        # Compute posterior mean using Cholesky
+        L = torch.linalg.cholesky(K_total)
+        alpha = torch.linalg.solve_triangular(L, y_train.unsqueeze(1), upper=False)
+        alpha = torch.linalg.solve_triangular(L.T, alpha, upper=True)
+
+        K_stacked = torch.stack([
+            x_new.unsqueeze(-1) * K_beta,
+            K_mu,
+            K_eps
+        ])
+        posterior_mean = K_stacked @ alpha
+
+        # Compute posterior variance using Cholesky
+        v_beta = torch.linalg.solve_triangular(L, (x_train * K_beta.T).T, upper=False)
+        v_mu = torch.linalg.solve_triangular(L, K_mu.T, upper=False)
+        v_eps = torch.linalg.solve_triangular(L, K_eps.T, upper=False)
+
+        post_var_beta = K_new_beta - v_beta.T @ v_beta
+        post_var_mu = K_new_mu - v_mu.T @ v_mu
+        post_var_eps = K_new_eps - v_eps.T @ v_eps
+
+        return {
+            &#39;mean&#39;: {
+                &#39;beta&#39;: posterior_mean[0].squeeze(),
+                &#39;mu&#39;: posterior_mean[1].squeeze(),
+                &#39;epsilon&#39;: posterior_mean[2].squeeze()
+            },
+            &#39;variance&#39;: {
+                &#39;beta&#39;: post_var_beta.diag(),
+                &#39;mu&#39;: post_var_mu.diag(),
+                &#39;epsilon&#39;: post_var_eps.diag()
+            }
+        }
+
+
+def predict(model, likelihood, X_new, X_train=None, y_train=None):
+    model.eval()
+    likelihood.eval()
+
+    if X_train is None:
+        X_train = model.train_inputs[0]
+    if y_train is None:
+        y_train = model.train_targets
+
+    with torch.no_grad(), gpytorch.settings.fast_pred_var():
+        observed_pred = likelihood(model(X_new))
+
+    latent_values = predict_latent(model, X_train, y_train, X_new)
+    return observed_pred.mean, observed_pred.variance, latent_values
+BSTS
+def bsts_fit(x,y):
+    with pm.Model() as model:
+        # Priors for variances
+
+        # sigma = pm.HalfCauchy(&#39;sigma&#39;, beta=1)
+        # Random walk for log volatility
+        log_sigma = pm.GaussianRandomWalk(&#39;log_sigma&#39;,
+                                          sigma=0.1,
+                                          shape=len(y),
+                                          init_dist=pm.Normal.dist(mu=0, sigma=1))
+        sigma = pm.Deterministic(&#39;sigma&#39;, pm.math.exp(log_sigma))
+
+        sigma_beta = pm.HalfCauchy(&#39;sigma_beta&#39;, beta=1)
+        sigma_mu = pm.HalfCauchy(&#39;sigma_mu&#39;, beta=1)
+
+        # Gaussian Random Walks for beta and mu
+        beta = pm.GaussianRandomWalk(&#39;beta&#39;, sigma=sigma_beta, init_dist=pm.Normal.dist(0, 10), shape=len(y))
+        mu = pm.GaussianRandomWalk(&#39;mu&#39;, sigma=sigma_mu, init_dist=pm.Normal.dist(0, 10), shape=len(y))
+
+        # Observation model
+        Y_obs = pm.Normal(&#39;Y_obs&#39;, mu=beta * x &#43; mu, sigma=sigma, observed=y)
+
+        # ---- 3. MCMC Sampling ----
+        trace = pm.sample(1000, tune=1000, chains=2, target_accept=0.9)
+        ppc = pm.sample_posterior_predictive(trace, var_names=[&#34;Y_obs&#34;], random_seed=42)
+
+        # Extract posterior mean and 95% credible intervals
+        beta_posterior = trace.posterior[&#39;beta&#39;].mean(dim=(&#34;chain&#34;, &#34;draw&#34;))
+        beta_lower = trace.posterior[&#39;beta&#39;].quantile(0.025, dim=(&#34;chain&#34;, &#34;draw&#34;))
+        beta_upper = trace.posterior[&#39;beta&#39;].quantile(0.975, dim=(&#34;chain&#34;, &#34;draw&#34;))
+
+        mu_posterior = trace.posterior[&#39;mu&#39;].mean(dim=(&#34;chain&#34;, &#34;draw&#34;))
+        mu_lower = trace.posterior[&#39;mu&#39;].quantile(0.025, dim=(&#34;chain&#34;, &#34;draw&#34;))
+        mu_upper = trace.posterior[&#39;mu&#39;].quantile(0.975, dim=(&#34;chain&#34;, &#34;draw&#34;))
+
+        # Extract posterior predictive samples
+        y_pred_samples = ppc.posterior_predictive[&#39;Y_obs&#39;]
+
+        # Calculate mean and 95% prediction interval
+        y_pred_mean = y_pred_samples.mean(dim=(&#39;chain&#39;, &#39;draw&#39;)).values
+        y_pred_lower = np.percentile(y_pred_samples.values, 2.5, axis=(0, 1))  # 2.5% quantile
+        y_pred_upper = np.percentile(y_pred_samples.values, 97.5, axis=(0, 1))  # 97.5% quantile
+
+        epsilon_samples = y - y_pred_samples.values  # Shape: (chains, draws, time)
+
+        # ---- 3. Calculate Mean and Intervals ----
+        # Mean residuals
+        epsilon_mean = epsilon_samples.mean(axis=(0, 1))  # Average over chains and draws
+
+        # 95% prediction intervals
+        epsilon_lower = np.percentile(epsilon_samples, 2.5, axis=(0, 1))
+        epsilon_upper = np.percentile(epsilon_samples, 97.5, axis=(0, 1))
+
+        data = {
+            &#39;y&#39;: {
+                &#39;mean&#39;: y_pred_mean,
+                &#39;upper&#39;: y_pred_upper,
+                &#39;lower&#39;: y_pred_lower
+            },
+            &#39;beta&#39;: {
+                &#39;mean&#39;: beta_posterior,
+                &#39;upper&#39;: beta_upper,
+                &#39;lower&#39;: beta_lower
+            },
+            &#39;mu&#39;: {
+                &#39;mean&#39;: mu_posterior,
+                &#39;upper&#39;: mu_upper,
+                &#39;lower&#39;: mu_lower
+            },
+            &#39;epsilon&#39;: {
+                &#39;mean&#39;: epsilon_mean,
+                &#39;upper&#39;: epsilon_upper,
+                &#39;lower&#39;: epsilon_lower
+            },
+        }
+
+        return data
+">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://oldhuntor.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Bayesian Cointegration codes",
+      "item": "https://oldhuntor.github.io/posts/codesnippets/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Bayesian Cointegration codes",
+  "name": "Bayesian Cointegration codes",
+  "description": "Bayesian regression def bayesian_rolling_window(X_t, Y_t, window_size=30): T = len(X_t) beta_t_est = np.zeros(T) mu_t_est = np.zeros(T) beta_var_est = np.zeros(T) mu_var_est = np.zeros(T) residual_var_est = np.zeros(T) Y_pred = np.zeros(T) Y_std_est = np.zeros(T) # Prior parameters beta_mean_prior = 0 beta_var_prior = 1 mu_mean_prior = 0 mu_var_prior = 1 sigma_prior = 1 for t in range(window_size, T): # Get rolling window data X_window = np.float64(X_t[t - window_size:t]) Y_window = np.float64(Y_t[t - window_size:t]) # Posterior parameters for beta XTX = np.sum(X_window ** 2) XTY = np.sum(X_window * (Y_window - np.mean(Y_window))) beta_var_post = 1 / (1 / beta_var_prior + XTX / sigma_prior) beta_mean_post = beta_var_post * (beta_mean_prior / beta_var_prior + XTY / sigma_prior) # Posterior parameters for mu mu_var_post = 1 / (1 / mu_var_prior + window_size / sigma_prior) mu_mean_post = mu_var_post * (mu_mean_prior / mu_var_prior + np.sum(Y_window - beta_mean_post * X_window) / sigma_prior) # Estimate residual variance residuals_window = Y_window - (beta_mean_post * X_window + mu_mean_post) residual_var_est[t] = np.var(residuals_window) # Store estimates beta_t_est[t] = beta_mean_post mu_t_est[t] = mu_mean_post beta_var_est[t] = beta_var_post mu_var_est[t] = mu_var_post # Predict Y_t and its credible interval Y_pred[t] = beta_t_est[t] * X_t[t] + mu_t_est[t] Y_var_est = (X_t[t] ** 2) * (beta_var_est[t]) + (mu_var_est[t]) + (1 / sigma_prior) Y_std_est[t] = np.sqrt(Y_var_est) # Prior parameters beta_mean_prior = beta_mean_post beta_var_prior = beta_var_post mu_mean_prior = mu_mean_post mu_var_prior = mu_var_post residuals = Y_t - Y_pred data = { \u0026#39;y\u0026#39;: { \u0026#39;mean\u0026#39;: Y_pred, \u0026#39;upper\u0026#39;: Y_pred + 1.96 * Y_std_est, \u0026#39;lower\u0026#39;: Y_pred - 1.96 * Y_std_est }, \u0026#39;beta\u0026#39;: { \u0026#39;mean\u0026#39;: beta_t_est, \u0026#39;upper\u0026#39;: beta_t_est + 1.96 * np.sqrt(beta_var_est), \u0026#39;lower\u0026#39;: beta_t_est - 1.96 * np.sqrt(beta_var_est) }, \u0026#39;mu\u0026#39;: { \u0026#39;mean\u0026#39;: mu_t_est, \u0026#39;upper\u0026#39;: mu_t_est + 1.96 * np.sqrt(mu_var_est), \u0026#39;lower\u0026#39;: mu_t_est - 1.96 * np.sqrt(mu_var_est) }, \u0026#39;epsilon\u0026#39;: { \u0026#39;mean\u0026#39;: residuals, \u0026#39;upper\u0026#39;: residuals + 1.96 * np.sqrt(residual_var_est), \u0026#39;lower\u0026#39;: residuals - 1.96 * np.sqrt(residual_var_est) }, } return data Bayesian GAM def bayesian_gam_with_splines(X_t, Y_t, df=10): T = len(X_t) time = np.linspace(0, 1, T) # Design matrices for splines design_matrix = patsy.dmatrix(f\u0026#34;bs(time, df={df}, degree=3)\u0026#34;, {\u0026#34;time\u0026#34;: time}, return_type=\u0026#39;dataframe\u0026#39;) # Joint Bayesian Ridge Regression for beta_t and mu_t X_joint = np.hstack([np.multiply(design_matrix.values, X_t[:, None]), design_matrix.values]) model_joint = BayesianRidge() model_joint.fit(X_joint, Y_t) # Predict values with uncertainties Y_pred, Y_std = model_joint.predict(X_joint, return_std=True) # Separate beta_t and mu_t beta_t_est = design_matrix.values @ model_joint.coef_[:design_matrix.shape[1]] mu_t_est = design_matrix.values @ model_joint.coef_[design_matrix.shape[1]:] # Compute standard deviations for beta and mu coef_cov = np.linalg.inv(model_joint.alpha_ * np.eye(X_joint.shape[1]) + model_joint.lambda_ * X_joint.T @ X_joint) beta_std_est = np.sqrt(np.sum((design_matrix.values @ coef_cov[:design_matrix.shape[1], :design_matrix.shape[1]]) * design_matrix.values, axis=1)) mu_std_est = np.sqrt(np.sum((design_matrix.values @ coef_cov[design_matrix.shape[1]:, design_matrix.shape[1]:]) * design_matrix.values, axis=1)) # Posterior variance of noise residual_var_est = 1 / model_joint.alpha_ # Posterior noise variance residuals = Y_t - Y_pred data = { \u0026#39;y\u0026#39;: { \u0026#39;mean\u0026#39;: Y_pred, \u0026#39;upper\u0026#39;: Y_pred + 1.96 * Y_std, \u0026#39;lower\u0026#39;: Y_pred - 1.96 * Y_std }, \u0026#39;beta\u0026#39;: { \u0026#39;mean\u0026#39;: beta_t_est, \u0026#39;upper\u0026#39;: beta_t_est + 1.96 * beta_std_est, \u0026#39;lower\u0026#39;: beta_t_est - 1.96 * beta_std_est }, \u0026#39;mu\u0026#39;: { \u0026#39;mean\u0026#39;: mu_t_est, \u0026#39;upper\u0026#39;: mu_t_est + 1.96 * mu_std_est, \u0026#39;lower\u0026#39;: mu_t_est - 1.96 * mu_std_est }, \u0026#39;epsilon\u0026#39;: { \u0026#39;mean\u0026#39;: residuals, \u0026#39;upper\u0026#39;: residuals + 1.96 * np.sqrt(residual_var_est), \u0026#39;lower\u0026#39;: residuals - 1.96 * np.sqrt(residual_var_est) }, } return data Gaussian Process class TimeVaryingGP(ExactGP): def __init__(self, train_x, train_y, likelihood): super(TimeVaryingGP, self).__init__(train_x, train_y, likelihood) # Separate kernels for each component self.beta_kernel = ScaleKernel(RBFKernel()) # self.beta_kernel.base_kernel.register_prior( # \u0026#39;lengthscale_prior\u0026#39;, # gpytorch.priors.GammaPrior(10.0, 20.0), # \u0026#39;lengthscale\u0026#39; # ) self.mu_kernel = ScaleKernel(RBFKernel()) self.eps_kernel = ScaleKernel(RBFKernel()) self.mean = ZeroMean() def forward(self, x): # Extract time and covariates t = x[:, 0] # time index X = x[:, 1] # covariate # Compute kernel matrices K_beta = self.beta_kernel(t) K_mu = self.mu_kernel(t) K_eps = self.eps_kernel(t) # Compute covariance matrix covar = X.unsqueeze(1) * K_beta * X.unsqueeze(0) + K_mu + K_eps mean = self.mean(x) return MultivariateNormal(mean, covar) def train_model(X, y, n_iter=100): if not isinstance(X, torch.Tensor): X = torch.from_numpy(X).clone().detach().float() y = torch.from_numpy(y).clone().detach().float() else: X = X.clone().detach().float() y = y.clone().detach().float() # Initialize model likelihood = gpytorch.likelihoods.GaussianLikelihood() model = TimeVaryingGP(X, y, likelihood) # Use the adam optimizer optimizer = torch.optim.Adam([ {\u0026#39;params\u0026#39;: model.parameters()}, ], lr=0.1) # \u0026#34;Loss\u0026#34; for GPs - the marginal log likelihood mll = gpytorch.mlls.ExactMarginalLogLikelihood(likelihood, model) # Training loop model.train() likelihood.train() for i in range(n_iter): optimizer.zero_grad() output = model(X) loss = -mll(output, y) loss.backward() optimizer.step() return model, likelihood def predict_latent(model, X_train, y_train, X_new): model.eval() jitter = 1e-6 with torch.no_grad(): t_train = X_train[:, 0] x_train = X_train[:, 1] t_new = X_new[:, 0] x_new = X_new[:, 1] K_beta = model.beta_kernel(t_new, t_train).evaluate() K_mu = model.mu_kernel(t_new, t_train).evaluate() K_eps = model.eps_kernel(t_new, t_train).evaluate() K_total = x_train * model.beta_kernel(t_train).evaluate() * x_train.unsqueeze(-1) + \\ model.mu_kernel(t_train).evaluate() + \\ model.eps_kernel(t_train).evaluate() + \\ model.likelihood.noise * torch.eye(len(t_train)) + \\ jitter * torch.eye(len(t_train)) K_new_beta = model.beta_kernel(t_new).evaluate() + jitter * torch.eye(len(t_new)) K_new_mu = model.mu_kernel(t_new).evaluate() + jitter * torch.eye(len(t_new)) K_new_eps = model.eps_kernel(t_new).evaluate() + jitter * torch.eye(len(t_new)) # Compute posterior mean using Cholesky L = torch.linalg.cholesky(K_total) alpha = torch.linalg.solve_triangular(L, y_train.unsqueeze(1), upper=False) alpha = torch.linalg.solve_triangular(L.T, alpha, upper=True) K_stacked = torch.stack([ x_new.unsqueeze(-1) * K_beta, K_mu, K_eps ]) posterior_mean = K_stacked @ alpha # Compute posterior variance using Cholesky v_beta = torch.linalg.solve_triangular(L, (x_train * K_beta.T).T, upper=False) v_mu = torch.linalg.solve_triangular(L, K_mu.T, upper=False) v_eps = torch.linalg.solve_triangular(L, K_eps.T, upper=False) post_var_beta = K_new_beta - v_beta.T @ v_beta post_var_mu = K_new_mu - v_mu.T @ v_mu post_var_eps = K_new_eps - v_eps.T @ v_eps return { \u0026#39;mean\u0026#39;: { \u0026#39;beta\u0026#39;: posterior_mean[0].squeeze(), \u0026#39;mu\u0026#39;: posterior_mean[1].squeeze(), \u0026#39;epsilon\u0026#39;: posterior_mean[2].squeeze() }, \u0026#39;variance\u0026#39;: { \u0026#39;beta\u0026#39;: post_var_beta.diag(), \u0026#39;mu\u0026#39;: post_var_mu.diag(), \u0026#39;epsilon\u0026#39;: post_var_eps.diag() } } def predict(model, likelihood, X_new, X_train=None, y_train=None): model.eval() likelihood.eval() if X_train is None: X_train = model.train_inputs[0] if y_train is None: y_train = model.train_targets with torch.no_grad(), gpytorch.settings.fast_pred_var(): observed_pred = likelihood(model(X_new)) latent_values = predict_latent(model, X_train, y_train, X_new) return observed_pred.mean, observed_pred.variance, latent_values BSTS def bsts_fit(x,y): with pm.Model() as model: # Priors for variances # sigma = pm.HalfCauchy(\u0026#39;sigma\u0026#39;, beta=1) # Random walk for log volatility log_sigma = pm.GaussianRandomWalk(\u0026#39;log_sigma\u0026#39;, sigma=0.1, shape=len(y), init_dist=pm.Normal.dist(mu=0, sigma=1)) sigma = pm.Deterministic(\u0026#39;sigma\u0026#39;, pm.math.exp(log_sigma)) sigma_beta = pm.HalfCauchy(\u0026#39;sigma_beta\u0026#39;, beta=1) sigma_mu = pm.HalfCauchy(\u0026#39;sigma_mu\u0026#39;, beta=1) # Gaussian Random Walks for beta and mu beta = pm.GaussianRandomWalk(\u0026#39;beta\u0026#39;, sigma=sigma_beta, init_dist=pm.Normal.dist(0, 10), shape=len(y)) mu = pm.GaussianRandomWalk(\u0026#39;mu\u0026#39;, sigma=sigma_mu, init_dist=pm.Normal.dist(0, 10), shape=len(y)) # Observation model Y_obs = pm.Normal(\u0026#39;Y_obs\u0026#39;, mu=beta * x + mu, sigma=sigma, observed=y) # ---- 3. MCMC Sampling ---- trace = pm.sample(1000, tune=1000, chains=2, target_accept=0.9) ppc = pm.sample_posterior_predictive(trace, var_names=[\u0026#34;Y_obs\u0026#34;], random_seed=42) # Extract posterior mean and 95% credible intervals beta_posterior = trace.posterior[\u0026#39;beta\u0026#39;].mean(dim=(\u0026#34;chain\u0026#34;, \u0026#34;draw\u0026#34;)) beta_lower = trace.posterior[\u0026#39;beta\u0026#39;].quantile(0.025, dim=(\u0026#34;chain\u0026#34;, \u0026#34;draw\u0026#34;)) beta_upper = trace.posterior[\u0026#39;beta\u0026#39;].quantile(0.975, dim=(\u0026#34;chain\u0026#34;, \u0026#34;draw\u0026#34;)) mu_posterior = trace.posterior[\u0026#39;mu\u0026#39;].mean(dim=(\u0026#34;chain\u0026#34;, \u0026#34;draw\u0026#34;)) mu_lower = trace.posterior[\u0026#39;mu\u0026#39;].quantile(0.025, dim=(\u0026#34;chain\u0026#34;, \u0026#34;draw\u0026#34;)) mu_upper = trace.posterior[\u0026#39;mu\u0026#39;].quantile(0.975, dim=(\u0026#34;chain\u0026#34;, \u0026#34;draw\u0026#34;)) # Extract posterior predictive samples y_pred_samples = ppc.posterior_predictive[\u0026#39;Y_obs\u0026#39;] # Calculate mean and 95% prediction interval y_pred_mean = y_pred_samples.mean(dim=(\u0026#39;chain\u0026#39;, \u0026#39;draw\u0026#39;)).values y_pred_lower = np.percentile(y_pred_samples.values, 2.5, axis=(0, 1)) # 2.5% quantile y_pred_upper = np.percentile(y_pred_samples.values, 97.5, axis=(0, 1)) # 97.5% quantile epsilon_samples = y - y_pred_samples.values # Shape: (chains, draws, time) # ---- 3. Calculate Mean and Intervals ---- # Mean residuals epsilon_mean = epsilon_samples.mean(axis=(0, 1)) # Average over chains and draws # 95% prediction intervals epsilon_lower = np.percentile(epsilon_samples, 2.5, axis=(0, 1)) epsilon_upper = np.percentile(epsilon_samples, 97.5, axis=(0, 1)) data = { \u0026#39;y\u0026#39;: { \u0026#39;mean\u0026#39;: y_pred_mean, \u0026#39;upper\u0026#39;: y_pred_upper, \u0026#39;lower\u0026#39;: y_pred_lower }, \u0026#39;beta\u0026#39;: { \u0026#39;mean\u0026#39;: beta_posterior, \u0026#39;upper\u0026#39;: beta_upper, \u0026#39;lower\u0026#39;: beta_lower }, \u0026#39;mu\u0026#39;: { \u0026#39;mean\u0026#39;: mu_posterior, \u0026#39;upper\u0026#39;: mu_upper, \u0026#39;lower\u0026#39;: mu_lower }, \u0026#39;epsilon\u0026#39;: { \u0026#39;mean\u0026#39;: epsilon_mean, \u0026#39;upper\u0026#39;: epsilon_upper, \u0026#39;lower\u0026#39;: epsilon_lower }, } return data ",
+  "keywords": [
+    
+  ],
+  "articleBody": "Bayesian regression def bayesian_rolling_window(X_t, Y_t, window_size=30): T = len(X_t) beta_t_est = np.zeros(T) mu_t_est = np.zeros(T) beta_var_est = np.zeros(T) mu_var_est = np.zeros(T) residual_var_est = np.zeros(T) Y_pred = np.zeros(T) Y_std_est = np.zeros(T) # Prior parameters beta_mean_prior = 0 beta_var_prior = 1 mu_mean_prior = 0 mu_var_prior = 1 sigma_prior = 1 for t in range(window_size, T): # Get rolling window data X_window = np.float64(X_t[t - window_size:t]) Y_window = np.float64(Y_t[t - window_size:t]) # Posterior parameters for beta XTX = np.sum(X_window ** 2) XTY = np.sum(X_window * (Y_window - np.mean(Y_window))) beta_var_post = 1 / (1 / beta_var_prior + XTX / sigma_prior) beta_mean_post = beta_var_post * (beta_mean_prior / beta_var_prior + XTY / sigma_prior) # Posterior parameters for mu mu_var_post = 1 / (1 / mu_var_prior + window_size / sigma_prior) mu_mean_post = mu_var_post * (mu_mean_prior / mu_var_prior + np.sum(Y_window - beta_mean_post * X_window) / sigma_prior) # Estimate residual variance residuals_window = Y_window - (beta_mean_post * X_window + mu_mean_post) residual_var_est[t] = np.var(residuals_window) # Store estimates beta_t_est[t] = beta_mean_post mu_t_est[t] = mu_mean_post beta_var_est[t] = beta_var_post mu_var_est[t] = mu_var_post # Predict Y_t and its credible interval Y_pred[t] = beta_t_est[t] * X_t[t] + mu_t_est[t] Y_var_est = (X_t[t] ** 2) * (beta_var_est[t]) + (mu_var_est[t]) + (1 / sigma_prior) Y_std_est[t] = np.sqrt(Y_var_est) # Prior parameters beta_mean_prior = beta_mean_post beta_var_prior = beta_var_post mu_mean_prior = mu_mean_post mu_var_prior = mu_var_post residuals = Y_t - Y_pred data = { 'y': { 'mean': Y_pred, 'upper': Y_pred + 1.96 * Y_std_est, 'lower': Y_pred - 1.96 * Y_std_est }, 'beta': { 'mean': beta_t_est, 'upper': beta_t_est + 1.96 * np.sqrt(beta_var_est), 'lower': beta_t_est - 1.96 * np.sqrt(beta_var_est) }, 'mu': { 'mean': mu_t_est, 'upper': mu_t_est + 1.96 * np.sqrt(mu_var_est), 'lower': mu_t_est - 1.96 * np.sqrt(mu_var_est) }, 'epsilon': { 'mean': residuals, 'upper': residuals + 1.96 * np.sqrt(residual_var_est), 'lower': residuals - 1.96 * np.sqrt(residual_var_est) }, } return data Bayesian GAM def bayesian_gam_with_splines(X_t, Y_t, df=10): T = len(X_t) time = np.linspace(0, 1, T) # Design matrices for splines design_matrix = patsy.dmatrix(f\"bs(time, df={df}, degree=3)\", {\"time\": time}, return_type='dataframe') # Joint Bayesian Ridge Regression for beta_t and mu_t X_joint = np.hstack([np.multiply(design_matrix.values, X_t[:, None]), design_matrix.values]) model_joint = BayesianRidge() model_joint.fit(X_joint, Y_t) # Predict values with uncertainties Y_pred, Y_std = model_joint.predict(X_joint, return_std=True) # Separate beta_t and mu_t beta_t_est = design_matrix.values @ model_joint.coef_[:design_matrix.shape[1]] mu_t_est = design_matrix.values @ model_joint.coef_[design_matrix.shape[1]:] # Compute standard deviations for beta and mu coef_cov = np.linalg.inv(model_joint.alpha_ * np.eye(X_joint.shape[1]) + model_joint.lambda_ * X_joint.T @ X_joint) beta_std_est = np.sqrt(np.sum((design_matrix.values @ coef_cov[:design_matrix.shape[1], :design_matrix.shape[1]]) * design_matrix.values, axis=1)) mu_std_est = np.sqrt(np.sum((design_matrix.values @ coef_cov[design_matrix.shape[1]:, design_matrix.shape[1]:]) * design_matrix.values, axis=1)) # Posterior variance of noise residual_var_est = 1 / model_joint.alpha_ # Posterior noise variance residuals = Y_t - Y_pred data = { 'y': { 'mean': Y_pred, 'upper': Y_pred + 1.96 * Y_std, 'lower': Y_pred - 1.96 * Y_std }, 'beta': { 'mean': beta_t_est, 'upper': beta_t_est + 1.96 * beta_std_est, 'lower': beta_t_est - 1.96 * beta_std_est }, 'mu': { 'mean': mu_t_est, 'upper': mu_t_est + 1.96 * mu_std_est, 'lower': mu_t_est - 1.96 * mu_std_est }, 'epsilon': { 'mean': residuals, 'upper': residuals + 1.96 * np.sqrt(residual_var_est), 'lower': residuals - 1.96 * np.sqrt(residual_var_est) }, } return data Gaussian Process class TimeVaryingGP(ExactGP): def __init__(self, train_x, train_y, likelihood): super(TimeVaryingGP, self).__init__(train_x, train_y, likelihood) # Separate kernels for each component self.beta_kernel = ScaleKernel(RBFKernel()) # self.beta_kernel.base_kernel.register_prior( # 'lengthscale_prior', # gpytorch.priors.GammaPrior(10.0, 20.0), # 'lengthscale' # ) self.mu_kernel = ScaleKernel(RBFKernel()) self.eps_kernel = ScaleKernel(RBFKernel()) self.mean = ZeroMean() def forward(self, x): # Extract time and covariates t = x[:, 0] # time index X = x[:, 1] # covariate # Compute kernel matrices K_beta = self.beta_kernel(t) K_mu = self.mu_kernel(t) K_eps = self.eps_kernel(t) # Compute covariance matrix covar = X.unsqueeze(1) * K_beta * X.unsqueeze(0) + K_mu + K_eps mean = self.mean(x) return MultivariateNormal(mean, covar) def train_model(X, y, n_iter=100): if not isinstance(X, torch.Tensor): X = torch.from_numpy(X).clone().detach().float() y = torch.from_numpy(y).clone().detach().float() else: X = X.clone().detach().float() y = y.clone().detach().float() # Initialize model likelihood = gpytorch.likelihoods.GaussianLikelihood() model = TimeVaryingGP(X, y, likelihood) # Use the adam optimizer optimizer = torch.optim.Adam([ {'params': model.parameters()}, ], lr=0.1) # \"Loss\" for GPs - the marginal log likelihood mll = gpytorch.mlls.ExactMarginalLogLikelihood(likelihood, model) # Training loop model.train() likelihood.train() for i in range(n_iter): optimizer.zero_grad() output = model(X) loss = -mll(output, y) loss.backward() optimizer.step() return model, likelihood def predict_latent(model, X_train, y_train, X_new): model.eval() jitter = 1e-6 with torch.no_grad(): t_train = X_train[:, 0] x_train = X_train[:, 1] t_new = X_new[:, 0] x_new = X_new[:, 1] K_beta = model.beta_kernel(t_new, t_train).evaluate() K_mu = model.mu_kernel(t_new, t_train).evaluate() K_eps = model.eps_kernel(t_new, t_train).evaluate() K_total = x_train * model.beta_kernel(t_train).evaluate() * x_train.unsqueeze(-1) + \\ model.mu_kernel(t_train).evaluate() + \\ model.eps_kernel(t_train).evaluate() + \\ model.likelihood.noise * torch.eye(len(t_train)) + \\ jitter * torch.eye(len(t_train)) K_new_beta = model.beta_kernel(t_new).evaluate() + jitter * torch.eye(len(t_new)) K_new_mu = model.mu_kernel(t_new).evaluate() + jitter * torch.eye(len(t_new)) K_new_eps = model.eps_kernel(t_new).evaluate() + jitter * torch.eye(len(t_new)) # Compute posterior mean using Cholesky L = torch.linalg.cholesky(K_total) alpha = torch.linalg.solve_triangular(L, y_train.unsqueeze(1), upper=False) alpha = torch.linalg.solve_triangular(L.T, alpha, upper=True) K_stacked = torch.stack([ x_new.unsqueeze(-1) * K_beta, K_mu, K_eps ]) posterior_mean = K_stacked @ alpha # Compute posterior variance using Cholesky v_beta = torch.linalg.solve_triangular(L, (x_train * K_beta.T).T, upper=False) v_mu = torch.linalg.solve_triangular(L, K_mu.T, upper=False) v_eps = torch.linalg.solve_triangular(L, K_eps.T, upper=False) post_var_beta = K_new_beta - v_beta.T @ v_beta post_var_mu = K_new_mu - v_mu.T @ v_mu post_var_eps = K_new_eps - v_eps.T @ v_eps return { 'mean': { 'beta': posterior_mean[0].squeeze(), 'mu': posterior_mean[1].squeeze(), 'epsilon': posterior_mean[2].squeeze() }, 'variance': { 'beta': post_var_beta.diag(), 'mu': post_var_mu.diag(), 'epsilon': post_var_eps.diag() } } def predict(model, likelihood, X_new, X_train=None, y_train=None): model.eval() likelihood.eval() if X_train is None: X_train = model.train_inputs[0] if y_train is None: y_train = model.train_targets with torch.no_grad(), gpytorch.settings.fast_pred_var(): observed_pred = likelihood(model(X_new)) latent_values = predict_latent(model, X_train, y_train, X_new) return observed_pred.mean, observed_pred.variance, latent_values BSTS def bsts_fit(x,y): with pm.Model() as model: # Priors for variances # sigma = pm.HalfCauchy('sigma', beta=1) # Random walk for log volatility log_sigma = pm.GaussianRandomWalk('log_sigma', sigma=0.1, shape=len(y), init_dist=pm.Normal.dist(mu=0, sigma=1)) sigma = pm.Deterministic('sigma', pm.math.exp(log_sigma)) sigma_beta = pm.HalfCauchy('sigma_beta', beta=1) sigma_mu = pm.HalfCauchy('sigma_mu', beta=1) # Gaussian Random Walks for beta and mu beta = pm.GaussianRandomWalk('beta', sigma=sigma_beta, init_dist=pm.Normal.dist(0, 10), shape=len(y)) mu = pm.GaussianRandomWalk('mu', sigma=sigma_mu, init_dist=pm.Normal.dist(0, 10), shape=len(y)) # Observation model Y_obs = pm.Normal('Y_obs', mu=beta * x + mu, sigma=sigma, observed=y) # ---- 3. MCMC Sampling ---- trace = pm.sample(1000, tune=1000, chains=2, target_accept=0.9) ppc = pm.sample_posterior_predictive(trace, var_names=[\"Y_obs\"], random_seed=42) # Extract posterior mean and 95% credible intervals beta_posterior = trace.posterior['beta'].mean(dim=(\"chain\", \"draw\")) beta_lower = trace.posterior['beta'].quantile(0.025, dim=(\"chain\", \"draw\")) beta_upper = trace.posterior['beta'].quantile(0.975, dim=(\"chain\", \"draw\")) mu_posterior = trace.posterior['mu'].mean(dim=(\"chain\", \"draw\")) mu_lower = trace.posterior['mu'].quantile(0.025, dim=(\"chain\", \"draw\")) mu_upper = trace.posterior['mu'].quantile(0.975, dim=(\"chain\", \"draw\")) # Extract posterior predictive samples y_pred_samples = ppc.posterior_predictive['Y_obs'] # Calculate mean and 95% prediction interval y_pred_mean = y_pred_samples.mean(dim=('chain', 'draw')).values y_pred_lower = np.percentile(y_pred_samples.values, 2.5, axis=(0, 1)) # 2.5% quantile y_pred_upper = np.percentile(y_pred_samples.values, 97.5, axis=(0, 1)) # 97.5% quantile epsilon_samples = y - y_pred_samples.values # Shape: (chains, draws, time) # ---- 3. Calculate Mean and Intervals ---- # Mean residuals epsilon_mean = epsilon_samples.mean(axis=(0, 1)) # Average over chains and draws # 95% prediction intervals epsilon_lower = np.percentile(epsilon_samples, 2.5, axis=(0, 1)) epsilon_upper = np.percentile(epsilon_samples, 97.5, axis=(0, 1)) data = { 'y': { 'mean': y_pred_mean, 'upper': y_pred_upper, 'lower': y_pred_lower }, 'beta': { 'mean': beta_posterior, 'upper': beta_upper, 'lower': beta_lower }, 'mu': { 'mean': mu_posterior, 'upper': mu_upper, 'lower': mu_lower }, 'epsilon': { 'mean': epsilon_mean, 'upper': epsilon_upper, 'lower': epsilon_lower }, } return data ",
+  "wordCount" : "1145",
+  "inLanguage": "en",
+  "datePublished": "2025-01-25T19:12:16+01:00",
+  "dateModified": "2025-01-25T19:12:16+01:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://oldhuntor.github.io/posts/codesnippets/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Xuanhao's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://oldhuntor.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/katex.min.css">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/katex.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "$", right: "$", display: false}
+          ]
+        });
+      });
+    </script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://oldhuntor.github.io/" accesskey="h" title="Xuanhao&#39;s Blog (Alt + H)">Xuanhao&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://oldhuntor.github.io/pdfs/xxx.pdf" title="My CV">
+                    <span>My CV</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Bayesian Cointegration codes
+    </h1>
+    <div class="post-meta"><span title='2025-01-25 19:12:16 +0100 CET'>January 25, 2025</span>&nbsp;·&nbsp;6 min
+
+</div>
+  </header> 
+  <div class="post-content"><h1 id="bayesian-regression">Bayesian regression<a hidden class="anchor" aria-hidden="true" href="#bayesian-regression">#</a></h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">bayesian_rolling_window</span>(X_t, Y_t, window_size<span style="color:#f92672">=</span><span style="color:#ae81ff">30</span>):
+</span></span><span style="display:flex;"><span>    T <span style="color:#f92672">=</span> len(X_t)
+</span></span><span style="display:flex;"><span>    beta_t_est <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros(T)
+</span></span><span style="display:flex;"><span>    mu_t_est <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros(T)
+</span></span><span style="display:flex;"><span>    beta_var_est <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros(T)
+</span></span><span style="display:flex;"><span>    mu_var_est <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros(T)
+</span></span><span style="display:flex;"><span>    residual_var_est <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros(T)
+</span></span><span style="display:flex;"><span>    Y_pred <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros(T)
+</span></span><span style="display:flex;"><span>    Y_std_est <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>zeros(T)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Prior parameters</span>
+</span></span><span style="display:flex;"><span>    beta_mean_prior <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    beta_var_prior <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    mu_mean_prior <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    mu_var_prior <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    sigma_prior <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> t <span style="color:#f92672">in</span> range(window_size, T):
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Get rolling window data</span>
+</span></span><span style="display:flex;"><span>        X_window <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>float64(X_t[t <span style="color:#f92672">-</span> window_size:t])
+</span></span><span style="display:flex;"><span>        Y_window <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>float64(Y_t[t <span style="color:#f92672">-</span> window_size:t])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Posterior parameters for beta</span>
+</span></span><span style="display:flex;"><span>        XTX <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>sum(X_window <span style="color:#f92672">**</span> <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>        XTY <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>sum(X_window <span style="color:#f92672">*</span> (Y_window <span style="color:#f92672">-</span> np<span style="color:#f92672">.</span>mean(Y_window)))
+</span></span><span style="display:flex;"><span>        beta_var_post <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">/</span> beta_var_prior <span style="color:#f92672">+</span> XTX <span style="color:#f92672">/</span> sigma_prior)
+</span></span><span style="display:flex;"><span>        beta_mean_post <span style="color:#f92672">=</span> beta_var_post <span style="color:#f92672">*</span> (beta_mean_prior <span style="color:#f92672">/</span> beta_var_prior <span style="color:#f92672">+</span> XTY <span style="color:#f92672">/</span> sigma_prior)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Posterior parameters for mu</span>
+</span></span><span style="display:flex;"><span>        mu_var_post <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">/</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">/</span> mu_var_prior <span style="color:#f92672">+</span> window_size <span style="color:#f92672">/</span> sigma_prior)
+</span></span><span style="display:flex;"><span>        mu_mean_post <span style="color:#f92672">=</span> mu_var_post <span style="color:#f92672">*</span> (mu_mean_prior <span style="color:#f92672">/</span> mu_var_prior <span style="color:#f92672">+</span> np<span style="color:#f92672">.</span>sum(Y_window <span style="color:#f92672">-</span> beta_mean_post <span style="color:#f92672">*</span> X_window) <span style="color:#f92672">/</span> sigma_prior)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Estimate residual variance</span>
+</span></span><span style="display:flex;"><span>        residuals_window <span style="color:#f92672">=</span> Y_window <span style="color:#f92672">-</span> (beta_mean_post <span style="color:#f92672">*</span> X_window <span style="color:#f92672">+</span> mu_mean_post)
+</span></span><span style="display:flex;"><span>        residual_var_est[t] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>var(residuals_window)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Store estimates</span>
+</span></span><span style="display:flex;"><span>        beta_t_est[t] <span style="color:#f92672">=</span> beta_mean_post
+</span></span><span style="display:flex;"><span>        mu_t_est[t] <span style="color:#f92672">=</span> mu_mean_post
+</span></span><span style="display:flex;"><span>        beta_var_est[t] <span style="color:#f92672">=</span> beta_var_post
+</span></span><span style="display:flex;"><span>        mu_var_est[t] <span style="color:#f92672">=</span> mu_var_post
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Predict Y_t and its credible interval</span>
+</span></span><span style="display:flex;"><span>        Y_pred[t] <span style="color:#f92672">=</span> beta_t_est[t] <span style="color:#f92672">*</span> X_t[t] <span style="color:#f92672">+</span> mu_t_est[t]
+</span></span><span style="display:flex;"><span>        Y_var_est <span style="color:#f92672">=</span> (X_t[t] <span style="color:#f92672">**</span> <span style="color:#ae81ff">2</span>) <span style="color:#f92672">*</span> (beta_var_est[t]) <span style="color:#f92672">+</span> (mu_var_est[t]) <span style="color:#f92672">+</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">/</span> sigma_prior)
+</span></span><span style="display:flex;"><span>        Y_std_est[t] <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>sqrt(Y_var_est)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Prior parameters</span>
+</span></span><span style="display:flex;"><span>        beta_mean_prior <span style="color:#f92672">=</span> beta_mean_post
+</span></span><span style="display:flex;"><span>        beta_var_prior <span style="color:#f92672">=</span> beta_var_post
+</span></span><span style="display:flex;"><span>        mu_mean_prior <span style="color:#f92672">=</span> mu_mean_post
+</span></span><span style="display:flex;"><span>        mu_var_prior <span style="color:#f92672">=</span> mu_var_post
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    residuals <span style="color:#f92672">=</span> Y_t <span style="color:#f92672">-</span> Y_pred
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    data <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;y&#39;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;mean&#39;</span>: Y_pred,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;upper&#39;</span>: Y_pred <span style="color:#f92672">+</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> Y_std_est,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;lower&#39;</span>: Y_pred <span style="color:#f92672">-</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> Y_std_est
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;beta&#39;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;mean&#39;</span>: beta_t_est,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;upper&#39;</span>:  beta_t_est <span style="color:#f92672">+</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>sqrt(beta_var_est),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;lower&#39;</span>: beta_t_est <span style="color:#f92672">-</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>sqrt(beta_var_est)
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;mu&#39;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;mean&#39;</span>: mu_t_est,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;upper&#39;</span>: mu_t_est <span style="color:#f92672">+</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>sqrt(mu_var_est),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;lower&#39;</span>: mu_t_est <span style="color:#f92672">-</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>sqrt(mu_var_est)
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;epsilon&#39;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;mean&#39;</span>: residuals,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;upper&#39;</span>: residuals <span style="color:#f92672">+</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>sqrt(residual_var_est),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;lower&#39;</span>: residuals <span style="color:#f92672">-</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>sqrt(residual_var_est)
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> data
+</span></span></code></pre></div><h1 id="bayesian-gam">Bayesian GAM<a hidden class="anchor" aria-hidden="true" href="#bayesian-gam">#</a></h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">bayesian_gam_with_splines</span>(X_t, Y_t, df<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>):
+</span></span><span style="display:flex;"><span>    T <span style="color:#f92672">=</span> len(X_t)
+</span></span><span style="display:flex;"><span>    time <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>linspace(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, T)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Design matrices for splines</span>
+</span></span><span style="display:flex;"><span>    design_matrix <span style="color:#f92672">=</span> patsy<span style="color:#f92672">.</span>dmatrix(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;bs(time, df=</span><span style="color:#e6db74">{</span>df<span style="color:#e6db74">}</span><span style="color:#e6db74">, degree=3)&#34;</span>, {<span style="color:#e6db74">&#34;time&#34;</span>: time}, return_type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;dataframe&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Joint Bayesian Ridge Regression for beta_t and mu_t</span>
+</span></span><span style="display:flex;"><span>    X_joint <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>hstack([np<span style="color:#f92672">.</span>multiply(design_matrix<span style="color:#f92672">.</span>values, X_t[:, <span style="color:#66d9ef">None</span>]), design_matrix<span style="color:#f92672">.</span>values])
+</span></span><span style="display:flex;"><span>    model_joint <span style="color:#f92672">=</span> BayesianRidge()
+</span></span><span style="display:flex;"><span>    model_joint<span style="color:#f92672">.</span>fit(X_joint, Y_t)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Predict values with uncertainties</span>
+</span></span><span style="display:flex;"><span>    Y_pred, Y_std <span style="color:#f92672">=</span> model_joint<span style="color:#f92672">.</span>predict(X_joint, return_std<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Separate beta_t and mu_t</span>
+</span></span><span style="display:flex;"><span>    beta_t_est <span style="color:#f92672">=</span> design_matrix<span style="color:#f92672">.</span>values <span style="color:#f92672">@</span> model_joint<span style="color:#f92672">.</span>coef_[:design_matrix<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>]]
+</span></span><span style="display:flex;"><span>    mu_t_est <span style="color:#f92672">=</span> design_matrix<span style="color:#f92672">.</span>values <span style="color:#f92672">@</span> model_joint<span style="color:#f92672">.</span>coef_[design_matrix<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>]:]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Compute standard deviations for beta and mu</span>
+</span></span><span style="display:flex;"><span>    coef_cov <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>linalg<span style="color:#f92672">.</span>inv(model_joint<span style="color:#f92672">.</span>alpha_ <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>eye(X_joint<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>]) <span style="color:#f92672">+</span> model_joint<span style="color:#f92672">.</span>lambda_ <span style="color:#f92672">*</span> X_joint<span style="color:#f92672">.</span>T <span style="color:#f92672">@</span> X_joint)
+</span></span><span style="display:flex;"><span>    beta_std_est <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>sqrt(np<span style="color:#f92672">.</span>sum((design_matrix<span style="color:#f92672">.</span>values <span style="color:#f92672">@</span> coef_cov[:design_matrix<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>], :design_matrix<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>]]) <span style="color:#f92672">*</span> design_matrix<span style="color:#f92672">.</span>values, axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>    mu_std_est <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>sqrt(np<span style="color:#f92672">.</span>sum((design_matrix<span style="color:#f92672">.</span>values <span style="color:#f92672">@</span> coef_cov[design_matrix<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>]:, design_matrix<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">1</span>]:]) <span style="color:#f92672">*</span> design_matrix<span style="color:#f92672">.</span>values, axis<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Posterior variance of noise</span>
+</span></span><span style="display:flex;"><span>    residual_var_est <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">/</span> model_joint<span style="color:#f92672">.</span>alpha_  <span style="color:#75715e"># Posterior noise variance</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    residuals <span style="color:#f92672">=</span> Y_t <span style="color:#f92672">-</span> Y_pred
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    data <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;y&#39;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;mean&#39;</span>: Y_pred,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;upper&#39;</span>: Y_pred <span style="color:#f92672">+</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> Y_std,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;lower&#39;</span>: Y_pred <span style="color:#f92672">-</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> Y_std
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;beta&#39;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;mean&#39;</span>: beta_t_est,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;upper&#39;</span>: beta_t_est <span style="color:#f92672">+</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> beta_std_est,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;lower&#39;</span>: beta_t_est <span style="color:#f92672">-</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> beta_std_est
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;mu&#39;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;mean&#39;</span>: mu_t_est,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;upper&#39;</span>: mu_t_est <span style="color:#f92672">+</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> mu_std_est,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;lower&#39;</span>: mu_t_est <span style="color:#f92672">-</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> mu_std_est
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;epsilon&#39;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;mean&#39;</span>: residuals,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;upper&#39;</span>: residuals <span style="color:#f92672">+</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>sqrt(residual_var_est),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;lower&#39;</span>: residuals <span style="color:#f92672">-</span> <span style="color:#ae81ff">1.96</span> <span style="color:#f92672">*</span> np<span style="color:#f92672">.</span>sqrt(residual_var_est)
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> data
+</span></span></code></pre></div><h1 id="gaussian-process">Gaussian Process<a hidden class="anchor" aria-hidden="true" href="#gaussian-process">#</a></h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TimeVaryingGP</span>(ExactGP):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __init__(self, train_x, train_y, likelihood):
+</span></span><span style="display:flex;"><span>        super(TimeVaryingGP, self)<span style="color:#f92672">.</span>__init__(train_x, train_y, likelihood)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Separate kernels for each component</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>beta_kernel <span style="color:#f92672">=</span> ScaleKernel(RBFKernel())
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># self.beta_kernel.base_kernel.register_prior(</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#     &#39;lengthscale_prior&#39;,</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#     gpytorch.priors.GammaPrior(10.0, 20.0),</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">#     &#39;lengthscale&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># )</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>mu_kernel <span style="color:#f92672">=</span> ScaleKernel(RBFKernel())
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>eps_kernel <span style="color:#f92672">=</span> ScaleKernel(RBFKernel())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>mean <span style="color:#f92672">=</span> ZeroMean()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">forward</span>(self, x):
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Extract time and covariates</span>
+</span></span><span style="display:flex;"><span>        t <span style="color:#f92672">=</span> x[:, <span style="color:#ae81ff">0</span>]  <span style="color:#75715e"># time index</span>
+</span></span><span style="display:flex;"><span>        X <span style="color:#f92672">=</span> x[:, <span style="color:#ae81ff">1</span>]  <span style="color:#75715e"># covariate</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Compute kernel matrices</span>
+</span></span><span style="display:flex;"><span>        K_beta <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>beta_kernel(t)
+</span></span><span style="display:flex;"><span>        K_mu <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>mu_kernel(t)
+</span></span><span style="display:flex;"><span>        K_eps <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>eps_kernel(t)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Compute covariance matrix</span>
+</span></span><span style="display:flex;"><span>        covar <span style="color:#f92672">=</span> X<span style="color:#f92672">.</span>unsqueeze(<span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> K_beta <span style="color:#f92672">*</span> X<span style="color:#f92672">.</span>unsqueeze(<span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> K_mu <span style="color:#f92672">+</span> K_eps
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        mean <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>mean(x)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> MultivariateNormal(mean, covar)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">train_model</span>(X, y, n_iter<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> isinstance(X, torch<span style="color:#f92672">.</span>Tensor):
+</span></span><span style="display:flex;"><span>        X <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>from_numpy(X)<span style="color:#f92672">.</span>clone()<span style="color:#f92672">.</span>detach()<span style="color:#f92672">.</span>float()
+</span></span><span style="display:flex;"><span>        y <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>from_numpy(y)<span style="color:#f92672">.</span>clone()<span style="color:#f92672">.</span>detach()<span style="color:#f92672">.</span>float()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>        X <span style="color:#f92672">=</span> X<span style="color:#f92672">.</span>clone()<span style="color:#f92672">.</span>detach()<span style="color:#f92672">.</span>float()
+</span></span><span style="display:flex;"><span>        y <span style="color:#f92672">=</span> y<span style="color:#f92672">.</span>clone()<span style="color:#f92672">.</span>detach()<span style="color:#f92672">.</span>float()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Initialize model</span>
+</span></span><span style="display:flex;"><span>    likelihood <span style="color:#f92672">=</span> gpytorch<span style="color:#f92672">.</span>likelihoods<span style="color:#f92672">.</span>GaussianLikelihood()
+</span></span><span style="display:flex;"><span>    model <span style="color:#f92672">=</span> TimeVaryingGP(X, y, likelihood)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Use the adam optimizer</span>
+</span></span><span style="display:flex;"><span>    optimizer <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>optim<span style="color:#f92672">.</span>Adam([
+</span></span><span style="display:flex;"><span>        {<span style="color:#e6db74">&#39;params&#39;</span>: model<span style="color:#f92672">.</span>parameters()},
+</span></span><span style="display:flex;"><span>    ], lr<span style="color:#f92672">=</span><span style="color:#ae81ff">0.1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># &#34;Loss&#34; for GPs - the marginal log likelihood</span>
+</span></span><span style="display:flex;"><span>    mll <span style="color:#f92672">=</span> gpytorch<span style="color:#f92672">.</span>mlls<span style="color:#f92672">.</span>ExactMarginalLogLikelihood(likelihood, model)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Training loop</span>
+</span></span><span style="display:flex;"><span>    model<span style="color:#f92672">.</span>train()
+</span></span><span style="display:flex;"><span>    likelihood<span style="color:#f92672">.</span>train()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(n_iter):
+</span></span><span style="display:flex;"><span>        optimizer<span style="color:#f92672">.</span>zero_grad()
+</span></span><span style="display:flex;"><span>        output <span style="color:#f92672">=</span> model(X)
+</span></span><span style="display:flex;"><span>        loss <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>mll(output, y)
+</span></span><span style="display:flex;"><span>        loss<span style="color:#f92672">.</span>backward()
+</span></span><span style="display:flex;"><span>        optimizer<span style="color:#f92672">.</span>step()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> model, likelihood
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">predict_latent</span>(model, X_train, y_train, X_new):
+</span></span><span style="display:flex;"><span>    model<span style="color:#f92672">.</span>eval()
+</span></span><span style="display:flex;"><span>    jitter <span style="color:#f92672">=</span> <span style="color:#ae81ff">1e-6</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> torch<span style="color:#f92672">.</span>no_grad():
+</span></span><span style="display:flex;"><span>        t_train <span style="color:#f92672">=</span> X_train[:, <span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>        x_train <span style="color:#f92672">=</span> X_train[:, <span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>        t_new <span style="color:#f92672">=</span> X_new[:, <span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>        x_new <span style="color:#f92672">=</span> X_new[:, <span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        K_beta <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>beta_kernel(t_new, t_train)<span style="color:#f92672">.</span>evaluate()
+</span></span><span style="display:flex;"><span>        K_mu <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>mu_kernel(t_new, t_train)<span style="color:#f92672">.</span>evaluate()
+</span></span><span style="display:flex;"><span>        K_eps <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>eps_kernel(t_new, t_train)<span style="color:#f92672">.</span>evaluate()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        K_total <span style="color:#f92672">=</span> x_train <span style="color:#f92672">*</span> model<span style="color:#f92672">.</span>beta_kernel(t_train)<span style="color:#f92672">.</span>evaluate() <span style="color:#f92672">*</span> x_train<span style="color:#f92672">.</span>unsqueeze(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span> \
+</span></span><span style="display:flex;"><span>                  model<span style="color:#f92672">.</span>mu_kernel(t_train)<span style="color:#f92672">.</span>evaluate() <span style="color:#f92672">+</span> \
+</span></span><span style="display:flex;"><span>                  model<span style="color:#f92672">.</span>eps_kernel(t_train)<span style="color:#f92672">.</span>evaluate() <span style="color:#f92672">+</span> \
+</span></span><span style="display:flex;"><span>                  model<span style="color:#f92672">.</span>likelihood<span style="color:#f92672">.</span>noise <span style="color:#f92672">*</span> torch<span style="color:#f92672">.</span>eye(len(t_train)) <span style="color:#f92672">+</span> \
+</span></span><span style="display:flex;"><span>                  jitter <span style="color:#f92672">*</span> torch<span style="color:#f92672">.</span>eye(len(t_train))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        K_new_beta <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>beta_kernel(t_new)<span style="color:#f92672">.</span>evaluate() <span style="color:#f92672">+</span> jitter <span style="color:#f92672">*</span> torch<span style="color:#f92672">.</span>eye(len(t_new))
+</span></span><span style="display:flex;"><span>        K_new_mu <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>mu_kernel(t_new)<span style="color:#f92672">.</span>evaluate() <span style="color:#f92672">+</span> jitter <span style="color:#f92672">*</span> torch<span style="color:#f92672">.</span>eye(len(t_new))
+</span></span><span style="display:flex;"><span>        K_new_eps <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>eps_kernel(t_new)<span style="color:#f92672">.</span>evaluate() <span style="color:#f92672">+</span> jitter <span style="color:#f92672">*</span> torch<span style="color:#f92672">.</span>eye(len(t_new))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Compute posterior mean using Cholesky</span>
+</span></span><span style="display:flex;"><span>        L <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>linalg<span style="color:#f92672">.</span>cholesky(K_total)
+</span></span><span style="display:flex;"><span>        alpha <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>linalg<span style="color:#f92672">.</span>solve_triangular(L, y_train<span style="color:#f92672">.</span>unsqueeze(<span style="color:#ae81ff">1</span>), upper<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>        alpha <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>linalg<span style="color:#f92672">.</span>solve_triangular(L<span style="color:#f92672">.</span>T, alpha, upper<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        K_stacked <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>stack([
+</span></span><span style="display:flex;"><span>            x_new<span style="color:#f92672">.</span>unsqueeze(<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> K_beta,
+</span></span><span style="display:flex;"><span>            K_mu,
+</span></span><span style="display:flex;"><span>            K_eps
+</span></span><span style="display:flex;"><span>        ])
+</span></span><span style="display:flex;"><span>        posterior_mean <span style="color:#f92672">=</span> K_stacked <span style="color:#f92672">@</span> alpha
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Compute posterior variance using Cholesky</span>
+</span></span><span style="display:flex;"><span>        v_beta <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>linalg<span style="color:#f92672">.</span>solve_triangular(L, (x_train <span style="color:#f92672">*</span> K_beta<span style="color:#f92672">.</span>T)<span style="color:#f92672">.</span>T, upper<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>        v_mu <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>linalg<span style="color:#f92672">.</span>solve_triangular(L, K_mu<span style="color:#f92672">.</span>T, upper<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>        v_eps <span style="color:#f92672">=</span> torch<span style="color:#f92672">.</span>linalg<span style="color:#f92672">.</span>solve_triangular(L, K_eps<span style="color:#f92672">.</span>T, upper<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        post_var_beta <span style="color:#f92672">=</span> K_new_beta <span style="color:#f92672">-</span> v_beta<span style="color:#f92672">.</span>T <span style="color:#f92672">@</span> v_beta
+</span></span><span style="display:flex;"><span>        post_var_mu <span style="color:#f92672">=</span> K_new_mu <span style="color:#f92672">-</span> v_mu<span style="color:#f92672">.</span>T <span style="color:#f92672">@</span> v_mu
+</span></span><span style="display:flex;"><span>        post_var_eps <span style="color:#f92672">=</span> K_new_eps <span style="color:#f92672">-</span> v_eps<span style="color:#f92672">.</span>T <span style="color:#f92672">@</span> v_eps
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;mean&#39;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;beta&#39;</span>: posterior_mean[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>squeeze(),
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;mu&#39;</span>: posterior_mean[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>squeeze(),
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;epsilon&#39;</span>: posterior_mean[<span style="color:#ae81ff">2</span>]<span style="color:#f92672">.</span>squeeze()
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;variance&#39;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;beta&#39;</span>: post_var_beta<span style="color:#f92672">.</span>diag(),
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;mu&#39;</span>: post_var_mu<span style="color:#f92672">.</span>diag(),
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;epsilon&#39;</span>: post_var_eps<span style="color:#f92672">.</span>diag()
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">predict</span>(model, likelihood, X_new, X_train<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>, y_train<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>):
+</span></span><span style="display:flex;"><span>    model<span style="color:#f92672">.</span>eval()
+</span></span><span style="display:flex;"><span>    likelihood<span style="color:#f92672">.</span>eval()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> X_train <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>        X_train <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>train_inputs[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> y_train <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>        y_train <span style="color:#f92672">=</span> model<span style="color:#f92672">.</span>train_targets
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> torch<span style="color:#f92672">.</span>no_grad(), gpytorch<span style="color:#f92672">.</span>settings<span style="color:#f92672">.</span>fast_pred_var():
+</span></span><span style="display:flex;"><span>        observed_pred <span style="color:#f92672">=</span> likelihood(model(X_new))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    latent_values <span style="color:#f92672">=</span> predict_latent(model, X_train, y_train, X_new)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> observed_pred<span style="color:#f92672">.</span>mean, observed_pred<span style="color:#f92672">.</span>variance, latent_values
+</span></span></code></pre></div><h1 id="bsts">BSTS<a hidden class="anchor" aria-hidden="true" href="#bsts">#</a></h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">bsts_fit</span>(x,y):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> pm<span style="color:#f92672">.</span>Model() <span style="color:#66d9ef">as</span> model:
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Priors for variances</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># sigma = pm.HalfCauchy(&#39;sigma&#39;, beta=1)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Random walk for log volatility</span>
+</span></span><span style="display:flex;"><span>        log_sigma <span style="color:#f92672">=</span> pm<span style="color:#f92672">.</span>GaussianRandomWalk(<span style="color:#e6db74">&#39;log_sigma&#39;</span>,
+</span></span><span style="display:flex;"><span>                                          sigma<span style="color:#f92672">=</span><span style="color:#ae81ff">0.1</span>,
+</span></span><span style="display:flex;"><span>                                          shape<span style="color:#f92672">=</span>len(y),
+</span></span><span style="display:flex;"><span>                                          init_dist<span style="color:#f92672">=</span>pm<span style="color:#f92672">.</span>Normal<span style="color:#f92672">.</span>dist(mu<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, sigma<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>        sigma <span style="color:#f92672">=</span> pm<span style="color:#f92672">.</span>Deterministic(<span style="color:#e6db74">&#39;sigma&#39;</span>, pm<span style="color:#f92672">.</span>math<span style="color:#f92672">.</span>exp(log_sigma))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        sigma_beta <span style="color:#f92672">=</span> pm<span style="color:#f92672">.</span>HalfCauchy(<span style="color:#e6db74">&#39;sigma_beta&#39;</span>, beta<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>        sigma_mu <span style="color:#f92672">=</span> pm<span style="color:#f92672">.</span>HalfCauchy(<span style="color:#e6db74">&#39;sigma_mu&#39;</span>, beta<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Gaussian Random Walks for beta and mu</span>
+</span></span><span style="display:flex;"><span>        beta <span style="color:#f92672">=</span> pm<span style="color:#f92672">.</span>GaussianRandomWalk(<span style="color:#e6db74">&#39;beta&#39;</span>, sigma<span style="color:#f92672">=</span>sigma_beta, init_dist<span style="color:#f92672">=</span>pm<span style="color:#f92672">.</span>Normal<span style="color:#f92672">.</span>dist(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">10</span>), shape<span style="color:#f92672">=</span>len(y))
+</span></span><span style="display:flex;"><span>        mu <span style="color:#f92672">=</span> pm<span style="color:#f92672">.</span>GaussianRandomWalk(<span style="color:#e6db74">&#39;mu&#39;</span>, sigma<span style="color:#f92672">=</span>sigma_mu, init_dist<span style="color:#f92672">=</span>pm<span style="color:#f92672">.</span>Normal<span style="color:#f92672">.</span>dist(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">10</span>), shape<span style="color:#f92672">=</span>len(y))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Observation model</span>
+</span></span><span style="display:flex;"><span>        Y_obs <span style="color:#f92672">=</span> pm<span style="color:#f92672">.</span>Normal(<span style="color:#e6db74">&#39;Y_obs&#39;</span>, mu<span style="color:#f92672">=</span>beta <span style="color:#f92672">*</span> x <span style="color:#f92672">+</span> mu, sigma<span style="color:#f92672">=</span>sigma, observed<span style="color:#f92672">=</span>y)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ---- 3. MCMC Sampling ----</span>
+</span></span><span style="display:flex;"><span>        trace <span style="color:#f92672">=</span> pm<span style="color:#f92672">.</span>sample(<span style="color:#ae81ff">1000</span>, tune<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span>, chains<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>, target_accept<span style="color:#f92672">=</span><span style="color:#ae81ff">0.9</span>)
+</span></span><span style="display:flex;"><span>        ppc <span style="color:#f92672">=</span> pm<span style="color:#f92672">.</span>sample_posterior_predictive(trace, var_names<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#34;Y_obs&#34;</span>], random_seed<span style="color:#f92672">=</span><span style="color:#ae81ff">42</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Extract posterior mean and 95% credible intervals</span>
+</span></span><span style="display:flex;"><span>        beta_posterior <span style="color:#f92672">=</span> trace<span style="color:#f92672">.</span>posterior[<span style="color:#e6db74">&#39;beta&#39;</span>]<span style="color:#f92672">.</span>mean(dim<span style="color:#f92672">=</span>(<span style="color:#e6db74">&#34;chain&#34;</span>, <span style="color:#e6db74">&#34;draw&#34;</span>))
+</span></span><span style="display:flex;"><span>        beta_lower <span style="color:#f92672">=</span> trace<span style="color:#f92672">.</span>posterior[<span style="color:#e6db74">&#39;beta&#39;</span>]<span style="color:#f92672">.</span>quantile(<span style="color:#ae81ff">0.025</span>, dim<span style="color:#f92672">=</span>(<span style="color:#e6db74">&#34;chain&#34;</span>, <span style="color:#e6db74">&#34;draw&#34;</span>))
+</span></span><span style="display:flex;"><span>        beta_upper <span style="color:#f92672">=</span> trace<span style="color:#f92672">.</span>posterior[<span style="color:#e6db74">&#39;beta&#39;</span>]<span style="color:#f92672">.</span>quantile(<span style="color:#ae81ff">0.975</span>, dim<span style="color:#f92672">=</span>(<span style="color:#e6db74">&#34;chain&#34;</span>, <span style="color:#e6db74">&#34;draw&#34;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        mu_posterior <span style="color:#f92672">=</span> trace<span style="color:#f92672">.</span>posterior[<span style="color:#e6db74">&#39;mu&#39;</span>]<span style="color:#f92672">.</span>mean(dim<span style="color:#f92672">=</span>(<span style="color:#e6db74">&#34;chain&#34;</span>, <span style="color:#e6db74">&#34;draw&#34;</span>))
+</span></span><span style="display:flex;"><span>        mu_lower <span style="color:#f92672">=</span> trace<span style="color:#f92672">.</span>posterior[<span style="color:#e6db74">&#39;mu&#39;</span>]<span style="color:#f92672">.</span>quantile(<span style="color:#ae81ff">0.025</span>, dim<span style="color:#f92672">=</span>(<span style="color:#e6db74">&#34;chain&#34;</span>, <span style="color:#e6db74">&#34;draw&#34;</span>))
+</span></span><span style="display:flex;"><span>        mu_upper <span style="color:#f92672">=</span> trace<span style="color:#f92672">.</span>posterior[<span style="color:#e6db74">&#39;mu&#39;</span>]<span style="color:#f92672">.</span>quantile(<span style="color:#ae81ff">0.975</span>, dim<span style="color:#f92672">=</span>(<span style="color:#e6db74">&#34;chain&#34;</span>, <span style="color:#e6db74">&#34;draw&#34;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Extract posterior predictive samples</span>
+</span></span><span style="display:flex;"><span>        y_pred_samples <span style="color:#f92672">=</span> ppc<span style="color:#f92672">.</span>posterior_predictive[<span style="color:#e6db74">&#39;Y_obs&#39;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Calculate mean and 95% prediction interval</span>
+</span></span><span style="display:flex;"><span>        y_pred_mean <span style="color:#f92672">=</span> y_pred_samples<span style="color:#f92672">.</span>mean(dim<span style="color:#f92672">=</span>(<span style="color:#e6db74">&#39;chain&#39;</span>, <span style="color:#e6db74">&#39;draw&#39;</span>))<span style="color:#f92672">.</span>values
+</span></span><span style="display:flex;"><span>        y_pred_lower <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>percentile(y_pred_samples<span style="color:#f92672">.</span>values, <span style="color:#ae81ff">2.5</span>, axis<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>))  <span style="color:#75715e"># 2.5% quantile</span>
+</span></span><span style="display:flex;"><span>        y_pred_upper <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>percentile(y_pred_samples<span style="color:#f92672">.</span>values, <span style="color:#ae81ff">97.5</span>, axis<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>))  <span style="color:#75715e"># 97.5% quantile</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        epsilon_samples <span style="color:#f92672">=</span> y <span style="color:#f92672">-</span> y_pred_samples<span style="color:#f92672">.</span>values  <span style="color:#75715e"># Shape: (chains, draws, time)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># ---- 3. Calculate Mean and Intervals ----</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Mean residuals</span>
+</span></span><span style="display:flex;"><span>        epsilon_mean <span style="color:#f92672">=</span> epsilon_samples<span style="color:#f92672">.</span>mean(axis<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>))  <span style="color:#75715e"># Average over chains and draws</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 95% prediction intervals</span>
+</span></span><span style="display:flex;"><span>        epsilon_lower <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>percentile(epsilon_samples, <span style="color:#ae81ff">2.5</span>, axis<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>        epsilon_upper <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>percentile(epsilon_samples, <span style="color:#ae81ff">97.5</span>, axis<span style="color:#f92672">=</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        data <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;y&#39;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;mean&#39;</span>: y_pred_mean,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;upper&#39;</span>: y_pred_upper,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;lower&#39;</span>: y_pred_lower
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;beta&#39;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;mean&#39;</span>: beta_posterior,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;upper&#39;</span>: beta_upper,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;lower&#39;</span>: beta_lower
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;mu&#39;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;mean&#39;</span>: mu_posterior,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;upper&#39;</span>: mu_upper,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;lower&#39;</span>: mu_lower
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;epsilon&#39;</span>: {
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;mean&#39;</span>: epsilon_mean,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;upper&#39;</span>: epsilon_upper,
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#39;lower&#39;</span>: epsilon_lower
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> data
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Bayesian Cointegration codes on x"
+            href="https://x.com/intent/tweet/?text=Bayesian%20Cointegration%20codes&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fcodesnippets%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Bayesian Cointegration codes on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fcodesnippets%2f&amp;title=Bayesian%20Cointegration%20codes&amp;summary=Bayesian%20Cointegration%20codes&amp;source=https%3a%2f%2foldhuntor.github.io%2fposts%2fcodesnippets%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Bayesian Cointegration codes on reddit"
+            href="https://reddit.com/submit?url=https%3a%2f%2foldhuntor.github.io%2fposts%2fcodesnippets%2f&title=Bayesian%20Cointegration%20codes">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Bayesian Cointegration codes on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2foldhuntor.github.io%2fposts%2fcodesnippets%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Bayesian Cointegration codes on whatsapp"
+            href="https://api.whatsapp.com/send?text=Bayesian%20Cointegration%20codes%20-%20https%3a%2f%2foldhuntor.github.io%2fposts%2fcodesnippets%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Bayesian Cointegration codes on telegram"
+            href="https://telegram.me/share/url?text=Bayesian%20Cointegration%20codes&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fcodesnippets%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Bayesian Cointegration codes on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Bayesian%20Cointegration%20codes&u=https%3a%2f%2foldhuntor.github.io%2fposts%2fcodesnippets%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://oldhuntor.github.io/">Xuanhao&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
