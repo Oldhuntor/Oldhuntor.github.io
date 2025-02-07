@@ -2,40 +2,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/posts/codesnippets/</loc>
+    <loc>https://oldhuntor.github.io/posts/</loc>
+    <lastmod>2027-12-08T19:12:16+01:00</lastmod>
+  </url><url>
+    <loc>https://oldhuntor.github.io/</loc>
+    <lastmod>2027-12-08T19:12:16+01:00</lastmod>
+  </url><url>
+    <loc>https://oldhuntor.github.io/posts/codesnippets/</loc>
     <lastmod>2025-01-25T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/</loc>
-    <lastmod>2025-01-25T19:12:16+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/</loc>
-    <lastmod>2025-01-25T19:12:16+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/bayesian_cointegration/</loc>
-    <lastmod>2024-12-08T19:12:16+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/story-of-arbitrage/</loc>
-    <lastmod>2024-12-08T19:12:16+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/timeseriesanomalydetectionwithunceratainty/</loc>
-    <lastmod>2024-12-08T19:12:16+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/non_conjugation/</loc>
-    <lastmod>2024-11-20T19:12:16+01:00</lastmod>
-  </url><url>
-    <loc>http://localhost:1313/posts/betabinomial/</loc>
+    <loc>https://oldhuntor.github.io/posts/dirichletmultinominal/</loc>
     <lastmod>2024-11-13T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/dirichletmultinominal/</loc>
-    <lastmod>2024-11-13T19:12:16+01:00</lastmod>
+    <loc>https://oldhuntor.github.io/posts/poissongamma/</loc>
+    <lastmod>2024-11-12T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/poissongamma/</loc>
-    <lastmod>2024-11-13T19:12:16+01:00</lastmod>
+    <loc>https://oldhuntor.github.io/posts/betabinomial/</loc>
+    <lastmod>2024-11-11T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/archives/</loc>
+    <loc>https://oldhuntor.github.io/archives/</loc>
   </url><url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://oldhuntor.github.io/categories/</loc>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>https://oldhuntor.github.io/tags/</loc>
   </url>
 </urlset>

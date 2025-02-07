@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on Xuanhao&#39;s Blog</title>
-    <link>http://localhost:1313/posts/</link>
+    <link>https://oldhuntor.github.io/posts/</link>
     <description>Recent content in Posts on Xuanhao&#39;s Blog</description>
     <generator>Hugo -- 0.138.0</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 25 Jan 2025 19:12:16 +0100</lastBuildDate>
-    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://oldhuntor.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Bayesian Cointegration codes</title>
-      <link>http://localhost:1313/posts/codesnippets/</link>
+      <link>https://oldhuntor.github.io/posts/codesnippets/</link>
       <pubDate>Sat, 25 Jan 2025 19:12:16 +0100</pubDate>
-      <guid>http://localhost:1313/posts/codesnippets/</guid>
+      <guid>https://oldhuntor.github.io/posts/codesnippets/</guid>
       <description>&lt;h1 id=&#34;cointegration-strategy-backtesting-framework&#34;&gt;Cointegration strategy backtesting framework&lt;/h1&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; backtest_multi_symbols &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Broker, BarData, Backtestor, Position, DailyBar
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; collections &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; deque
@@ -1216,111 +1216,90 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        profit_rate &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; total_pnl &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; position_worth
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; profit_rate
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/Report.png&#34;&gt;&lt;/p&gt;</description>
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/Report.png&#34;&gt;&lt;/p&gt;</description>
     </item>
     <item>
-      <title>Bayesian Cointegration</title>
-      <link>http://localhost:1313/posts/bayesian_cointegration/</link>
-      <pubDate>Sun, 08 Dec 2024 19:12:16 +0100</pubDate>
-      <guid>http://localhost:1313/posts/bayesian_cointegration/</guid>
-      <description>&lt;h1 id=&#34;bayesian-approach-to-cointegration-pair-trading&#34;&gt;Bayesian Approach to Cointegration Pair Trading&lt;/h1&gt;
-&lt;h2 id=&#34;methodology&#34;&gt;Methodology&lt;/h2&gt;
-&lt;p&gt;In this research, a Bayesian framework is utilized to model the dynamic relationship between two assets to identify profitable pair trading opportunities. The methodology consists of these steps:&lt;/p&gt;
+      <title>DirichletMultinominal</title>
+      <link>https://oldhuntor.github.io/posts/dirichletmultinominal/</link>
+      <pubDate>Wed, 13 Nov 2024 19:12:16 +0100</pubDate>
+      <guid>https://oldhuntor.github.io/posts/dirichletmultinominal/</guid>
+      <description>&lt;h1 id=&#34;基于贝叶斯理论的交易策略-三&#34;&gt;基于贝叶斯理论的交易策略 （三）&lt;/h1&gt;
+&lt;p&gt;上一篇&lt;a href=&#34;https://oldhuntor.github.io/posts/poissongamma/&#34;&gt;文章&lt;/a&gt;我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。&lt;/p&gt;
+&lt;h2 id=&#34;什么是dirichlet分布&#34;&gt;什么是Dirichlet分布&lt;/h2&gt;
+&lt;p&gt;Dirichlet分布是由正实数向量参数化的一系列连续多元概率分布。 它经常在贝叶斯统计中用作多项分布的先验分布。 Dirichlet分布的概率密度函数的公式如下：&lt;/p&gt;
+$$
+P(\mathbf{x} \mid \boldsymbol{\alpha}) = \frac{1}{B(\boldsymbol{\alpha})} \prod_{i=1}^{K} x_i^{\alpha_i - 1}
+$$&lt;p&gt;其中$\mathbf{x} = (x_1, \ldots, x_K)$是一个 K 维向量，表示 K 个不同类别或事件的概率。 这些概率之和必须为 1，&lt;/p&gt;
+&lt;p&gt;$\boldsymbol{\alpha} = (\alpha_1, \ldots, \alpha_K)$是一个正参数向量，$\alpha_i$代表了第$i$个类别的先验，或者说计数。&lt;/p&gt;
+&lt;p&gt;$\beta(\alpha)$是多项式Beta函数，作为归一化常数，保证总概率积分为1。定义为：$B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^{K} \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^{K} \alpha_i\right)}$，在这个公式中$\Gamma$表示Gamma函数，它是阶乘函数（其参数向下移动 1）到实数和复数的扩展。&lt;/p&gt;
+&lt;p&gt;Dirichlet分布是 Beta 分布向更高维度的推广。 在二维情况下（K=2），Dirichlet分布简化为 Beta 分布。&lt;/p&gt;
+&lt;h2 id=&#34;什么是multinomial多项分布&#34;&gt;什么是Multinomial(多项分布)&lt;/h2&gt;
+&lt;p&gt;多项分布是二项分布对两个以上类别的推广。 它描述了滚动 n 次 K 面骰子每一面可能计数的概率。 简单来说，它是固定次数试验中多个类别计数的分布。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;特点：&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;类别：有 K 种可能的结果或类别。&lt;/li&gt;
+&lt;li&gt;试验：有 n 个独立试验。&lt;/li&gt;
+&lt;li&gt;概率：每次试验都恰好产生 K 个类别中的一个。 每次试验的每个类别的概率都是固定的，并表示为：$p_1,p_2,\dots,p_k$，其中$∑p_i=1$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Probability Mass Function&lt;/strong&gt;(PMF):
+给定结果$x=(x_1,x_2,\dots,x_K)$的多项分布的pmf为：
+&lt;/p&gt;
+$$P(X = x) = \frac{n!}{x_1! x_2! \ldots x_K!} p_1^{x_1} p_2^{x_2} \ldots p_K^{x_K}
+$$&lt;p&gt;
+其中，$x_i$为$i$类别的计数，且 $\sum_{i=1}^{K} x_{i} = n$。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>PoissonGamma</title>
+      <link>https://oldhuntor.github.io/posts/poissongamma/</link>
+      <pubDate>Tue, 12 Nov 2024 19:12:16 +0100</pubDate>
+      <guid>https://oldhuntor.github.io/posts/poissongamma/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://oldhuntor.github.io/posts/betabinomial/&#34;&gt;上一篇文章&lt;/a&gt;我们将了如何利用beta- binomial共轭分布来设计交易策略。那我们是否可以用伽马和柏松（gamma- poisson）共轭来设计交易策略呢？本文将展示一种交易策略例子。&lt;/p&gt;
+&lt;h2 id=&#34;模型&#34;&gt;模型&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;目标：模拟一段时间内的平均上涨次数&lt;/li&gt;
+&lt;li&gt;先验分布：gamma分布，以下是gamma分布的分布函数：&lt;/li&gt;
+&lt;/ul&gt;
+$$ f(x; \alpha, \beta) = \frac{\beta^{\alpha} x^{\alpha - 1} e^{-\beta x}}{\Gamma(\alpha)}
+$$&lt;p&gt;
+以下是gamma分布函数在不同参数下的图像：
+&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/poi_1.png&#34;&gt;
+可以看出，gamma分布的定义域是[0, +$\infty$]，这说明，我们不能再选择研究上涨概率$\theta$这种0到1的参数了，我们可以研究一段时间内平均上涨次数$\lambda$，这也是为什么需要选择柏松分布来计算likelihood的原因。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;柏松分布似然函数：
+柏松分布只有一个参数$\lambda$， 我们把它定义为一段时间内的上涨次数。
+以下是柏松分布的概率密度函数：
+$$L(\lambda; k) = \frac{e^{-\lambda} \lambda^k}{k!}$$
+以下是柏松分布概率密度图像：
+&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/poi_2.png&#34;&gt;
+可以看出柏松分布是一个离散分布，这种离散分布正好可以用来模拟上涨次数这种离散值。
+如果我们假定每一段时间的上涨次数是相互独立的，我们就可以使用柏松的似然函数。
+以下是柏松分布的似然函数：
+$$L(\lambda; x_1, x_2, \ldots, x_n) = e^{-n\lambda} \lambda^{\sum_{i=1}^{n}x_i} \prod_{i=1}^{n} \frac{1}{x_i!}
+$$&lt;/li&gt;
+&lt;li&gt;后验分布
+在有了先验分布和似然函数之后，我们就可以计算后验分布了，后验分布如下：
+$$p(\lambda | x_1, x_2, \ldots, x_n; \alpha&#39;, \beta&#39;) = \frac{{\beta&#39;}^{\alpha&#39;}}{\Gamma(\alpha&#39;)} \lambda^{\alpha&#39; - 1} e^{-\beta&#39; \lambda}
+$$
+$$\alpha&#39; = \alpha + \sum_{i=1}^{n} x_i,\beta&#39; = \beta + n$$
+可以发现，后验分布也是gamma分布，并且后验分布的$\alpha$与$\beta$可以直接通过观测样本的信息得到，这个计算提供了极大便利。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;应用例子&#34;&gt;应用例子&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;strong&gt;Identifying Cointegrated Pairs&lt;/strong&gt;:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Use historical price data to test for cointegration between asset pairs using statistical tests such as the Engle-Granger test or Johansen test.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Select pairs that demonstrate a strong cointegration relationship.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Additionally, using the fitting criterion of &lt;strong&gt;GPs&lt;/strong&gt; and evaluate how strong the dependencies between pairs of assets:&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Journey to a universal hedge system (part I)</title>
-      <link>http://localhost:1313/posts/story-of-arbitrage/</link>
-      <pubDate>Sun, 08 Dec 2024 19:12:16 +0100</pubDate>
-      <guid>http://localhost:1313/posts/story-of-arbitrage/</guid>
-      <description>&lt;h1 id=&#34;journey-to-a-universal-hedge-system-part-i&#34;&gt;Journey to a universal hedge system (part I)&lt;/h1&gt;
-&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
-&lt;p&gt;Statistical arbitrage or hedging has already been known for a long time, people usually
-tackle this trading strategy with models that have strong assumptions, and
-generally have only limited amount of asset pairs to trade based on the
-some macro or micro economics assumption.&lt;/p&gt;
-&lt;p&gt;In this essay, we want to explore more modern and diverse statistical method
-or machine learning methods for hedging. We will solve two questions:&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Time series anomaly detection with uncertainty</title>
-      <link>http://localhost:1313/posts/timeseriesanomalydetectionwithunceratainty/</link>
-      <pubDate>Sun, 08 Dec 2024 19:12:16 +0100</pubDate>
-      <guid>http://localhost:1313/posts/timeseriesanomalydetectionwithunceratainty/</guid>
-      <description>&lt;h1 id=&#34;abstract&#34;&gt;abstract&lt;/h1&gt;
-&lt;h1 id=&#34;introduction&#34;&gt;introduction&lt;/h1&gt;
-&lt;h1 id=&#34;related-work&#34;&gt;related work&lt;/h1&gt;
-&lt;h1 id=&#34;conclusion&#34;&gt;conclusion&lt;/h1&gt;
-&lt;h1 id=&#34;references&#34;&gt;references&lt;/h1&gt;</description>
-    </item>
-    <item>
-      <title>Non_conjugated Prior</title>
-      <link>http://localhost:1313/posts/non_conjugation/</link>
-      <pubDate>Wed, 20 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>http://localhost:1313/posts/non_conjugation/</guid>
-      <description>&lt;h1 id=&#34;基于贝叶斯理论的交易策略四&#34;&gt;基于贝叶斯理论的交易策略（四）&lt;/h1&gt;
-&lt;p&gt;前几期的文章都是用共轭先验分布来制定交易策略，本期文章将采用非共轭分布来制定交易策略。
-一般情况下我们用正太分布可以拟合大部分类型的数据：
-&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;image-20.png&#34;&gt;&lt;/p&gt;
-&lt;p&gt;但现在我们不想假设先验分布属于什么分布，我们想利用数据本身直接得出一个分布，类似于无监督学习。
-我们的分布可以是一个曲线比如：
-&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;image-19.png&#34;&gt;
-对于这种非钟形曲线，我们可以利用Gaussian mixture distribution去拟合。
-&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;image-21.png&#34;&gt;
-Gaussian mixture distribution 即是不同参数的高斯分布相加在一起，一般情况下，复杂的数据需要的Gaussian mixture component不会超过5就能达到比较好的效果，我们可以利用AIC和BIC来筛选合适的component数量。
-以下是一个python例子：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sklearn.mixture &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; GaussianMixture
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; numpy &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; np
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; matplotlib.pyplot &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; plt
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 生成示例数据，这里直接使用正态分布的随机数据&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;random&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;normal(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;reshape(&lt;span style=&#34;color:#f92672&#34;&gt;-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 尝试不同的组件数量，以找出最佳的模型&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;n_components_range &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; range(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;11&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;models &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [GaussianMixture(n, covariance_type&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;full&amp;#39;&lt;/span&gt;, random_state&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fit(data) &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; n &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; n_components_range]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 计算每个模型的AIC和BIC&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;aics &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [m&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;aic(data) &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; m &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; models]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;bics &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [m&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;bic(data) &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; m &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; models]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 绘制AIC和BIC图表，以选择最佳的组件数量&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;figure(figsize&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;))
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;plot(n_components_range, aics, label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;AIC&amp;#39;&lt;/span&gt;, marker&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;o&amp;#39;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;plot(n_components_range, bics, label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;BIC&amp;#39;&lt;/span&gt;, marker&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;o&amp;#39;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;xlabel(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Number of components&amp;#39;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ylabel(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Information criterion&amp;#39;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;legend()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;title(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;AIC and BIC for different number of components&amp;#39;&lt;/span&gt;)
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;show()
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 找出AIC和BIC最小值对应的组件数量&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;best_aic_n_components &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; n_components_range[np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;argmin(aics)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;best_bic_n_components &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; n_components_range[np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;argmin(bics)]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;(best_aic_n_components, best_bic_n_components)
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;运行结果：
-&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;image-22.png&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;长周期
+长周期决定gamma分布先验。
+长周期的单位为小时k。
+长周期的序列是 n天的小时k，由 7 * 24 * 60 = 10080 条分钟k合成
+然后计算24 小时中， 每天的上涨次数 ，{&amp;ldquo;day1&amp;rdquo;: 13, &amp;ldquo;day2&amp;rdquo;: 6, &amp;ldquo;day3&amp;rdquo;: 8&amp;hellip;.&amp;ldquo;dayn&amp;rdquo;: x}
+计算出样本平均数和方差来估计 （Moment method, 矩估计） 先验的alpha prior 和 beta 		prior
+$\bar{x} = \frac{\alpha}{\beta}$,$s^2 = \frac{\alpha}{\beta^2}$&lt;/p&gt;</description>
     </item>
     <item>
       <title>BetaBinomial</title>
-      <link>http://localhost:1313/posts/betabinomial/</link>
-      <pubDate>Wed, 13 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>http://localhost:1313/posts/betabinomial/</guid>
+      <link>https://oldhuntor.github.io/posts/betabinomial/</link>
+      <pubDate>Mon, 11 Nov 2024 19:12:16 +0100</pubDate>
+      <guid>https://oldhuntor.github.io/posts/betabinomial/</guid>
       <description>&lt;h1 id=&#34;基于贝叶斯理论的交易策略&#34;&gt;基于贝叶斯理论的交易策略&lt;/h1&gt;
-&lt;p&gt;@&lt;a href=&#34;%E7%9B%AE%E5%BD%95&#34;&gt;TOC&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;模型逻辑&#34;&gt;模型逻辑&lt;/h2&gt;
 &lt;p&gt;假设长周期是能够体现趋势的，并且再观测了短周期的数据之后，能够更好的对长周期的趋势作出判断。&lt;/p&gt;
 &lt;ul&gt;
@@ -1348,83 +1327,6 @@ $$\text{Binomial}(k | n, \theta) = \binom{n}{k} \theta^k (1 - \theta)^{n-k}$$&lt
 $$ \alpha_{\text{post}} = \alpha + k, \beta_{\text{post}} = \beta + n - k$$&lt;p&gt;
 所以后验分布为：
 &lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>DirichletMultinominal</title>
-      <link>http://localhost:1313/posts/dirichletmultinominal/</link>
-      <pubDate>Wed, 13 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>http://localhost:1313/posts/dirichletmultinominal/</guid>
-      <description>&lt;h1 id=&#34;基于贝叶斯理论的交易策略-三&#34;&gt;基于贝叶斯理论的交易策略 （三）&lt;/h1&gt;
-&lt;p&gt;上一篇&lt;a href=&#34;http://localhost:1313/posts/poissongamma/&#34;&gt;文章&lt;/a&gt;我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。&lt;/p&gt;
-&lt;h2 id=&#34;什么是dirichlet分布&#34;&gt;什么是Dirichlet分布&lt;/h2&gt;
-&lt;p&gt;Dirichlet分布是由正实数向量参数化的一系列连续多元概率分布。 它经常在贝叶斯统计中用作多项分布的先验分布。 Dirichlet分布的概率密度函数的公式如下：&lt;/p&gt;
-$$
-P(\mathbf{x} \mid \boldsymbol{\alpha}) = \frac{1}{B(\boldsymbol{\alpha})} \prod_{i=1}^{K} x_i^{\alpha_i - 1}
-$$&lt;p&gt;其中$\mathbf{x} = (x_1, \ldots, x_K)$是一个 K 维向量，表示 K 个不同类别或事件的概率。 这些概率之和必须为 1，&lt;/p&gt;
-&lt;p&gt;$\boldsymbol{\alpha} = (\alpha_1, \ldots, \alpha_K)$是一个正参数向量，$\alpha_i$代表了第$i$个类别的先验，或者说计数。&lt;/p&gt;
-&lt;p&gt;$\beta(\alpha)$是多项式Beta函数，作为归一化常数，保证总概率积分为1。定义为：$B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^{K} \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^{K} \alpha_i\right)}$，在这个公式中$\Gamma$表示Gamma函数，它是阶乘函数（其参数向下移动 1）到实数和复数的扩展。&lt;/p&gt;
-&lt;p&gt;Dirichlet分布是 Beta 分布向更高维度的推广。 在二维情况下（K=2），Dirichlet分布简化为 Beta 分布。&lt;/p&gt;
-&lt;h2 id=&#34;什么是multinomial多项分布&#34;&gt;什么是Multinomial(多项分布)&lt;/h2&gt;
-&lt;p&gt;多项分布是二项分布对两个以上类别的推广。 它描述了滚动 n 次 K 面骰子每一面可能计数的概率。 简单来说，它是固定次数试验中多个类别计数的分布。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;特点：&lt;/strong&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;类别：有 K 种可能的结果或类别。&lt;/li&gt;
-&lt;li&gt;试验：有 n 个独立试验。&lt;/li&gt;
-&lt;li&gt;概率：每次试验都恰好产生 K 个类别中的一个。 每次试验的每个类别的概率都是固定的，并表示为：$p_1,p_2,\dots,p_k$，其中$∑p_i=1$&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;strong&gt;Probability Mass Function&lt;/strong&gt;(PMF):
-给定结果$x=(x_1,x_2,\dots,x_K)$的多项分布的pmf为：
-&lt;/p&gt;
-$$P(X = x) = \frac{n!}{x_1! x_2! \ldots x_K!} p_1^{x_1} p_2^{x_2} \ldots p_K^{x_K}
-$$&lt;p&gt;
-其中，$x_i$为$i$类别的计数，且 $\sum_{i=1}^{K} x_{i} = n$。&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>PoissonGamma</title>
-      <link>http://localhost:1313/posts/poissongamma/</link>
-      <pubDate>Wed, 13 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>http://localhost:1313/posts/poissongamma/</guid>
-      <description>&lt;p&gt;@&lt;a href=&#34;%E7%94%A8%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%90%86%E8%AE%BA%E6%9D%A5%E5%81%9A%E4%BA%A4%E6%98%93%E7%AD%96%E7%95%A5%EF%BC%88%E4%BA%8C%EF%BC%89&#34;&gt;TOC&lt;/a&gt;
-&lt;a href=&#34;http://localhost:1313/posts/betabinomial/&#34;&gt;上一篇文章&lt;/a&gt;我们将了如何利用beta- binomial共轭分布来设计交易策略。那我们是否可以用伽马和柏松（gamma- poisson）共轭来设计交易策略呢？本文将展示一种交易策略例子。&lt;/p&gt;
-&lt;h2 id=&#34;模型&#34;&gt;模型&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;目标：模拟一段时间内的平均上涨次数&lt;/li&gt;
-&lt;li&gt;先验分布：gamma分布，以下是gamma分布的分布函数：&lt;/li&gt;
-&lt;/ul&gt;
-$$ f(x; \alpha, \beta) = \frac{\beta^{\alpha} x^{\alpha - 1} e^{-\beta x}}{\Gamma(\alpha)}
-$$&lt;p&gt;
-以下是gamma分布函数在不同参数下的图像：
-&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/poi_1.png&#34;&gt;
-可以看出，gamma分布的定义域是[0, +$\infty$]，这说明，我们不能再选择研究上涨概率$\theta$这种0到1的参数了，我们可以研究一段时间内平均上涨次数$\lambda$，这也是为什么需要选择柏松分布来计算likelihood的原因。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;柏松分布似然函数：
-柏松分布只有一个参数$\lambda$， 我们把它定义为一段时间内的上涨次数。
-以下是柏松分布的概率密度函数：
-$$L(\lambda; k) = \frac{e^{-\lambda} \lambda^k}{k!}$$
-以下是柏松分布概率密度图像：
-&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/poi_2.png&#34;&gt;
-可以看出柏松分布是一个离散分布，这种离散分布正好可以用来模拟上涨次数这种离散值。
-如果我们假定每一段时间的上涨次数是相互独立的，我们就可以使用柏松的似然函数。
-以下是柏松分布的似然函数：
-$$L(\lambda; x_1, x_2, \ldots, x_n) = e^{-n\lambda} \lambda^{\sum_{i=1}^{n}x_i} \prod_{i=1}^{n} \frac{1}{x_i!}
-$$&lt;/li&gt;
-&lt;li&gt;后验分布
-在有了先验分布和似然函数之后，我们就可以计算后验分布了，后验分布如下：
-$$p(\lambda | x_1, x_2, \ldots, x_n; \alpha&#39;, \beta&#39;) = \frac{{\beta&#39;}^{\alpha&#39;}}{\Gamma(\alpha&#39;)} \lambda^{\alpha&#39; - 1} e^{-\beta&#39; \lambda}
-$$
-$$\alpha&#39; = \alpha + \sum_{i=1}^{n} x_i,\beta&#39; = \beta + n$$
-可以发现，后验分布也是gamma分布，并且后验分布的$\alpha$与$\beta$可以直接通过观测样本的信息得到，这个计算提供了极大便利。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;应用例子&#34;&gt;应用例子&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;长周期
-长周期决定gamma分布先验。
-长周期的单位为小时k。
-长周期的序列是 n天的小时k，由 7 * 24 * 60 = 10080 条分钟k合成
-然后计算24 小时中， 每天的上涨次数 ，{&amp;ldquo;day1&amp;rdquo;: 13, &amp;ldquo;day2&amp;rdquo;: 6, &amp;ldquo;day3&amp;rdquo;: 8&amp;hellip;.&amp;ldquo;dayn&amp;rdquo;: x}
-计算出样本平均数和方差来估计 （Moment method, 矩估计） 先验的alpha prior 和 beta 		prior
-$\bar{x} = \frac{\alpha}{\beta}$,$s^2 = \frac{\alpha}{\beta^2}$&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

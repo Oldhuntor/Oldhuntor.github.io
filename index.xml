@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Xuanhao&#39;s Blog</title>
-    <link>http://localhost:1313/</link>
+    <link>https://oldhuntor.github.io/</link>
     <description>Recent content on Xuanhao&#39;s Blog</description>
     <generator>Hugo -- 0.138.0</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 25 Jan 2025 19:12:16 +0100</lastBuildDate>
-    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://oldhuntor.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Bayesian Cointegration codes</title>
-      <link>http://localhost:1313/posts/codesnippets/</link>
+      <link>https://oldhuntor.github.io/posts/codesnippets/</link>
       <pubDate>Sat, 25 Jan 2025 19:12:16 +0100</pubDate>
-      <guid>http://localhost:1313/posts/codesnippets/</guid>
+      <guid>https://oldhuntor.github.io/posts/codesnippets/</guid>
       <description>&lt;h1 id=&#34;cointegration-strategy-backtesting-framework&#34;&gt;Cointegration strategy backtesting framework&lt;/h1&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; backtest_multi_symbols &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Broker, BarData, Backtestor, Position, DailyBar
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; collections &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; deque
@@ -1216,15 +1216,15 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        profit_rate &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; total_pnl &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; position_worth
 &lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; profit_rate
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/Report.png&#34;&gt;&lt;/p&gt;</description>
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/Report.png&#34;&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>DirichletMultinominal</title>
-      <link>http://localhost:1313/posts/dirichletmultinominal/</link>
+      <link>https://oldhuntor.github.io/posts/dirichletmultinominal/</link>
       <pubDate>Wed, 13 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>http://localhost:1313/posts/dirichletmultinominal/</guid>
+      <guid>https://oldhuntor.github.io/posts/dirichletmultinominal/</guid>
       <description>&lt;h1 id=&#34;基于贝叶斯理论的交易策略-三&#34;&gt;基于贝叶斯理论的交易策略 （三）&lt;/h1&gt;
-&lt;p&gt;上一篇&lt;a href=&#34;http://localhost:1313/posts/poissongamma/&#34;&gt;文章&lt;/a&gt;我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。&lt;/p&gt;
+&lt;p&gt;上一篇&lt;a href=&#34;https://oldhuntor.github.io/posts/poissongamma/&#34;&gt;文章&lt;/a&gt;我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。&lt;/p&gt;
 &lt;h2 id=&#34;什么是dirichlet分布&#34;&gt;什么是Dirichlet分布&lt;/h2&gt;
 &lt;p&gt;Dirichlet分布是由正实数向量参数化的一系列连续多元概率分布。 它经常在贝叶斯统计中用作多项分布的先验分布。 Dirichlet分布的概率密度函数的公式如下：&lt;/p&gt;
 $$
@@ -1250,10 +1250,10 @@ $$&lt;p&gt;
     </item>
     <item>
       <title>PoissonGamma</title>
-      <link>http://localhost:1313/posts/poissongamma/</link>
+      <link>https://oldhuntor.github.io/posts/poissongamma/</link>
       <pubDate>Tue, 12 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>http://localhost:1313/posts/poissongamma/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/betabinomial/&#34;&gt;上一篇文章&lt;/a&gt;我们将了如何利用beta- binomial共轭分布来设计交易策略。那我们是否可以用伽马和柏松（gamma- poisson）共轭来设计交易策略呢？本文将展示一种交易策略例子。&lt;/p&gt;
+      <guid>https://oldhuntor.github.io/posts/poissongamma/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://oldhuntor.github.io/posts/betabinomial/&#34;&gt;上一篇文章&lt;/a&gt;我们将了如何利用beta- binomial共轭分布来设计交易策略。那我们是否可以用伽马和柏松（gamma- poisson）共轭来设计交易策略呢？本文将展示一种交易策略例子。&lt;/p&gt;
 &lt;h2 id=&#34;模型&#34;&gt;模型&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;目标：模拟一段时间内的平均上涨次数&lt;/li&gt;
@@ -1262,7 +1262,7 @@ $$&lt;p&gt;
 $$ f(x; \alpha, \beta) = \frac{\beta^{\alpha} x^{\alpha - 1} e^{-\beta x}}{\Gamma(\alpha)}
 $$&lt;p&gt;
 以下是gamma分布函数在不同参数下的图像：
-&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/poi_1.png&#34;&gt;
+&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/poi_1.png&#34;&gt;
 可以看出，gamma分布的定义域是[0, +$\infty$]，这说明，我们不能再选择研究上涨概率$\theta$这种0到1的参数了，我们可以研究一段时间内平均上涨次数$\lambda$，这也是为什么需要选择柏松分布来计算likelihood的原因。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;柏松分布似然函数：
@@ -1270,7 +1270,7 @@ $$&lt;p&gt;
 以下是柏松分布的概率密度函数：
 $$L(\lambda; k) = \frac{e^{-\lambda} \lambda^k}{k!}$$
 以下是柏松分布概率密度图像：
-&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/poi_2.png&#34;&gt;
+&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/poi_2.png&#34;&gt;
 可以看出柏松分布是一个离散分布，这种离散分布正好可以用来模拟上涨次数这种离散值。
 如果我们假定每一段时间的上涨次数是相互独立的，我们就可以使用柏松的似然函数。
 以下是柏松分布的似然函数：
@@ -1296,9 +1296,9 @@ $\bar{x} = \frac{\alpha}{\beta}$,$s^2 = \frac{\alpha}{\beta^2}$&lt;/p&gt;</descr
     </item>
     <item>
       <title>BetaBinomial</title>
-      <link>http://localhost:1313/posts/betabinomial/</link>
+      <link>https://oldhuntor.github.io/posts/betabinomial/</link>
       <pubDate>Mon, 11 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>http://localhost:1313/posts/betabinomial/</guid>
+      <guid>https://oldhuntor.github.io/posts/betabinomial/</guid>
       <description>&lt;h1 id=&#34;基于贝叶斯理论的交易策略&#34;&gt;基于贝叶斯理论的交易策略&lt;/h1&gt;
 &lt;h2 id=&#34;模型逻辑&#34;&gt;模型逻辑&lt;/h2&gt;
 &lt;p&gt;假设长周期是能够体现趋势的，并且再观测了短周期的数据之后，能够更好的对长周期的趋势作出判断。&lt;/p&gt;
