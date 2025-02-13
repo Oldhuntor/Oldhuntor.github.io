@@ -181,8 +181,8 @@ The Dirichlet distribution is a family of continuous multivariate probability di
         </div>
         <ul id="menu">
             <li>
-                <a href="https://oldhuntor.github.io/pdfs/xxx.pdf" title="My CV">
-                    <span>My CV</span>
+                <a href="https://oldhuntor.github.io/posts/about-me" title="About Me">
+                    <span>About Me</span>
                 </a>
             </li>
         </ul>
@@ -199,7 +199,31 @@ The Dirichlet distribution is a family of continuous multivariate probability di
     <div class="post-meta"><span title='2024-11-13 19:12:16 +0100 CET'>November 13, 2024</span>&nbsp;·&nbsp;8 min
 
 </div>
-  </header> 
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#what-is-dirichlet-distribution" aria-label="What is Dirichlet Distribution">What is Dirichlet Distribution</a></li>
+                <li>
+                    <a href="#what-is-multinomial-distribution" aria-label="What is Multinomial distribution?">What is Multinomial distribution?</a></li>
+                <li>
+                    <a href="#conjugate-prior" aria-label="Conjugate Prior">Conjugate Prior</a></li>
+                <li>
+                    <a href="#parameter-update-visualization" aria-label="Parameter Update Visualization">Parameter Update Visualization</a></li>
+                <li>
+                    <a href="#trading-strategy" aria-label="Trading strategy">Trading strategy</a></li>
+                <li>
+                    <a href="#strategy-practice" aria-label="Strategy Practice">Strategy Practice</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
   <div class="post-content"><p>In the last <a href="/posts/poissongamma/">essay</a> we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.</p>
 <h2 id="what-is-dirichlet-distribution">What is Dirichlet Distribution<a hidden class="anchor" aria-hidden="true" href="#what-is-dirichlet-distribution">#</a></h2>
 <p>The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:</p>

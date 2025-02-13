@@ -2582,8 +2582,8 @@ class Broker:
         </div>
         <ul id="menu">
             <li>
-                <a href="https://oldhuntor.github.io/pdfs/xxx.pdf" title="My CV">
-                    <span>My CV</span>
+                <a href="https://oldhuntor.github.io/posts/about-me" title="About Me">
+                    <span>About Me</span>
                 </a>
             </li>
         </ul>
@@ -2600,7 +2600,38 @@ class Broker:
     <div class="post-meta"><span title='2025-01-25 19:12:16 +0100 CET'>January 25, 2025</span>&nbsp;·&nbsp;17 min
 
 </div>
-  </header> 
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#cointegration-strategy-backtesting-framework" aria-label="Cointegration strategy backtesting framework">Cointegration strategy backtesting framework</a></li>
+                <li>
+                    <a href="#bayesian-regression" aria-label="Bayesian regression">Bayesian regression</a></li>
+                <li>
+                    <a href="#bayesian-gam" aria-label="Bayesian GAM">Bayesian GAM</a></li>
+                <li>
+                    <a href="#gaussian-process" aria-label="Gaussian Process">Gaussian Process</a></li>
+                <li>
+                    <a href="#bsts" aria-label="BSTS">BSTS</a></li>
+                <li>
+                    <a href="#gaussian-process-clustering" aria-label="Gaussian Process clustering">Gaussian Process clustering</a></li>
+                <li>
+                    <a href="#appendix" aria-label="Appendix">Appendix</a><ul>
+                        
+                <li>
+                    <a href="#broker-object" aria-label="broker object">broker object</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
   <div class="post-content"><h1 id="cointegration-strategy-backtesting-framework">Cointegration strategy backtesting framework<a hidden class="anchor" aria-hidden="true" href="#cointegration-strategy-backtesting-framework">#</a></h1>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> backtest_multi_symbols <span style="color:#f92672">import</span> Broker, BarData, Backtestor, Position, DailyBar
 </span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> deque
