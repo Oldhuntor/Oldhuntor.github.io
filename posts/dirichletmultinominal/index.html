@@ -5,32 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>DirichletMultinominal | Xuanhao&#39;s Blog</title>
+<title>Trading strategies based on Bayesian theory (Part 3) | Xuanhao&#39;s Blog</title>
 <meta name="keywords" content="">
-<meta name="description" content="基于贝叶斯理论的交易策略 （三）
-上一篇文章我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。
-什么是Dirichlet分布
-Dirichlet分布是由正实数向量参数化的一系列连续多元概率分布。 它经常在贝叶斯统计中用作多项分布的先验分布。 Dirichlet分布的概率密度函数的公式如下：
-$$
-P(\mathbf{x} \mid \boldsymbol{\alpha}) = \frac{1}{B(\boldsymbol{\alpha})} \prod_{i=1}^{K} x_i^{\alpha_i - 1}
-$$其中$\mathbf{x} = (x_1, \ldots, x_K)$是一个 K 维向量，表示 K 个不同类别或事件的概率。 这些概率之和必须为 1，
-$\boldsymbol{\alpha} = (\alpha_1, \ldots, \alpha_K)$是一个正参数向量，$\alpha_i$代表了第$i$个类别的先验，或者说计数。
-$\beta(\alpha)$是多项式Beta函数，作为归一化常数，保证总概率积分为1。定义为：$B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^{K} \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^{K} \alpha_i\right)}$，在这个公式中$\Gamma$表示Gamma函数，它是阶乘函数（其参数向下移动 1）到实数和复数的扩展。
-Dirichlet分布是 Beta 分布向更高维度的推广。 在二维情况下（K=2），Dirichlet分布简化为 Beta 分布。
-什么是Multinomial(多项分布)
-多项分布是二项分布对两个以上类别的推广。 它描述了滚动 n 次 K 面骰子每一面可能计数的概率。 简单来说，它是固定次数试验中多个类别计数的分布。
-特点：
-
-类别：有 K 种可能的结果或类别。
-试验：有 n 个独立试验。
-概率：每次试验都恰好产生 K 个类别中的一个。 每次试验的每个类别的概率都是固定的，并表示为：$p_1,p_2,\dots,p_k$，其中$∑p_i=1$
-
-Probability Mass Function(PMF):
-给定结果$x=(x_1,x_2,\dots,x_K)$的多项分布的pmf为：
-
-$$P(X = x) = \frac{n!}{x_1! x_2! \ldots x_K!} p_1^{x_1} p_2^{x_2} \ldots p_K^{x_K}
-$$
-其中，$x_i$为$i$类别的计数，且 $\sum_{i=1}^{K} x_{i} = n$。">
+<meta name="description" content="In the last essay we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.
+What is Dirichlet Distribution
+The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:">
 <meta name="author" content="">
 <link rel="canonical" href="https://oldhuntor.github.io/posts/dirichletmultinominal/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.d6fcd20a4fb86efa4dfac8ec95da60244cc8871042183da1ef28e3a762ad79c8.css" integrity="sha256-1vzSCk&#43;4bvpN&#43;sjsldpgJEzIhxBCGD2h7yjjp2Ktecg=" rel="preload stylesheet" as="style">
@@ -80,47 +59,19 @@ $$
     </style>
 </noscript><meta property="og:url" content="https://oldhuntor.github.io/posts/dirichletmultinominal/">
   <meta property="og:site_name" content="Xuanhao&#39;s Blog">
-  <meta property="og:title" content="DirichletMultinominal">
-  <meta property="og:description" content="基于贝叶斯理论的交易策略 （三） 上一篇文章我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。
-什么是Dirichlet分布 Dirichlet分布是由正实数向量参数化的一系列连续多元概率分布。 它经常在贝叶斯统计中用作多项分布的先验分布。 Dirichlet分布的概率密度函数的公式如下：
-$$ P(\mathbf{x} \mid \boldsymbol{\alpha}) = \frac{1}{B(\boldsymbol{\alpha})} \prod_{i=1}^{K} x_i^{\alpha_i - 1} $$其中$\mathbf{x} = (x_1, \ldots, x_K)$是一个 K 维向量，表示 K 个不同类别或事件的概率。 这些概率之和必须为 1，
-$\boldsymbol{\alpha} = (\alpha_1, \ldots, \alpha_K)$是一个正参数向量，$\alpha_i$代表了第$i$个类别的先验，或者说计数。
-$\beta(\alpha)$是多项式Beta函数，作为归一化常数，保证总概率积分为1。定义为：$B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^{K} \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^{K} \alpha_i\right)}$，在这个公式中$\Gamma$表示Gamma函数，它是阶乘函数（其参数向下移动 1）到实数和复数的扩展。
-Dirichlet分布是 Beta 分布向更高维度的推广。 在二维情况下（K=2），Dirichlet分布简化为 Beta 分布。
-什么是Multinomial(多项分布) 多项分布是二项分布对两个以上类别的推广。 它描述了滚动 n 次 K 面骰子每一面可能计数的概率。 简单来说，它是固定次数试验中多个类别计数的分布。
-特点：
-类别：有 K 种可能的结果或类别。 试验：有 n 个独立试验。 概率：每次试验都恰好产生 K 个类别中的一个。 每次试验的每个类别的概率都是固定的，并表示为：$p_1,p_2,\dots,p_k$，其中$∑p_i=1$ Probability Mass Function(PMF): 给定结果$x=(x_1,x_2,\dots,x_K)$的多项分布的pmf为： $$P(X = x) = \frac{n!}{x_1! x_2! \ldots x_K!} p_1^{x_1} p_2^{x_2} \ldots p_K^{x_K} $$ 其中，$x_i$为$i$类别的计数，且 $\sum_{i=1}^{K} x_{i} = n$。">
+  <meta property="og:title" content="Trading strategies based on Bayesian theory (Part 3)">
+  <meta property="og:description" content="In the last essay we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.
+What is Dirichlet Distribution The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:">
   <meta property="og:locale" content="en-us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
     <meta property="article:published_time" content="2024-11-13T19:12:16+01:00">
     <meta property="article:modified_time" content="2024-11-13T19:12:16+01:00">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="DirichletMultinominal">
-<meta name="twitter:description" content="基于贝叶斯理论的交易策略 （三）
-上一篇文章我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。
-什么是Dirichlet分布
-Dirichlet分布是由正实数向量参数化的一系列连续多元概率分布。 它经常在贝叶斯统计中用作多项分布的先验分布。 Dirichlet分布的概率密度函数的公式如下：
-$$
-P(\mathbf{x} \mid \boldsymbol{\alpha}) = \frac{1}{B(\boldsymbol{\alpha})} \prod_{i=1}^{K} x_i^{\alpha_i - 1}
-$$其中$\mathbf{x} = (x_1, \ldots, x_K)$是一个 K 维向量，表示 K 个不同类别或事件的概率。 这些概率之和必须为 1，
-$\boldsymbol{\alpha} = (\alpha_1, \ldots, \alpha_K)$是一个正参数向量，$\alpha_i$代表了第$i$个类别的先验，或者说计数。
-$\beta(\alpha)$是多项式Beta函数，作为归一化常数，保证总概率积分为1。定义为：$B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^{K} \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^{K} \alpha_i\right)}$，在这个公式中$\Gamma$表示Gamma函数，它是阶乘函数（其参数向下移动 1）到实数和复数的扩展。
-Dirichlet分布是 Beta 分布向更高维度的推广。 在二维情况下（K=2），Dirichlet分布简化为 Beta 分布。
-什么是Multinomial(多项分布)
-多项分布是二项分布对两个以上类别的推广。 它描述了滚动 n 次 K 面骰子每一面可能计数的概率。 简单来说，它是固定次数试验中多个类别计数的分布。
-特点：
-
-类别：有 K 种可能的结果或类别。
-试验：有 n 个独立试验。
-概率：每次试验都恰好产生 K 个类别中的一个。 每次试验的每个类别的概率都是固定的，并表示为：$p_1,p_2,\dots,p_k$，其中$∑p_i=1$
-
-Probability Mass Function(PMF):
-给定结果$x=(x_1,x_2,\dots,x_K)$的多项分布的pmf为：
-
-$$P(X = x) = \frac{n!}{x_1! x_2! \ldots x_K!} p_1^{x_1} p_2^{x_2} \ldots p_K^{x_K}
-$$
-其中，$x_i$为$i$类别的计数，且 $\sum_{i=1}^{K} x_{i} = n$。">
+<meta name="twitter:title" content="Trading strategies based on Bayesian theory (Part 3)">
+<meta name="twitter:description" content="In the last essay we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.
+What is Dirichlet Distribution
+The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:">
 
 
 <script type="application/ld+json">
@@ -137,7 +88,7 @@ $$
     {
       "@type": "ListItem",
       "position":  2 ,
-      "name": "DirichletMultinominal",
+      "name": "Trading strategies based on Bayesian theory (Part 3)",
       "item": "https://oldhuntor.github.io/posts/dirichletmultinominal/"
     }
   ]
@@ -147,14 +98,14 @@ $$
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "DirichletMultinominal",
-  "name": "DirichletMultinominal",
-  "description": "基于贝叶斯理论的交易策略 （三） 上一篇文章我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。\n什么是Dirichlet分布 Dirichlet分布是由正实数向量参数化的一系列连续多元概率分布。 它经常在贝叶斯统计中用作多项分布的先验分布。 Dirichlet分布的概率密度函数的公式如下：\n$$ P(\\mathbf{x} \\mid \\boldsymbol{\\alpha}) = \\frac{1}{B(\\boldsymbol{\\alpha})} \\prod_{i=1}^{K} x_i^{\\alpha_i - 1} $$其中$\\mathbf{x} = (x_1, \\ldots, x_K)$是一个 K 维向量，表示 K 个不同类别或事件的概率。 这些概率之和必须为 1，\n$\\boldsymbol{\\alpha} = (\\alpha_1, \\ldots, \\alpha_K)$是一个正参数向量，$\\alpha_i$代表了第$i$个类别的先验，或者说计数。\n$\\beta(\\alpha)$是多项式Beta函数，作为归一化常数，保证总概率积分为1。定义为：$B(\\boldsymbol{\\alpha}) = \\frac{\\prod_{i=1}^{K} \\Gamma(\\alpha_i)}{\\Gamma\\left(\\sum_{i=1}^{K} \\alpha_i\\right)}$，在这个公式中$\\Gamma$表示Gamma函数，它是阶乘函数（其参数向下移动 1）到实数和复数的扩展。\nDirichlet分布是 Beta 分布向更高维度的推广。 在二维情况下（K=2），Dirichlet分布简化为 Beta 分布。\n什么是Multinomial(多项分布) 多项分布是二项分布对两个以上类别的推广。 它描述了滚动 n 次 K 面骰子每一面可能计数的概率。 简单来说，它是固定次数试验中多个类别计数的分布。\n特点：\n类别：有 K 种可能的结果或类别。 试验：有 n 个独立试验。 概率：每次试验都恰好产生 K 个类别中的一个。 每次试验的每个类别的概率都是固定的，并表示为：$p_1,p_2,\\dots,p_k$，其中$∑p_i=1$ Probability Mass Function(PMF): 给定结果$x=(x_1,x_2,\\dots,x_K)$的多项分布的pmf为： $$P(X = x) = \\frac{n!}{x_1! x_2! \\ldots x_K!} p_1^{x_1} p_2^{x_2} \\ldots p_K^{x_K} $$ 其中，$x_i$为$i$类别的计数，且 $\\sum_{i=1}^{K} x_{i} = n$。\n",
+  "headline": "Trading strategies based on Bayesian theory (Part 3)",
+  "name": "Trading strategies based on Bayesian theory (Part 3)",
+  "description": "In the last essay we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.\nWhat is Dirichlet Distribution The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:\n",
   "keywords": [
     
   ],
-  "articleBody": "基于贝叶斯理论的交易策略 （三） 上一篇文章我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。\n什么是Dirichlet分布 Dirichlet分布是由正实数向量参数化的一系列连续多元概率分布。 它经常在贝叶斯统计中用作多项分布的先验分布。 Dirichlet分布的概率密度函数的公式如下：\n$$ P(\\mathbf{x} \\mid \\boldsymbol{\\alpha}) = \\frac{1}{B(\\boldsymbol{\\alpha})} \\prod_{i=1}^{K} x_i^{\\alpha_i - 1} $$其中$\\mathbf{x} = (x_1, \\ldots, x_K)$是一个 K 维向量，表示 K 个不同类别或事件的概率。 这些概率之和必须为 1，\n$\\boldsymbol{\\alpha} = (\\alpha_1, \\ldots, \\alpha_K)$是一个正参数向量，$\\alpha_i$代表了第$i$个类别的先验，或者说计数。\n$\\beta(\\alpha)$是多项式Beta函数，作为归一化常数，保证总概率积分为1。定义为：$B(\\boldsymbol{\\alpha}) = \\frac{\\prod_{i=1}^{K} \\Gamma(\\alpha_i)}{\\Gamma\\left(\\sum_{i=1}^{K} \\alpha_i\\right)}$，在这个公式中$\\Gamma$表示Gamma函数，它是阶乘函数（其参数向下移动 1）到实数和复数的扩展。\nDirichlet分布是 Beta 分布向更高维度的推广。 在二维情况下（K=2），Dirichlet分布简化为 Beta 分布。\n什么是Multinomial(多项分布) 多项分布是二项分布对两个以上类别的推广。 它描述了滚动 n 次 K 面骰子每一面可能计数的概率。 简单来说，它是固定次数试验中多个类别计数的分布。\n特点：\n类别：有 K 种可能的结果或类别。 试验：有 n 个独立试验。 概率：每次试验都恰好产生 K 个类别中的一个。 每次试验的每个类别的概率都是固定的，并表示为：$p_1,p_2,\\dots,p_k$，其中$∑p_i=1$ Probability Mass Function(PMF): 给定结果$x=(x_1,x_2,\\dots,x_K)$的多项分布的pmf为： $$P(X = x) = \\frac{n!}{x_1! x_2! \\ldots x_K!} p_1^{x_1} p_2^{x_2} \\ldots p_K^{x_K} $$ 其中，$x_i$为$i$类别的计数，且 $\\sum_{i=1}^{K} x_{i} = n$。\n共轭先验（Conjugate Prior） 在贝叶斯统计中，共轭先验是一种先验分布，当与某个似然函数结合时，会产生同一族的后验分布。 对于多项分布，共轭先验是Dirichlet分布。\n原理： 先验： 在观察任何数据之前，我们使用Dirichlet分布（以参数为特征）表达我们对类别概率的信念，参数为$\\boldsymbol{\\alpha} = (\\alpha_1,\\alpha_2, \\ldots, \\alpha_K)$ 似然： 然后我们观察可以建模为多项分布的数据。 后验： 观察数据后，类别概率的后验分布再次是Dirichlet分布，但具有更新的参数。\n更新参数： Dirichlet先验的参数根据观测数据以简单的方式更新。如果原本的参数为$\\boldsymbol{\\alpha} = (\\alpha_1,\\alpha_2, \\ldots, \\alpha_K)$，观测的计数为$x=(x_1,x_2,\\dots,x_K)$，Dirichlet后验分布的参数即为：$\\boldsymbol{\\alpha} + x = (\\alpha_1+x_1,\\alpha_2+x_2, \\ldots, \\alpha_K+x_K)$\n共轭先验的概念，如Dirichlet-multinomial，在贝叶斯分析中至关重要，因为它简化了后验分布的计算，而后验分布是贝叶斯推理的基础。 这种结合允许根据新数据对我们的信念进行更直接的分析或计算更新。\nTips\n参数$\\alpha_i$的含义：\n当 $\\alpha_i$​ 大于 1 时，表明对应的类别 $i$ 有较高的先验概率。 当 $\\alpha_i$​ 等于 1 时，表示对这些类别没有特别的先验知识，这称为无信息先验。 当 $\\alpha_i$ 小于 1 时，表明对应的类别 $i$ 有较低的先验概率。 概率的表达：\n在 Dirichlet 分布中，$p_i$​ （第 $i$ 个类别的概率）的期望值是 $E[p_i]=\\frac{\\alpha_{i} }{\\sum_{j=1}^{k} \\alpha_{j} }$ 。这表明 $\\alpha_i$ 影响了对应类别的概率，但不直接等同于概率。 贝叶斯更新：\n在观察到数据后，Dirichlet 分布的参数会更新，形成后验分布。如果观察到的数据中类别 $i$ 出现的次数是 $x_i$​，则后验分布的参数变为 $\\alpha_i+x_i$​。这意味着每个 $\\alpha_i$​ 作为先验知识与观察到的数据相结合，共同影响了类别 $i$ 的后验概率。 因此，可以将每个 $\\alpha_i$​ 看作是在没有观察数据之前对类别 $i$ 概率的一种\"信念\"或预期，而这些信念随着数据的出现而更新。这是贝叶斯方法的一个核心特点：结合先验信念和观察数据来形成后验知识。\n参数更新可视化 先验Dirichlet分布：此分布代表我们对不同结果的概率的最初信念（在 3 类示例中）。 在这里，我使用了统一先验参数 [1,1,1]，表示对任何类别没有初始偏好。 后Dirichlet分布：观察数据后（在本例中，每个类别的 [10,5,15]计数） ，后验分布更新了我们的信念。 后验分布的参数是先验参数与观察到的计数之和，得到参数 [11,6,16]。 这个后验分布现在反映了我们在考虑观察到的数据后更新的信念。 import numpy as np import matplotlib.pyplot as plt from scipy.stats import dirichlet # Function to plot Dirichlet distributions def plot_dirichlet(parameters, title): # Sample from the Dirichlet distribution samples = dirichlet.rvs(parameters, size=10000) # Plotting plt.figure(figsize=(8, 6)) plt.hist(samples, bins=30, density=True, histtype='step', label=['Component 1', 'Component 2', 'Component 3']) plt.title(title) plt.xlabel('Value') plt.ylabel('Density') plt.legend() plt.show() # Prior Dirichlet distribution parameters (example values) prior_parameters = np.array([1, 1, 1]) plot_dirichlet(prior_parameters, \"Prior Dirichlet Distribution\") # Dirichlet-multinomial conjugation: updating the parameters # Let's say we have observed counts for each category observed_counts = np.array([10, 5, 15]) # example counts for 3 categories posterior_parameters = prior_parameters + observed_counts plot_dirichlet(posterior_parameters, \"Posterior Dirichlet Distribution\") 交易策略 在这种策略中，你可以使用长周期数据来设定先验参数，然后使用短周期数据来更新后验参数，从而做出交易决策。以下是一种实现这个策略的方法：\n步骤1：设定先验参数\n选择长周期数据：首先，你需要确定什么样的数据代表长周期。例如，这可以是过去一年的月度数据，或者任何其他符合你策略的历史数据。 分析长周期数据：根据这些数据，你可以估计每个类别（比如“看涨”，“看跌”，“中性”）的频率。 设定Dirichlet先验参数：使用这些频率来设定Dirichlet分布的先验参数$\\boldsymbol{\\alpha} = (\\alpha_1,\\alpha_2, \\ldots, \\alpha_K)$，这些参数反映了长周期市场行为的你的初始信念。 def on_long_bar(self, long_bar: BarData): self.am_long.update_bar(long_bar) if not self.am_long.inited: return # 计算看涨、看跌和中性的Bar数量 for i in range(self.am_long.size): diff = self.am_long.close[i] - self.am_long.open[i] tick_diff = diff/self.tick_size if tick_diff \u003e self.tick_size_threshold: self.prior_bullish += 1 elif tick_diff \u003c -self.tick_size_threshold: self.prior_bearish += 1 else: self.prior_neutral += 1 self.prior_neutral = self.prior_neutral/self.am_long.size self.prior_bearish = self.prior_bearish/self.am_long.size self.prior_bullish = self.prior_bullish/self.am_long.size self.priors_inited = True 步骤 2: 更新后验参数\n选择短周期数据：接着，选择代表短周期的数据，例如最近一周或一个月的数据。 计算类别计数：统计短周期内每个类别的出现次数。 更新后验参数：使用短周期数据更新先验参数。如果你在短周期中观察到的类别计数为$(x_1,x_2,\\dots,x_k)$，那么后验参数为$\\boldsymbol{\\alpha_{post}} + x = (\\alpha_1+x_1,\\alpha_2+x_2, \\ldots, \\alpha_K+x_K)$ def on_short_bar(self, short_bar: BarData): self.am_short.update_bar(short_bar) if not self.am_short.inited: return if not self.priors_inited: return buy_signal = False sell_signal = False bullish_count = 0 bearish_count = 0 neutral_count = 0 # 计算看涨、看跌和中性的Bar数量 for i in range(self.am_short.size): diff = self.am_short.close[i] - self.am_short.open[i] tick_diff = diff/self.tick_size if tick_diff \u003e self.tick_size_threshold: bullish_count += 1 elif tick_diff \u003c -self.tick_size_threshold: bearish_count += 1 else: neutral_count += 1 # 更新参数 self.post_bullish = self.prior_bullish + bullish_count self.post_bearish = self.prior_bearish + bearish_count self.post_neutral = self.prior_neutral + neutral_count 步骤 3: 做出交易决策\n计算后验均值：计算每个类别的后验概率，$\\alpha_{j\\text{post}} = \\frac{\\alpha_{j\\text{post}}}{\\sum_{i=1}^{k} a_{i\\text{post}}}$ 选择概率最高的类别：基于后验均值，确定哪个类别具有最高的概率。 制定交易策略：根据概率最高的类别制定你的交易策略。例如，如果“看涨”类别的概率最高，你可能会选择买入；如果是“看跌”，则可能会选择卖出。 sumpost = self.post_bearish+self.post_neutral+self.post_bullish post_prob_bull = self.post_bullish/sumpost post_prob_bear = self.post_bearish/sumpost post_prob_neu = self.post_neutral/sumpost maxValue = max(post_prob_neu,post_prob_bull,post_prob_bear) if maxValue == post_prob_bear: sell_signal = True elif maxValue == post_prob_bull: buy_signal = True else: return if self.dual_side: if buy_signal and sell_signal: return # both long and short if buy_signal: if self.pos \u003e= 0: if abs(self.pos) \u003c self.pyramiding: self.buy(short_bar.close_price, self.fix_size) else: self.cover(short_bar.close_price, abs(self.pos)) self.buy(short_bar.close_price, self.fix_size) if sell_signal: if self.pos \u003c= 0: if abs(self.pos) \u003c self.pyramiding: self.short(short_bar.close_price, self.fix_size) else: self.sell(short_bar.close_price, abs(self.pos)) self.short(short_bar.close_price, self.fix_size) else: if buy_signal: if self.pos \u003e= 0 and self.pos \u003c self.pyramiding: self.buy(short_bar.close_price, self.fix_size) if sell_signal: if self.pos != 0: self.sell(short_bar.close_price, self.pos) 策略实战 环境参数 策略参数 回测结果 策略曲线 ",
-  "wordCount" : "545",
+  "articleBody": "In the last essay we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.\nWhat is Dirichlet Distribution The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:\n$$ P(\\mathbf{x} \\mid \\boldsymbol{\\alpha}) = \\frac{1}{B(\\boldsymbol{\\alpha})} \\prod_{i=1}^{K} x_i^{\\alpha_i - 1} $$where $\\mathbf{x} = (x_1, \\ldots, x_K)$ is a K-dimensional vector representing the probabilities of K different categories or events. The sum of these probabilities must be 1.\n$\\boldsymbol{\\alpha} = (\\alpha_1, \\ldots, \\alpha_K)$ is a positive parameter vector, $\\alpha_i$ represents the prior, or count, of the $i$th category.\n$\\beta(\\alpha)$ is the polynomial Beta function, which serves as a normalization constant to ensure that the total probability integral is 1. It is defined as: $B(\\boldsymbol{\\alpha}) = \\frac{\\prod_{i=1}^{K} \\Gamma(\\alpha_i)}{\\Gamma\\left(\\sum_{i=1}^{K} \\alpha_i\\right)}$, where $\\Gamma$ represents the Gamma function, which is an extension of the factorial function (whose argument is shifted down by 1) to real and complex numbers.\nThe Dirichlet distribution is a generalization of the Beta distribution to higher dimensions. In the two-dimensional case (K=2), the Dirichlet distribution simplifies to the Beta distribution.\nWhat is Multinomial distribution? The multinomial distribution is a generalization of the binomial distribution to more than two categories. It describes the probability of each possible count for rolling a K-sided die n times. In simple terms, it is the distribution of the counts of multiple categories in a fixed number of trials.\nFeatures:\nClass: There are K possible outcomes or classes. Trial: There are n independent trials. Probability: Each trial produces exactly one of the K classes. The probability of each class in each trial is fixed and expressed as: $p_1,p_2,\\dots,p_k$, where $∑p_i=1$ Probability Mass Function(PMF): The pmf of the multinomial distribution of a given outcome $x=(x_1,x_2,\\dots,x_K)$ is: $$P(X = x) = \\frac{n!}{x_1! x_2! \\ldots x_K!} p_1^{x_1} p_2^{x_2} \\ldots p_K^{x_K} $$ Where $x_i$ is the count of the $i$ category, and $\\sum_{i=1}^{K} x_{i} = n$.\nConjugate Prior In Bayesian statistics, a conjugate prior is a prior distribution that, when combined with a likelihood function, produces a posterior distribution of the same family. For multinomial distributions, the conjugate prior is the Dirichlet distribution.\nPrinciple: Prior: Before observing any data, we express our belief about the class probabilities using a Dirichlet distribution (characterized by parameters) with parameters $\\boldsymbol{\\alpha} = (\\alpha_1,\\alpha_2, \\ldots, \\alpha_K)$ Likelihood: Then we observe data which can be modeled as a multinomial distribution. Posterior: After observing the data, the posterior distribution of the class probabilities is again a Dirichlet distribution but with updated parameters.\nUpdate parameters: The parameters of the Dirichlet prior are updated in a simple way based on the observed data. If the original parameters are $\\boldsymbol{\\alpha} = (\\alpha_1,\\alpha_2, \\ldots, \\alpha_K)$, and the observed counts are $x=(x_1,x_2,\\dots,x_K)$, the parameters of the Dirichlet posterior distribution are: $\\boldsymbol{\\alpha} + x = (\\alpha_1+x_1,\\alpha_2+x_2, \\ldots, \\alpha_K+x_K)$\nThe concept of a conjugate prior, such as the Dirichlet-multinomial, is crucial in Bayesian analysis because it simplifies the computation of the posterior distribution, which is the basis of Bayesian inference. This conjugation allows for more straightforward analysis or computational updates to our beliefs in light of new data.\nTips\nThe meaning of parameter $\\alpha_i$: When $\\alpha_i$ is greater than 1, it indicates that the corresponding category $i$ has a higher prior probability. When $\\alpha_i$ is equal to 1, it indicates that there is no special prior knowledge about these categories, which is called uninformative prior. When $\\alpha_i$ is less than 1, it indicates that the corresponding category $i$ has a lower prior probability. Expression of probability: In the Dirichlet distribution, the expected value of $p_i$ (the probability of the $i$th category) is $E[p_i]=\\frac{\\alpha_{i} }{\\sum_{j=1}^{k} \\alpha_{j} }$ . This shows that $\\alpha_i$ affects the probability of the corresponding category, but is not directly equivalent to the probability. Bayesian Update: After the data is observed, the parameters of the Dirichlet distribution are updated to form the posterior distribution. If the number of times category $i$ appears in the observed data is $x_i$, then the parameters of the posterior distribution become $\\alpha_i+x_i$. This means that each $\\alpha_i$ as prior knowledge combined with the observed data jointly affects the posterior probability of category $i$. Therefore, each $\\alpha_i$ can be regarded as a “belief” or expectation of the probability of category $i$ before the data is observed, and these beliefs are updated as the data appears. This is a core feature of the Bayesian method: combining prior beliefs and observed data to form posterior knowledge. Parameter Update Visualization Prior Dirichlet Distribution: This distribution represents our initial beliefs about the probabilities of different outcomes (in the 3-class example). Here, I used a uniform prior with parameters [1,1,1], indicating no initial preference for any class. Posterior Dirichlet Distribution: After observing the data (in this case, [10,5,15] counts for each class), the posterior distribution updates our beliefs. The parameters of the posterior distribution are the sum of the prior parameters and the observed counts, resulting in parameters [11,6,16]. This posterior distribution now reflects our updated beliefs after taking into account the observed data. import numpy as np import matplotlib.pyplot as plt from scipy.stats import dirichlet # Function to plot Dirichlet distributions def plot_dirichlet(parameters, title): # Sample from the Dirichlet distribution samples = dirichlet.rvs(parameters, size=10000) # Plotting plt.figure(figsize=(8, 6)) plt.hist(samples, bins=30, density=True, histtype='step', label=['Component 1', 'Component 2', 'Component 3']) plt.title(title) plt.xlabel('Value') plt.ylabel('Density') plt.legend() plt.show() # Prior Dirichlet distribution parameters (example values) prior_parameters = np.array([1, 1, 1]) plot_dirichlet(prior_parameters, \"Prior Dirichlet Distribution\") # Dirichlet-multinomial conjugation: updating the parameters # Let's say we have observed counts for each category observed_counts = np.array([10, 5, 15]) # example counts for 3 categories posterior_parameters = prior_parameters + observed_counts plot_dirichlet(posterior_parameters, \"Posterior Dirichlet Distribution\") Trading strategy In this strategy, you use long-term data to set the prior parameters, and then use short-term data to update the posterior parameters to make trading decisions. Here is one way to implement this strategy:\nStep 1: Set Prior Parameters\nChoose Long-Term Data: First, you need to decide what kind of data represents the long-term. For example, this could be monthly data for the past year, or any other historical data that fits your strategy. Analyze Long-Term Data: Based on this data, you can estimate the frequency of each category (e.g., “bullish”, “bearish”, “neutral”). Set Dirichlet Prior Parameters: Use these frequencies to set the prior parameters of the Dirichlet distribution $\\boldsymbol{\\alpha} = (\\alpha_1,\\alpha_2, \\ldots, \\alpha_K)$, which reflect your initial beliefs about the long-term market behavior. def on_long_bar(self, long_bar: BarData): self.am_long.update_bar(long_bar) if not self.am_long.inited: return # Calculate the number of bullish, bearish and neutral bars for i in range(self.am_long.size): diff = self.am_long.close[i] - self.am_long.open[i] tick_diff = diff/self.tick_size if tick_diff \u003e self.tick_size_threshold: self.prior_bullish += 1 elif tick_diff \u003c -self.tick_size_threshold: self.prior_bearish += 1 else: self.prior_neutral += 1 self.prior_neutral = self.prior_neutral/self.am_long.size self.prior_bearish = self.prior_bearish/self.am_long.size self.prior_bullish = self.prior_bullish/self.am_long.size self.priors_inited = True Step 2: Update the posterior parameters\nSelect short-term data: Next, select data that represents a short period, such as the data from the last week or month. Calculate category counts: Count the number of occurrences of each category in the short period. Update the posterior parameters: Use the short-term data to update the prior parameters. If the category counts you observe in the short period are $(x_1,x_2,\\dots,x_k)$, then the posterior parameters are $\\boldsymbol{\\alpha_{post}} + x = (\\alpha_1+x_1,\\alpha_2+x_2, \\ldots, \\alpha_K+x_K)$ def on_short_bar(self, short_bar: BarData): self.am_short.update_bar(short_bar) if not self.am_short.inited: return if not self.priors_inited: return buy_signal = False sell_signal = False bullish_count = 0 bearish_count = 0 neutral_count = 0 # Calculate the number of bullish, bearish and neutral bars for i in range(self.am_short.size): diff = self.am_short.close[i] - self.am_short.open[i] tick_diff = diff/self.tick_size if tick_diff \u003e self.tick_size_threshold: bullish_count += 1 elif tick_diff \u003c -self.tick_size_threshold: bearish_count += 1 else: neutral_count += 1 # Parameter updating self.post_bullish = self.prior_bullish + bullish_count self.post_bearish = self.prior_bearish + bearish_count self.post_neutral = self.prior_neutral + neutral_count Step 3: Make a trading decision\nCalculate the posterior mean: Calculate the posterior probability of each class, $\\alpha_{j\\text{post}} = \\frac{\\alpha_{j\\text{post}}}{\\sum_{i=1}^{k} a_{i\\text{post}}}$ Select the class with the highest probability: Based on the posterior mean, determine which class has the highest probability. Develop a trading strategy: Develop your trading strategy based on the class with the highest probability. For example, if the “bullish” class has the highest probability, you might choose to buy; if it is “bearish”, you might choose to sell. sumpost = self.post_bearish+self.post_neutral+self.post_bullish post_prob_bull = self.post_bullish/sumpost post_prob_bear = self.post_bearish/sumpost post_prob_neu = self.post_neutral/sumpost maxValue = max(post_prob_neu,post_prob_bull,post_prob_bear) if maxValue == post_prob_bear: sell_signal = True elif maxValue == post_prob_bull: buy_signal = True else: return if self.dual_side: if buy_signal and sell_signal: return # both long and short if buy_signal: if self.pos \u003e= 0: if abs(self.pos) \u003c self.pyramiding: self.buy(short_bar.close_price, self.fix_size) else: self.cover(short_bar.close_price, abs(self.pos)) self.buy(short_bar.close_price, self.fix_size) if sell_signal: if self.pos \u003c= 0: if abs(self.pos) \u003c self.pyramiding: self.short(short_bar.close_price, self.fix_size) else: self.sell(short_bar.close_price, abs(self.pos)) self.short(short_bar.close_price, self.fix_size) else: if buy_signal: if self.pos \u003e= 0 and self.pos \u003c self.pyramiding: self.buy(short_bar.close_price, self.fix_size) if sell_signal: if self.pos != 0: self.sell(short_bar.close_price, self.pos) Strategy Practice Environment parameter Strategy parameter backtesting result Strategy curve ",
+  "wordCount" : "1512",
   "inLanguage": "en",
   "datePublished": "2024-11-13T19:12:16+01:00",
   "dateModified": "2024-11-13T19:12:16+01:00",
@@ -243,74 +194,70 @@ $$
   <header class="post-header">
     
     <h1 class="post-title entry-hint-parent">
-      DirichletMultinominal
+      Trading strategies based on Bayesian theory (Part 3)
     </h1>
-    <div class="post-meta"><span title='2024-11-13 19:12:16 +0100 CET'>November 13, 2024</span>&nbsp;·&nbsp;3 min
+    <div class="post-meta"><span title='2024-11-13 19:12:16 +0100 CET'>November 13, 2024</span>&nbsp;·&nbsp;8 min
 
 </div>
   </header> 
-  <div class="post-content"><h1 id="基于贝叶斯理论的交易策略-三">基于贝叶斯理论的交易策略 （三）<a hidden class="anchor" aria-hidden="true" href="#基于贝叶斯理论的交易策略-三">#</a></h1>
-<p>上一篇<a href="/posts/poissongamma/">文章</a>我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。</p>
-<h2 id="什么是dirichlet分布">什么是Dirichlet分布<a hidden class="anchor" aria-hidden="true" href="#什么是dirichlet分布">#</a></h2>
-<p>Dirichlet分布是由正实数向量参数化的一系列连续多元概率分布。 它经常在贝叶斯统计中用作多项分布的先验分布。 Dirichlet分布的概率密度函数的公式如下：</p>
+  <div class="post-content"><p>In the last <a href="/posts/poissongamma/">essay</a> we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.</p>
+<h2 id="what-is-dirichlet-distribution">What is Dirichlet Distribution<a hidden class="anchor" aria-hidden="true" href="#what-is-dirichlet-distribution">#</a></h2>
+<p>The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:</p>
 $$
 P(\mathbf{x} \mid \boldsymbol{\alpha}) = \frac{1}{B(\boldsymbol{\alpha})} \prod_{i=1}^{K} x_i^{\alpha_i - 1}
-$$<p>其中$\mathbf{x} = (x_1, \ldots, x_K)$是一个 K 维向量，表示 K 个不同类别或事件的概率。 这些概率之和必须为 1，</p>
-<p>$\boldsymbol{\alpha} = (\alpha_1, \ldots, \alpha_K)$是一个正参数向量，$\alpha_i$代表了第$i$个类别的先验，或者说计数。</p>
-<p>$\beta(\alpha)$是多项式Beta函数，作为归一化常数，保证总概率积分为1。定义为：$B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^{K} \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^{K} \alpha_i\right)}$，在这个公式中$\Gamma$表示Gamma函数，它是阶乘函数（其参数向下移动 1）到实数和复数的扩展。</p>
-<p>Dirichlet分布是 Beta 分布向更高维度的推广。 在二维情况下（K=2），Dirichlet分布简化为 Beta 分布。</p>
-<h2 id="什么是multinomial多项分布">什么是Multinomial(多项分布)<a hidden class="anchor" aria-hidden="true" href="#什么是multinomial多项分布">#</a></h2>
-<p>多项分布是二项分布对两个以上类别的推广。 它描述了滚动 n 次 K 面骰子每一面可能计数的概率。 简单来说，它是固定次数试验中多个类别计数的分布。</p>
-<p><strong>特点：</strong></p>
+$$<p>where $\mathbf{x} = (x_1, \ldots, x_K)$ is a K-dimensional vector representing the probabilities of K different categories or events. The sum of these probabilities must be 1.</p>
+<p>$\boldsymbol{\alpha} = (\alpha_1, \ldots, \alpha_K)$ is a positive parameter vector, $\alpha_i$ represents the prior, or count, of the $i$th category.</p>
+<p>$\beta(\alpha)$ is the polynomial Beta function, which serves as a normalization constant to ensure that the total probability integral is 1. It is defined as: $B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^{K} \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^{K} \alpha_i\right)}$, where $\Gamma$ represents the Gamma function, which is an extension of the factorial function (whose argument is shifted down by 1) to real and complex numbers.</p>
+<p>The Dirichlet distribution is a generalization of the Beta distribution to higher dimensions. In the two-dimensional case (K=2), the Dirichlet distribution simplifies to the Beta distribution.</p>
+<h2 id="what-is-multinomial-distribution">What is Multinomial distribution?<a hidden class="anchor" aria-hidden="true" href="#what-is-multinomial-distribution">#</a></h2>
+<p>The multinomial distribution is a generalization of the binomial distribution to more than two categories. It describes the probability of each possible count for rolling a K-sided die n times. In simple terms, it is the distribution of the counts of multiple categories in a fixed number of trials.</p>
+<p><strong>Features:</strong></p>
 <ol>
-<li>类别：有 K 种可能的结果或类别。</li>
-<li>试验：有 n 个独立试验。</li>
-<li>概率：每次试验都恰好产生 K 个类别中的一个。 每次试验的每个类别的概率都是固定的，并表示为：$p_1,p_2,\dots,p_k$，其中$∑p_i=1$</li>
+<li>Class: There are K possible outcomes or classes.</li>
+<li>Trial: There are n independent trials.</li>
+<li>Probability: Each trial produces exactly one of the K classes. The probability of each class in each trial is fixed and expressed as: $p_1,p_2,\dots,p_k$, where $∑p_i=1$</li>
 </ol>
 <p><strong>Probability Mass Function</strong>(PMF):
-给定结果$x=(x_1,x_2,\dots,x_K)$的多项分布的pmf为：
+The pmf of the multinomial distribution of a given outcome $x=(x_1,x_2,\dots,x_K)$ is:
 </p>
-$$P(X = x) = \frac{n!}{x_1! x_2! \ldots x_K!} p_1^{x_1} p_2^{x_2} \ldots p_K^{x_K}
-$$<p>
-其中，$x_i$为$i$类别的计数，且 $\sum_{i=1}^{K} x_{i} = n$。</p>
-<h2 id="共轭先验conjugate-prior">共轭先验（Conjugate Prior）<a hidden class="anchor" aria-hidden="true" href="#共轭先验conjugate-prior">#</a></h2>
-<p>在贝叶斯统计中，共轭先验是一种先验分布，当与某个似然函数结合时，会产生同一族的后验分布。 对于多项分布，共轭先验是Dirichlet分布。</p>
-<p>原理：
-<strong>先验：</strong> 在观察任何数据之前，我们使用Dirichlet分布（以参数为特征）表达我们对类别概率的信念，参数为$\boldsymbol{\alpha} = (\alpha_1,\alpha_2, \ldots, \alpha_K)$
-<strong>似然：</strong> 然后我们观察可以建模为多项分布的数据。
-<strong>后验：</strong> 观察数据后，类别概率的后验分布再次是Dirichlet分布，但具有更新的参数。</p>
-<p>更新参数：
-Dirichlet先验的参数根据观测数据以简单的方式更新。如果原本的参数为$\boldsymbol{\alpha} = (\alpha_1,\alpha_2, \ldots, \alpha_K)$，观测的计数为$x=(x_1,x_2,\dots,x_K)$，Dirichlet后验分布的参数即为：$\boldsymbol{\alpha} + x = (\alpha_1+x_1,\alpha_2+x_2, \ldots, \alpha_K+x_K)$</p>
-<p>共轭先验的概念，如Dirichlet-multinomial，在贝叶斯分析中至关重要，因为它简化了后验分布的计算，而后验分布是贝叶斯推理的基础。 这种结合允许根据新数据对我们的信念进行更直接的分析或计算更新。</p>
+$$P(X = x) = \frac{n!}{x_1! x_2! \ldots x_K!} p_1^{x_1} p_2^{x_2} \ldots p_K^{x_K} $$<p>
+Where $x_i$ is the count of the $i$ category, and $\sum_{i=1}^{K} x_{i} = n$.</p>
+<h2 id="conjugate-prior">Conjugate Prior<a hidden class="anchor" aria-hidden="true" href="#conjugate-prior">#</a></h2>
+<p>In Bayesian statistics, a conjugate prior is a prior distribution that, when combined with a likelihood function, produces a posterior distribution of the same family. For multinomial distributions, the conjugate prior is the Dirichlet distribution.</p>
+<p>Principle:
+<strong>Prior:</strong> Before observing any data, we express our belief about the class probabilities using a Dirichlet distribution (characterized by parameters) with parameters $\boldsymbol{\alpha} = (\alpha_1,\alpha_2, \ldots, \alpha_K)$
+<strong>Likelihood:</strong> Then we observe data which can be modeled as a multinomial distribution.
+<strong>Posterior:</strong> After observing the data, the posterior distribution of the class probabilities is again a Dirichlet distribution but with updated parameters.</p>
+<p>Update parameters:
+The parameters of the Dirichlet prior are updated in a simple way based on the observed data. If the original parameters are $\boldsymbol{\alpha} = (\alpha_1,\alpha_2, \ldots, \alpha_K)$, and the observed counts are $x=(x_1,x_2,\dots,x_K)$, the parameters of the Dirichlet posterior distribution are: $\boldsymbol{\alpha} + x = (\alpha_1+x_1,\alpha_2+x_2, \ldots, \alpha_K+x_K)$</p>
+<p>The concept of a conjugate prior, such as the Dirichlet-multinomial, is crucial in Bayesian analysis because it simplifies the computation of the posterior distribution, which is the basis of Bayesian inference. This conjugation allows for more straightforward analysis or computational updates to our beliefs in light of new data.</p>
 <p><strong>Tips</strong></p>
 <ol>
-<li>
-<p><strong>参数$\alpha_i$的含义</strong>：</p>
-<ul>
-<li>当 $\alpha_i$​ 大于 1 时，表明对应的类别 $i$ 有较高的先验概率。</li>
-<li>当 $\alpha_i$​ 等于 1 时，表示对这些类别没有特别的先验知识，这称为无信息先验。</li>
-<li>当 $\alpha_i$ 小于 1 时，表明对应的类别 $i$ 有较低的先验概率。</li>
-</ul>
-</li>
-<li>
-<p><strong>概率的表达</strong>：</p>
-<ul>
-<li>在 Dirichlet 分布中，$p_i$​ （第 $i$ 个类别的概率）的期望值是 $E[p_i]=\frac{\alpha_{i} }{\sum_{j=1}^{k} \alpha_{j} }$ 。这表明 $\alpha_i$ 影响了对应类别的概率，但不直接等同于概率。</li>
-</ul>
-</li>
-<li>
-<p><strong>贝叶斯更新</strong>：</p>
-<ul>
-<li>在观察到数据后，Dirichlet 分布的参数会更新，形成后验分布。如果观察到的数据中类别 $i$ 出现的次数是 $x_i$​，则后验分布的参数变为 $\alpha_i+x_i$​。这意味着每个 $\alpha_i$​ 作为先验知识与观察到的数据相结合，共同影响了类别 $i$ 的后验概率。</li>
-</ul>
-</li>
+<li><strong>The meaning of parameter $\alpha_i$</strong>:</li>
 </ol>
-<p>因此，可以将每个 $\alpha_i$​ 看作是在没有观察数据之前对类别 $i$ 概率的一种&quot;信念&quot;或预期，而这些信念随着数据的出现而更新。这是贝叶斯方法的一个核心特点：结合先验信念和观察数据来形成后验知识。</p>
-<h2 id="参数更新可视化">参数更新可视化<a hidden class="anchor" aria-hidden="true" href="#参数更新可视化">#</a></h2>
 <ul>
-<li><strong>先验Dirichlet分布</strong>：此分布代表我们对不同结果的概率的最初信念（在 3 类示例中）。 在这里，我使用了统一先验参数 [1,1,1]，表示对任何类别没有初始偏好。
+<li>When $\alpha_i$ is greater than 1, it indicates that the corresponding category $i$ has a higher prior probability.</li>
+<li>When $\alpha_i$ is equal to 1, it indicates that there is no special prior knowledge about these categories, which is called uninformative prior.</li>
+<li>When $\alpha_i$ is less than 1, it indicates that the corresponding category $i$ has a lower prior probability.</li>
+</ul>
+<ol start="2">
+<li><strong>Expression of probability</strong>:</li>
+</ol>
+<ul>
+<li>In the Dirichlet distribution, the expected value of $p_i$ (the probability of the $i$th category) is $E[p_i]=\frac{\alpha_{i} }{\sum_{j=1}^{k} \alpha_{j} }$ . This shows that $\alpha_i$ affects the probability of the corresponding category, but is not directly equivalent to the probability.</li>
+</ul>
+<ol start="3">
+<li><strong>Bayesian Update</strong>:</li>
+</ol>
+<ul>
+<li>After the data is observed, the parameters of the Dirichlet distribution are updated to form the posterior distribution. If the number of times category $i$ appears in the observed data is $x_i$, then the parameters of the posterior distribution become $\alpha_i+x_i$. This means that each $\alpha_i$ as prior knowledge combined with the observed data jointly affects the posterior probability of category $i$.
+Therefore, each $\alpha_i$ can be regarded as a &ldquo;belief&rdquo; or expectation of the probability of category $i$ before the data is observed, and these beliefs are updated as the data appears. This is a core feature of the Bayesian method: combining prior beliefs and observed data to form posterior knowledge.</li>
+</ul>
+<h2 id="parameter-update-visualization">Parameter Update Visualization<a hidden class="anchor" aria-hidden="true" href="#parameter-update-visualization">#</a></h2>
+<ul>
+<li><strong>Prior Dirichlet Distribution</strong>: This distribution represents our initial beliefs about the probabilities of different outcomes (in the 3-class example). Here, I used a uniform prior with parameters [1,1,1], indicating no initial preference for any class.
 <img alt="Alt text" loading="lazy" src="/images/image-6.png"></li>
-<li><strong>后Dirichlet分布</strong>：观察数据后（在本例中，每个类别的 [10,5,15]计数） ，后验分布更新了我们的信念。 后验分布的参数是先验参数与观察到的计数之和，得到参数 [11,6,16]。 这个后验分布现在反映了我们在考虑观察到的数据后更新的信念。
+<li><strong>Posterior Dirichlet Distribution</strong>: After observing the data (in this case, [10,5,15] counts for each class), the posterior distribution updates our beliefs. The parameters of the posterior distribution are the sum of the prior parameters and the observed counts, resulting in parameters [11,6,16]. This posterior distribution now reflects our updated beliefs after taking into account the observed data.
 <img alt="Alt text" loading="lazy" src="/images/image-7.png"></li>
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> numpy <span style="color:#66d9ef">as</span> np
@@ -340,20 +287,20 @@ Dirichlet先验的参数根据观测数据以简单的方式更新。如果原�
 </span></span><span style="display:flex;"><span>observed_counts <span style="color:#f92672">=</span> np<span style="color:#f92672">.</span>array([<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">15</span>]) <span style="color:#75715e"># example counts for 3 categories</span>
 </span></span><span style="display:flex;"><span>posterior_parameters <span style="color:#f92672">=</span> prior_parameters <span style="color:#f92672">+</span> observed_counts
 </span></span><span style="display:flex;"><span>plot_dirichlet(posterior_parameters, <span style="color:#e6db74">&#34;Posterior Dirichlet Distribution&#34;</span>)
-</span></span></code></pre></div><h2 id="交易策略">交易策略<a hidden class="anchor" aria-hidden="true" href="#交易策略">#</a></h2>
-<p>在这种策略中，你可以使用长周期数据来设定先验参数，然后使用短周期数据来更新后验参数，从而做出交易决策。以下是一种实现这个策略的方法：</p>
-<p><strong>步骤1：设定先验参数</strong></p>
+</span></span></code></pre></div><h2 id="trading-strategy">Trading strategy<a hidden class="anchor" aria-hidden="true" href="#trading-strategy">#</a></h2>
+<p>In this strategy, you use long-term data to set the prior parameters, and then use short-term data to update the posterior parameters to make trading decisions. Here is one way to implement this strategy:</p>
+<p><strong>Step 1: Set Prior Parameters</strong></p>
 <ul>
-<li><strong>选择长周期数据</strong>：首先，你需要确定什么样的数据代表长周期。例如，这可以是过去一年的月度数据，或者任何其他符合你策略的历史数据。</li>
-<li><strong>分析长周期数据</strong>：根据这些数据，你可以估计每个类别（比如“看涨”，“看跌”，“中性”）的频率。</li>
-<li><strong>设定Dirichlet先验参数</strong>：使用这些频率来设定Dirichlet分布的先验参数$\boldsymbol{\alpha} = (\alpha_1,\alpha_2, \ldots, \alpha_K)$，这些参数反映了长周期市场行为的你的初始信念。</li>
+<li><strong>Choose Long-Term Data</strong>: First, you need to decide what kind of data represents the long-term. For example, this could be monthly data for the past year, or any other historical data that fits your strategy.</li>
+<li><strong>Analyze Long-Term Data</strong>: Based on this data, you can estimate the frequency of each category (e.g., &ldquo;bullish&rdquo;, &ldquo;bearish&rdquo;, &ldquo;neutral&rdquo;).</li>
+<li><strong>Set Dirichlet Prior Parameters</strong>: Use these frequencies to set the prior parameters of the Dirichlet distribution $\boldsymbol{\alpha} = (\alpha_1,\alpha_2, \ldots, \alpha_K)$, which reflect your initial beliefs about the long-term market behavior.</li>
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">on_long_bar</span>(self, long_bar: BarData):
 </span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>am_long<span style="color:#f92672">.</span>update_bar(long_bar)
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>am_long<span style="color:#f92672">.</span>inited:
 </span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 计算看涨、看跌和中性的Bar数量</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Calculate the number of bullish, bearish and neutral bars</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(self<span style="color:#f92672">.</span>am_long<span style="color:#f92672">.</span>size):
 </span></span><span style="display:flex;"><span>            diff <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>am_long<span style="color:#f92672">.</span>close[i] <span style="color:#f92672">-</span> self<span style="color:#f92672">.</span>am_long<span style="color:#f92672">.</span>open[i]
 </span></span><span style="display:flex;"><span>            tick_diff <span style="color:#f92672">=</span> diff<span style="color:#f92672">/</span>self<span style="color:#f92672">.</span>tick_size
@@ -369,11 +316,11 @@ Dirichlet先验的参数根据观测数据以简单的方式更新。如果原�
 </span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>prior_bullish <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>prior_bullish<span style="color:#f92672">/</span>self<span style="color:#f92672">.</span>am_long<span style="color:#f92672">.</span>size
 </span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>priors_inited <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
-</span></span></code></pre></div><p><strong>步骤 2: 更新后验参数</strong></p>
+</span></span></code></pre></div><p><strong>Step 2: Update the posterior parameters</strong></p>
 <ul>
-<li><strong>选择短周期数据</strong>：接着，选择代表短周期的数据，例如最近一周或一个月的数据。</li>
-<li><strong>计算类别计数</strong>：统计短周期内每个类别的出现次数。</li>
-<li><strong>更新后验参数</strong>：使用短周期数据更新先验参数。如果你在短周期中观察到的类别计数为$(x_1,x_2,\dots,x_k)$，那么后验参数为$\boldsymbol{\alpha_{post}} + x = (\alpha_1+x_1,\alpha_2+x_2, \ldots, \alpha_K+x_K)$</li>
+<li><strong>Select short-term data</strong>: Next, select data that represents a short period, such as the data from the last week or month.</li>
+<li><strong>Calculate category counts</strong>: Count the number of occurrences of each category in the short period.</li>
+<li><strong>Update the posterior parameters</strong>: Use the short-term data to update the prior parameters. If the category counts you observe in the short period are $(x_1,x_2,\dots,x_k)$, then the posterior parameters are $\boldsymbol{\alpha_{post}} + x = (\alpha_1+x_1,\alpha_2+x_2, \ldots, \alpha_K+x_K)$</li>
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">on_short_bar</span>(self, short_bar: BarData):
 </span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>am_short<span style="color:#f92672">.</span>update_bar(short_bar)
@@ -390,7 +337,7 @@ Dirichlet先验的参数根据观测数据以简单的方式更新。如果原�
 </span></span><span style="display:flex;"><span>        bearish_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
 </span></span><span style="display:flex;"><span>        neutral_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 计算看涨、看跌和中性的Bar数量</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Calculate the number of bullish, bearish and neutral bars</span>
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(self<span style="color:#f92672">.</span>am_short<span style="color:#f92672">.</span>size):
 </span></span><span style="display:flex;"><span>            diff <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>am_short<span style="color:#f92672">.</span>close[i] <span style="color:#f92672">-</span> self<span style="color:#f92672">.</span>am_short<span style="color:#f92672">.</span>open[i]
 </span></span><span style="display:flex;"><span>            tick_diff <span style="color:#f92672">=</span> diff<span style="color:#f92672">/</span>self<span style="color:#f92672">.</span>tick_size
@@ -401,15 +348,15 @@ Dirichlet先验的参数根据观测数据以简单的方式更新。如果原�
 </span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
 </span></span><span style="display:flex;"><span>                neutral_count <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 更新参数</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Parameter updating</span>
 </span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>post_bullish <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>prior_bullish <span style="color:#f92672">+</span> bullish_count
 </span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>post_bearish <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>prior_bearish <span style="color:#f92672">+</span> bearish_count
 </span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>post_neutral <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>prior_neutral <span style="color:#f92672">+</span> neutral_count
-</span></span></code></pre></div><p><strong>步骤 3: 做出交易决策</strong></p>
+</span></span></code></pre></div><p><strong>Step 3: Make a trading decision</strong></p>
 <ul>
-<li><strong>计算后验均值</strong>：计算每个类别的后验概率，$\alpha_{j\text{post}} = \frac{\alpha_{j\text{post}}}{\sum_{i=1}^{k} a_{i\text{post}}}$</li>
-<li><strong>选择概率最高的类别</strong>：基于后验均值，确定哪个类别具有最高的概率。</li>
-<li><strong>制定交易策略</strong>：根据概率最高的类别制定你的交易策略。例如，如果“看涨”类别的概率最高，你可能会选择买入；如果是“看跌”，则可能会选择卖出。</li>
+<li><strong>Calculate the posterior mean</strong>: Calculate the posterior probability of each class, $\alpha_{j\text{post}} = \frac{\alpha_{j\text{post}}}{\sum_{i=1}^{k} a_{i\text{post}}}$</li>
+<li><strong>Select the class with the highest probability</strong>: Based on the posterior mean, determine which class has the highest probability.</li>
+<li><strong>Develop a trading strategy</strong>: Develop your trading strategy based on the class with the highest probability. For example, if the &ldquo;bullish&rdquo; class has the highest probability, you might choose to buy; if it is &ldquo;bearish&rdquo;, you might choose to sell.</li>
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>sumpost <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>post_bearish<span style="color:#f92672">+</span>self<span style="color:#f92672">.</span>post_neutral<span style="color:#f92672">+</span>self<span style="color:#f92672">.</span>post_bullish
 </span></span><span style="display:flex;"><span>
@@ -455,15 +402,15 @@ Dirichlet先验的参数根据观测数据以简单的方式更新。如果原�
 </span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> sell_signal:
 </span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>pos <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:
 </span></span><span style="display:flex;"><span>                    self<span style="color:#f92672">.</span>sell(short_bar<span style="color:#f92672">.</span>close_price, self<span style="color:#f92672">.</span>pos)
-</span></span></code></pre></div><h2 id="策略实战">策略实战<a hidden class="anchor" aria-hidden="true" href="#策略实战">#</a></h2>
-<p><strong>环境参数</strong>
+</span></span></code></pre></div><h2 id="strategy-practice">Strategy Practice<a hidden class="anchor" aria-hidden="true" href="#strategy-practice">#</a></h2>
+<p><strong>Environment parameter</strong>
 <img alt="Alt text" loading="lazy" src="/images/image-11.png">
-<strong>策略参数</strong>
+<strong>Strategy parameter</strong>
 <img alt="Alt text" loading="lazy" src="/images/image-8.png">
-<strong>回测结果</strong>
+<strong>backtesting result</strong>
 <img alt="Alt text" loading="lazy" src="/images/image-9.png">
 <img alt="Alt text" loading="lazy" src="/images/image-10.png">
-<strong>策略曲线</strong>
+<strong>Strategy curve</strong>
 <img alt="Alt text" loading="lazy" src="/images/image-12.png"></p>
 <p><img alt="Alt text" loading="lazy" src="/images/image-13.png"></p>
 <p><img alt="Alt text" loading="lazy" src="/images/image-14.png">
@@ -478,8 +425,8 @@ Dirichlet先验的参数根据观测数据以简单的方式更新。如果原�
 
 <ul class="share-buttons">
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share DirichletMultinominal on x"
-            href="https://x.com/intent/tweet/?text=DirichletMultinominal&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f&amp;hashtags=">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on x"
+            href="https://x.com/intent/tweet/?text=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f&amp;hashtags=">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
@@ -487,8 +434,8 @@ Dirichlet先验的参数根据观测数据以简单的方式更新。如果原�
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share DirichletMultinominal on linkedin"
-            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f&amp;title=DirichletMultinominal&amp;summary=DirichletMultinominal&amp;source=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f&amp;title=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&amp;summary=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&amp;source=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
@@ -496,8 +443,8 @@ Dirichlet先验的参数根据观测数据以简单的方式更新。如果原�
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share DirichletMultinominal on reddit"
-            href="https://reddit.com/submit?url=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f&title=DirichletMultinominal">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on reddit"
+            href="https://reddit.com/submit?url=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f&title=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
@@ -505,7 +452,7 @@ Dirichlet先验的参数根据观测数据以简单的方式更新。如果原�
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share DirichletMultinominal on facebook"
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on facebook"
             href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
@@ -514,8 +461,8 @@ Dirichlet先验的参数根据观测数据以简单的方式更新。如果原�
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share DirichletMultinominal on whatsapp"
-            href="https://api.whatsapp.com/send?text=DirichletMultinominal%20-%20https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on whatsapp"
+            href="https://api.whatsapp.com/send?text=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29%20-%20https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
@@ -523,8 +470,8 @@ Dirichlet先验的参数根据观测数据以简单的方式更新。如果原�
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share DirichletMultinominal on telegram"
-            href="https://telegram.me/share/url?text=DirichletMultinominal&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on telegram"
+            href="https://telegram.me/share/url?text=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
             <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
@@ -532,8 +479,8 @@ Dirichlet先验的参数根据观测数据以简单的方式更新。如果原�
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share DirichletMultinominal on ycombinator"
-            href="https://news.ycombinator.com/submitlink?t=DirichletMultinominal&u=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&u=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
             <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
                 xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
                 <path

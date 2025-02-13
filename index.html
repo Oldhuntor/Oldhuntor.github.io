@@ -178,6 +178,20 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
+    <h2 class="entry-hint-parent">Journey to a universal hedge system (part I)
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Journey to a universal hedge system Intro Statistical arbitrage or hedging has already been known for a long time, people usually tackle this trading strategy with models that have strong assumptions, and generally have only limited amount of asset pairs to trade based on the some macro or micro economics assumption.
+In this essay, we want to explore more modern and diverse statistical method or machine learning methods for hedging. We will address two questions:
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-02-08 19:12:16 +0100 CET'>February 8, 2025</span>&nbsp;·&nbsp;9 min</footer>
+  <a class="entry-link" aria-label="post link to Journey to a universal hedge system (part I)" href="https://oldhuntor.github.io/posts/story-of-arbitrage1/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
     <h2 class="entry-hint-parent">Bayesian Cointegration codes
     </h2>
   </header>
@@ -190,51 +204,43 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">DirichletMultinominal
+    <h2 class="entry-hint-parent">Trading strategies based on Bayesian theory (Part 3)
     </h2>
   </header>
   <div class="entry-content">
-    <p>基于贝叶斯理论的交易策略 （三） 上一篇文章我们讲了利用Gamma-Poisson共轭分布来制定交易策略，以下这篇文章我们将尝试使用更加复杂的Dirichlet-Multinominal 共轭分布。
-什么是Dirichlet分布 Dirichlet分布是由正实数向量参数化的一系列连续多元概率分布。 它经常在贝叶斯统计中用作多项分布的先验分布。 Dirichlet分布的概率密度函数的公式如下：
-$$ P(\mathbf{x} \mid \boldsymbol{\alpha}) = \frac{1}{B(\boldsymbol{\alpha})} \prod_{i=1}^{K} x_i^{\alpha_i - 1} $$其中$\mathbf{x} = (x_1, \ldots, x_K)$是一个 K 维向量，表示 K 个不同类别或事件的概率。 这些概率之和必须为 1，
-$\boldsymbol{\alpha} = (\alpha_1, \ldots, \alpha_K)$是一个正参数向量，$\alpha_i$代表了第$i$个类别的先验，或者说计数。
-$\beta(\alpha)$是多项式Beta函数，作为归一化常数，保证总概率积分为1。定义为：$B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^{K} \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^{K} \alpha_i\right)}$，在这个公式中$\Gamma$表示Gamma函数，它是阶乘函数（其参数向下移动 1）到实数和复数的扩展。
-Dirichlet分布是 Beta 分布向更高维度的推广。 在二维情况下（K=2），Dirichlet分布简化为 Beta 分布。
-什么是Multinomial(多项分布) 多项分布是二项分布对两个以上类别的推广。 它描述了滚动 n 次 K 面骰子每一面可能计数的概率。 简单来说，它是固定次数试验中多个类别计数的分布。
-特点：
-类别：有 K 种可能的结果或类别。 试验：有 n 个独立试验。 概率：每次试验都恰好产生 K 个类别中的一个。 每次试验的每个类别的概率都是固定的，并表示为：$p_1,p_2,\dots,p_k$，其中$∑p_i=1$ Probability Mass Function(PMF): 给定结果$x=(x_1,x_2,\dots,x_K)$的多项分布的pmf为： $$P(X = x) = \frac{n!}{x_1! x_2! \ldots x_K!} p_1^{x_1} p_2^{x_2} \ldots p_K^{x_K} $$ 其中，$x_i$为$i$类别的计数，且 $\sum_{i=1}^{K} x_{i} = n$。
+    <p>In the last essay we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.
+What is Dirichlet Distribution The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-11-13 19:12:16 +0100 CET'>November 13, 2024</span>&nbsp;·&nbsp;3 min</footer>
-  <a class="entry-link" aria-label="post link to DirichletMultinominal" href="https://oldhuntor.github.io/posts/dirichletmultinominal/"></a>
+  <footer class="entry-footer"><span title='2024-11-13 19:12:16 +0100 CET'>November 13, 2024</span>&nbsp;·&nbsp;8 min</footer>
+  <a class="entry-link" aria-label="post link to Trading strategies based on Bayesian theory (Part 3)" href="https://oldhuntor.github.io/posts/dirichletmultinominal/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">PoissonGamma
+    <h2 class="entry-hint-parent">Trading strategies based on Bayesian theory (Part 2)
     </h2>
   </header>
   <div class="entry-content">
-    <p>上一篇文章我们将了如何利用beta- binomial共轭分布来设计交易策略。那我们是否可以用伽马和柏松（gamma- poisson）共轭来设计交易策略呢？本文将展示一种交易策略例子。
-模型 目标：模拟一段时间内的平均上涨次数 先验分布：gamma分布，以下是gamma分布的分布函数： $$ f(x; \alpha, \beta) = \frac{\beta^{\alpha} x^{\alpha - 1} e^{-\beta x}}{\Gamma(\alpha)} $$ 以下是gamma分布函数在不同参数下的图像： 可以看出，gamma分布的定义域是[0, &#43;$\infty$]，这说明，我们不能再选择研究上涨概率$\theta$这种0到1的参数了，我们可以研究一段时间内平均上涨次数$\lambda$，这也是为什么需要选择柏松分布来计算likelihood的原因。
-柏松分布似然函数： 柏松分布只有一个参数$\lambda$， 我们把它定义为一段时间内的上涨次数。 以下是柏松分布的概率密度函数： $$L(\lambda; k) = \frac{e^{-\lambda} \lambda^k}{k!}$$ 以下是柏松分布概率密度图像： 可以看出柏松分布是一个离散分布，这种离散分布正好可以用来模拟上涨次数这种离散值。 如果我们假定每一段时间的上涨次数是相互独立的，我们就可以使用柏松的似然函数。 以下是柏松分布的似然函数： $$L(\lambda; x_1, x_2, \ldots, x_n) = e^{-n\lambda} \lambda^{\sum_{i=1}^{n}x_i} \prod_{i=1}^{n} \frac{1}{x_i!} $$ 后验分布 在有了先验分布和似然函数之后，我们就可以计算后验分布了，后验分布如下： $$p(\lambda | x_1, x_2, \ldots, x_n; \alpha&#39;, \beta&#39;) = \frac{{\beta&#39;}^{\alpha&#39;}}{\Gamma(\alpha&#39;)} \lambda^{\alpha&#39; - 1} e^{-\beta&#39; \lambda} $$ $$\alpha&#39; = \alpha &#43; \sum_{i=1}^{n} x_i,\beta&#39; = \beta &#43; n$$ 可以发现，后验分布也是gamma分布，并且后验分布的$\alpha$与$\beta$可以直接通过观测样本的信息得到，这个计算提供了极大便利。 应用例子 长周期 长周期决定gamma分布先验。 长周期的单位为小时k。 长周期的序列是 n天的小时k，由 7 * 24 * 60 = 10080 条分钟k合成 然后计算24 小时中， 每天的上涨次数 ，{“day1”: 13, “day2”: 6, “day3”: 8….“dayn”: x} 计算出样本平均数和方差来估计 （Moment method, 矩估计） 先验的alpha prior 和 beta prior $\bar{x} = \frac{\alpha}{\beta}$,$s^2 = \frac{\alpha}{\beta^2}$
+    <p>In the previous post we learned how to design trading strategies using the beta-binomial conjugate distribution. Can we design trading strategies using the gamma-Poisson conjugate distribution? This post will show an example of a trading strategy.
+Model Objective: simulate the average number of increases over a period of time Prior distribution: gamma distribution, the following is the distribution function of gamma distribution: $$ f(x; \alpha, \beta) = \frac{\beta^{\alpha} x^{\alpha - 1} e^{-\beta x}}{\Gamma(\alpha)} $$ Below are the images of the gamma distribution function with different parameters:： It can be seen that the domain of the gamma distribution is [0, &#43;$\infty$], which means that we can no longer choose to study the parameter $\theta$, which is a 0 to 1 probability of increase. We can study the average number of increases $\lambda$ over a period of time. This is why we need to choose the Poisson distribution to calculate the likelihood.
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-11-12 19:12:16 +0100 CET'>November 12, 2024</span>&nbsp;·&nbsp;4 min</footer>
-  <a class="entry-link" aria-label="post link to PoissonGamma" href="https://oldhuntor.github.io/posts/poissongamma/"></a>
+  <footer class="entry-footer"><span title='2024-11-12 19:12:16 +0100 CET'>November 12, 2024</span>&nbsp;·&nbsp;9 min</footer>
+  <a class="entry-link" aria-label="post link to Trading strategies based on Bayesian theory (Part 2)" href="https://oldhuntor.github.io/posts/poissongamma/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">BetaBinomial
+    <h2 class="entry-hint-parent">Trading strategies based on Bayesian theory (Part 1)
     </h2>
   </header>
   <div class="entry-content">
-    <p>基于贝叶斯理论的交易策略 模型逻辑 假设长周期是能够体现趋势的，并且再观测了短周期的数据之后，能够更好的对长周期的趋势作出判断。
-目标： 预测未来是否有趋势 参数：$\theta$ ：上涨的概率，是一个0到1的float 模型：根据长周期数据，决定$\theta$ 的先验分布，再根据短周期数据，更新我们对$\theta$ 的信念得到后验分布。 先验分布（prior）的选择：因为$\theta$ 是0到1的连续分布，于是我们选择Beta分布。 斯然函数（likelihood）的选择：因为我们想预测涨跌，可以把数据简化成抛硬币，即是二项分布。 beta - binomial 共轭，如果以beta分布为先验分布，二项分布为斯然函数，则后验分布也为beta分布，这样子能够简化计算。 套用贝叶斯理论 $f(\theta)$ 为先验分布 prior $f(\theta|X)$ 为后验分布 posterior $f(X|\theta)$ 为斯然函数 likelihood $$f(\theta|X) = \frac{f(X|\theta) \cdot f(\theta)}{\int f(X|\theta) \cdot f(\theta) \, d\theta}$$根据我们模型的假设， $\theta$ （上涨的概率，open小于close的概率）符合beta分布。beta分布的形状参数$\alpha$为长周期序列中，open小于close价格的k线的个数，$\beta$为open大于close价格的k线的个数。 Beta分布的概率密度函数： $$\text{Beta}(\theta | \alpha, \beta) = \frac{\theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}{B(\alpha, \beta)}$$ 斯然函数符合二项分布，$n$为短周期序列的长度，$k$为open小于close价格的k线的个数： $$\text{Binomial}(k | n, \theta) = \binom{n}{k} \theta^k (1 - \theta)^{n-k}$$ 根据贝叶斯公式计算后得到后验分布的参数： $$ \alpha_{\text{post}} = \alpha &#43; k, \beta_{\text{post}} = \beta &#43; n - k$$ 所以后验分布为： ...</p>
+    <p>Model Logic Assuming that the long cycle can reflect the trend, and after observing the short-term data, we can better judge the long-term trend.
+Goal: Predict whether there will be a trend in the future Parameter：$\theta$ ：The probability of rising is a float between 0 and 1. Model：Based on long-term data，Determine the prior distribution of $\theta$, and then update our belief in $\theta$ based on short-term data to obtain the posterior distribution. prior：Because $\theta$ is a continuous distribution from 0 to 1, we choose Beta distribution. likelihood：Because we want to predict the rise and fall, we can simplify the data to tossing a coin, which is a binomial distribution. beta - binomial conjugate, if beta distribution is used as the prior distribution and binomial distribution is used as the Siran function, then the posterior distribution is also beta distribution, which can simplify the calculation. Applying Bayesian theory $f(\theta)$ is the prior distribution prior $f(\theta|X)$ is the posterior distribution posterior $f(X|\theta)$ is the likelihood function ...</p>
   </div>
-  <footer class="entry-footer"><span title='2024-11-11 19:12:16 +0100 CET'>November 11, 2024</span>&nbsp;·&nbsp;2 min</footer>
-  <a class="entry-link" aria-label="post link to BetaBinomial" href="https://oldhuntor.github.io/posts/betabinomial/"></a>
+  <footer class="entry-footer"><span title='2024-11-11 19:12:16 +0100 CET'>November 11, 2024</span>&nbsp;·&nbsp;5 min</footer>
+  <a class="entry-link" aria-label="post link to Trading strategies based on Bayesian theory (Part 1)" href="https://oldhuntor.github.io/posts/betabinomial/"></a>
 </article>
     </main>
     

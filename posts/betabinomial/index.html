@@ -5,35 +5,22 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="robots" content="index, follow">
-<title>BetaBinomial | Xuanhao&#39;s Blog</title>
+<title>Trading strategies based on Bayesian theory (Part 1) | Xuanhao&#39;s Blog</title>
 <meta name="keywords" content="">
-<meta name="description" content="基于贝叶斯理论的交易策略
-模型逻辑
-假设长周期是能够体现趋势的，并且再观测了短周期的数据之后，能够更好的对长周期的趋势作出判断。
+<meta name="description" content="Model Logic
+Assuming that the long cycle can reflect the trend, and after observing the short-term data, we can better judge the long-term trend.
 
-目标： 预测未来是否有趋势
-参数：$\theta$ ：上涨的概率，是一个0到1的float
-模型：根据长周期数据，决定$\theta$ 的先验分布，再根据短周期数据，更新我们对$\theta$ 的信念得到后验分布。
-先验分布（prior）的选择：因为$\theta$ 是0到1的连续分布，于是我们选择Beta分布。
-斯然函数（likelihood）的选择：因为我们想预测涨跌，可以把数据简化成抛硬币，即是二项分布。
-beta - binomial 共轭，如果以beta分布为先验分布，二项分布为斯然函数，则后验分布也为beta分布，这样子能够简化计算。
+Goal: Predict whether there will be a trend in the future
+Parameter：$\theta$ ：The probability of rising is a float between 0 and 1.
+Model：Based on long-term data，Determine the prior distribution of $\theta$, and then update our belief in $\theta$ based on short-term data to obtain the posterior distribution.
+prior：Because $\theta$ is a continuous distribution from 0 to 1, we choose Beta distribution.
+likelihood：Because we want to predict the rise and fall, we can simplify the data to tossing a coin, which is a binomial distribution.
+beta - binomial conjugate, if beta distribution is used as the prior distribution and binomial distribution is used as the Siran function, then the posterior distribution is also beta distribution, which can simplify the calculation.
 
-套用贝叶斯理论
-$f(\theta)$ 为先验分布 prior
-$f(\theta|X)$ 为后验分布 posterior
-$f(X|\theta)$ 为斯然函数 likelihood
-
-$$f(\theta|X) = \frac{f(X|\theta) \cdot f(\theta)}{\int f(X|\theta) \cdot f(\theta) \, d\theta}$$根据我们模型的假设， $\theta$ （上涨的概率，open小于close的概率）符合beta分布。beta分布的形状参数$\alpha$为长周期序列中，open小于close价格的k线的个数，$\beta$为open大于close价格的k线的个数。
-Beta分布的概率密度函数：
-
-$$\text{Beta}(\theta | \alpha, \beta) = \frac{\theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}{B(\alpha, \beta)}$$
-斯然函数符合二项分布，$n$为短周期序列的长度，$k$为open小于close价格的k线的个数：
-
-$$\text{Binomial}(k | n, \theta) = \binom{n}{k} \theta^k (1 - \theta)^{n-k}$$
-根据贝叶斯公式计算后得到后验分布的参数：
-
-$$ \alpha_{\text{post}} = \alpha &#43; k, \beta_{\text{post}} = \beta &#43; n - k$$
-所以后验分布为：
+Applying Bayesian theory
+$f(\theta)$ is the prior distribution prior
+$f(\theta|X)$ is the posterior distribution posterior
+$f(X|\theta)$ is the likelihood function
 ">
 <meta name="author" content="">
 <link rel="canonical" href="https://oldhuntor.github.io/posts/betabinomial/">
@@ -84,43 +71,30 @@ $$ \alpha_{\text{post}} = \alpha &#43; k, \beta_{\text{post}} = \beta &#43; n - 
     </style>
 </noscript><meta property="og:url" content="https://oldhuntor.github.io/posts/betabinomial/">
   <meta property="og:site_name" content="Xuanhao&#39;s Blog">
-  <meta property="og:title" content="BetaBinomial">
-  <meta property="og:description" content="基于贝叶斯理论的交易策略 模型逻辑 假设长周期是能够体现趋势的，并且再观测了短周期的数据之后，能够更好的对长周期的趋势作出判断。
-目标： 预测未来是否有趋势 参数：$\theta$ ：上涨的概率，是一个0到1的float 模型：根据长周期数据，决定$\theta$ 的先验分布，再根据短周期数据，更新我们对$\theta$ 的信念得到后验分布。 先验分布（prior）的选择：因为$\theta$ 是0到1的连续分布，于是我们选择Beta分布。 斯然函数（likelihood）的选择：因为我们想预测涨跌，可以把数据简化成抛硬币，即是二项分布。 beta - binomial 共轭，如果以beta分布为先验分布，二项分布为斯然函数，则后验分布也为beta分布，这样子能够简化计算。 套用贝叶斯理论 $f(\theta)$ 为先验分布 prior $f(\theta|X)$ 为后验分布 posterior $f(X|\theta)$ 为斯然函数 likelihood $$f(\theta|X) = \frac{f(X|\theta) \cdot f(\theta)}{\int f(X|\theta) \cdot f(\theta) \, d\theta}$$根据我们模型的假设， $\theta$ （上涨的概率，open小于close的概率）符合beta分布。beta分布的形状参数$\alpha$为长周期序列中，open小于close价格的k线的个数，$\beta$为open大于close价格的k线的个数。 Beta分布的概率密度函数： $$\text{Beta}(\theta | \alpha, \beta) = \frac{\theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}{B(\alpha, \beta)}$$ 斯然函数符合二项分布，$n$为短周期序列的长度，$k$为open小于close价格的k线的个数： $$\text{Binomial}(k | n, \theta) = \binom{n}{k} \theta^k (1 - \theta)^{n-k}$$ 根据贝叶斯公式计算后得到后验分布的参数： $$ \alpha_{\text{post}} = \alpha &#43; k, \beta_{\text{post}} = \beta &#43; n - k$$ 所以后验分布为： ">
+  <meta property="og:title" content="Trading strategies based on Bayesian theory (Part 1)">
+  <meta property="og:description" content="Model Logic Assuming that the long cycle can reflect the trend, and after observing the short-term data, we can better judge the long-term trend.
+Goal: Predict whether there will be a trend in the future Parameter：$\theta$ ：The probability of rising is a float between 0 and 1. Model：Based on long-term data，Determine the prior distribution of $\theta$, and then update our belief in $\theta$ based on short-term data to obtain the posterior distribution. prior：Because $\theta$ is a continuous distribution from 0 to 1, we choose Beta distribution. likelihood：Because we want to predict the rise and fall, we can simplify the data to tossing a coin, which is a binomial distribution. beta - binomial conjugate, if beta distribution is used as the prior distribution and binomial distribution is used as the Siran function, then the posterior distribution is also beta distribution, which can simplify the calculation. Applying Bayesian theory $f(\theta)$ is the prior distribution prior $f(\theta|X)$ is the posterior distribution posterior $f(X|\theta)$ is the likelihood function ">
   <meta property="og:locale" content="en-us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="posts">
     <meta property="article:published_time" content="2024-11-11T19:12:16+01:00">
     <meta property="article:modified_time" content="2024-11-11T19:12:16+01:00">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="BetaBinomial">
-<meta name="twitter:description" content="基于贝叶斯理论的交易策略
-模型逻辑
-假设长周期是能够体现趋势的，并且再观测了短周期的数据之后，能够更好的对长周期的趋势作出判断。
+<meta name="twitter:title" content="Trading strategies based on Bayesian theory (Part 1)">
+<meta name="twitter:description" content="Model Logic
+Assuming that the long cycle can reflect the trend, and after observing the short-term data, we can better judge the long-term trend.
 
-目标： 预测未来是否有趋势
-参数：$\theta$ ：上涨的概率，是一个0到1的float
-模型：根据长周期数据，决定$\theta$ 的先验分布，再根据短周期数据，更新我们对$\theta$ 的信念得到后验分布。
-先验分布（prior）的选择：因为$\theta$ 是0到1的连续分布，于是我们选择Beta分布。
-斯然函数（likelihood）的选择：因为我们想预测涨跌，可以把数据简化成抛硬币，即是二项分布。
-beta - binomial 共轭，如果以beta分布为先验分布，二项分布为斯然函数，则后验分布也为beta分布，这样子能够简化计算。
+Goal: Predict whether there will be a trend in the future
+Parameter：$\theta$ ：The probability of rising is a float between 0 and 1.
+Model：Based on long-term data，Determine the prior distribution of $\theta$, and then update our belief in $\theta$ based on short-term data to obtain the posterior distribution.
+prior：Because $\theta$ is a continuous distribution from 0 to 1, we choose Beta distribution.
+likelihood：Because we want to predict the rise and fall, we can simplify the data to tossing a coin, which is a binomial distribution.
+beta - binomial conjugate, if beta distribution is used as the prior distribution and binomial distribution is used as the Siran function, then the posterior distribution is also beta distribution, which can simplify the calculation.
 
-套用贝叶斯理论
-$f(\theta)$ 为先验分布 prior
-$f(\theta|X)$ 为后验分布 posterior
-$f(X|\theta)$ 为斯然函数 likelihood
-
-$$f(\theta|X) = \frac{f(X|\theta) \cdot f(\theta)}{\int f(X|\theta) \cdot f(\theta) \, d\theta}$$根据我们模型的假设， $\theta$ （上涨的概率，open小于close的概率）符合beta分布。beta分布的形状参数$\alpha$为长周期序列中，open小于close价格的k线的个数，$\beta$为open大于close价格的k线的个数。
-Beta分布的概率密度函数：
-
-$$\text{Beta}(\theta | \alpha, \beta) = \frac{\theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}{B(\alpha, \beta)}$$
-斯然函数符合二项分布，$n$为短周期序列的长度，$k$为open小于close价格的k线的个数：
-
-$$\text{Binomial}(k | n, \theta) = \binom{n}{k} \theta^k (1 - \theta)^{n-k}$$
-根据贝叶斯公式计算后得到后验分布的参数：
-
-$$ \alpha_{\text{post}} = \alpha &#43; k, \beta_{\text{post}} = \beta &#43; n - k$$
-所以后验分布为：
+Applying Bayesian theory
+$f(\theta)$ is the prior distribution prior
+$f(\theta|X)$ is the posterior distribution posterior
+$f(X|\theta)$ is the likelihood function
 ">
 
 
@@ -138,7 +112,7 @@ $$ \alpha_{\text{post}} = \alpha &#43; k, \beta_{\text{post}} = \beta &#43; n - 
     {
       "@type": "ListItem",
       "position":  2 ,
-      "name": "BetaBinomial",
+      "name": "Trading strategies based on Bayesian theory (Part 1)",
       "item": "https://oldhuntor.github.io/posts/betabinomial/"
     }
   ]
@@ -148,14 +122,14 @@ $$ \alpha_{\text{post}} = \alpha &#43; k, \beta_{\text{post}} = \beta &#43; n - 
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "BetaBinomial",
-  "name": "BetaBinomial",
-  "description": "基于贝叶斯理论的交易策略 模型逻辑 假设长周期是能够体现趋势的，并且再观测了短周期的数据之后，能够更好的对长周期的趋势作出判断。\n目标： 预测未来是否有趋势 参数：$\\theta$ ：上涨的概率，是一个0到1的float 模型：根据长周期数据，决定$\\theta$ 的先验分布，再根据短周期数据，更新我们对$\\theta$ 的信念得到后验分布。 先验分布（prior）的选择：因为$\\theta$ 是0到1的连续分布，于是我们选择Beta分布。 斯然函数（likelihood）的选择：因为我们想预测涨跌，可以把数据简化成抛硬币，即是二项分布。 beta - binomial 共轭，如果以beta分布为先验分布，二项分布为斯然函数，则后验分布也为beta分布，这样子能够简化计算。 套用贝叶斯理论 $f(\\theta)$ 为先验分布 prior $f(\\theta|X)$ 为后验分布 posterior $f(X|\\theta)$ 为斯然函数 likelihood $$f(\\theta|X) = \\frac{f(X|\\theta) \\cdot f(\\theta)}{\\int f(X|\\theta) \\cdot f(\\theta) \\, d\\theta}$$根据我们模型的假设， $\\theta$ （上涨的概率，open小于close的概率）符合beta分布。beta分布的形状参数$\\alpha$为长周期序列中，open小于close价格的k线的个数，$\\beta$为open大于close价格的k线的个数。 Beta分布的概率密度函数： $$\\text{Beta}(\\theta | \\alpha, \\beta) = \\frac{\\theta^{\\alpha - 1} (1 - \\theta)^{\\beta - 1}}{B(\\alpha, \\beta)}$$ 斯然函数符合二项分布，$n$为短周期序列的长度，$k$为open小于close价格的k线的个数： $$\\text{Binomial}(k | n, \\theta) = \\binom{n}{k} \\theta^k (1 - \\theta)^{n-k}$$ 根据贝叶斯公式计算后得到后验分布的参数： $$ \\alpha_{\\text{post}} = \\alpha + k, \\beta_{\\text{post}} = \\beta + n - k$$ 所以后验分布为： ",
+  "headline": "Trading strategies based on Bayesian theory (Part 1)",
+  "name": "Trading strategies based on Bayesian theory (Part 1)",
+  "description": "Model Logic Assuming that the long cycle can reflect the trend, and after observing the short-term data, we can better judge the long-term trend.\nGoal: Predict whether there will be a trend in the future Parameter：$\\theta$ ：The probability of rising is a float between 0 and 1. Model：Based on long-term data，Determine the prior distribution of $\\theta$, and then update our belief in $\\theta$ based on short-term data to obtain the posterior distribution. prior：Because $\\theta$ is a continuous distribution from 0 to 1, we choose Beta distribution. likelihood：Because we want to predict the rise and fall, we can simplify the data to tossing a coin, which is a binomial distribution. beta - binomial conjugate, if beta distribution is used as the prior distribution and binomial distribution is used as the Siran function, then the posterior distribution is also beta distribution, which can simplify the calculation. Applying Bayesian theory $f(\\theta)$ is the prior distribution prior $f(\\theta|X)$ is the posterior distribution posterior $f(X|\\theta)$ is the likelihood function ",
   "keywords": [
     
   ],
-  "articleBody": "基于贝叶斯理论的交易策略 模型逻辑 假设长周期是能够体现趋势的，并且再观测了短周期的数据之后，能够更好的对长周期的趋势作出判断。\n目标： 预测未来是否有趋势 参数：$\\theta$ ：上涨的概率，是一个0到1的float 模型：根据长周期数据，决定$\\theta$ 的先验分布，再根据短周期数据，更新我们对$\\theta$ 的信念得到后验分布。 先验分布（prior）的选择：因为$\\theta$ 是0到1的连续分布，于是我们选择Beta分布。 斯然函数（likelihood）的选择：因为我们想预测涨跌，可以把数据简化成抛硬币，即是二项分布。 beta - binomial 共轭，如果以beta分布为先验分布，二项分布为斯然函数，则后验分布也为beta分布，这样子能够简化计算。 套用贝叶斯理论 $f(\\theta)$ 为先验分布 prior $f(\\theta|X)$ 为后验分布 posterior $f(X|\\theta)$ 为斯然函数 likelihood $$f(\\theta|X) = \\frac{f(X|\\theta) \\cdot f(\\theta)}{\\int f(X|\\theta) \\cdot f(\\theta) \\, d\\theta}$$根据我们模型的假设， $\\theta$ （上涨的概率，open小于close的概率）符合beta分布。beta分布的形状参数$\\alpha$为长周期序列中，open小于close价格的k线的个数，$\\beta$为open大于close价格的k线的个数。 Beta分布的概率密度函数： $$\\text{Beta}(\\theta | \\alpha, \\beta) = \\frac{\\theta^{\\alpha - 1} (1 - \\theta)^{\\beta - 1}}{B(\\alpha, \\beta)}$$ 斯然函数符合二项分布，$n$为短周期序列的长度，$k$为open小于close价格的k线的个数： $$\\text{Binomial}(k | n, \\theta) = \\binom{n}{k} \\theta^k (1 - \\theta)^{n-k}$$ 根据贝叶斯公式计算后得到后验分布的参数： $$ \\alpha_{\\text{post}} = \\alpha + k, \\beta_{\\text{post}} = \\beta + n - k$$ 所以后验分布为： $$\\text{Beta}(\\theta | \\alpha_{\\text{post}}, \\beta_{\\text{post}}) = \\frac{\\theta^{\\alpha_{\\text{post}} - 1} (1 - \\theta)^{\\beta_{\\text{post}} - 1}}{B(\\alpha_{\\text{post}}, \\beta_{\\text{post}})}$$ 这样我们就得到了经过短周期数据更新的$\\theta$的后验分布，然后我们用后验分布的均值来作为$\\theta$的估计，也就得到了后验上涨概率。\n例子 长周期序列长度：30，上涨次数20。 短周期序列长度：10，上涨次数2。 上图为先验和后验概率分布图，可以看出，又于短周期序列中10个k线只有两个k线是上涨的，$\\theta$（上涨）的后验分布比先验分布更加靠近左边了。 策略参数 dual_side : 是否双向开仓 pyramiding：同方向最大开仓次数 long_trend_window_size：长周期序列长度 short_trend_window_size：短周期序列长度 long_trend_period：长周期粒度， short_trend_period：短周期粒度 buy_threshold：做多阈值 sell_threshold：做空阈值 fix_size：每次开仓的量 默认参数：\ndual_side : 1 pyramiding：10 long_trend_window_size：300 # 长度为300的小时k序列 short_trend_window_size：30 # 长度为30的5分钟k序列 long_trend_period：60 # 代表60分钟k即小时k short_trend_period：5 # 代表5分钟k buy_threshold：做多阈值 0.54 sell_threshold：做空阈值 0.45 fix_size：每次开仓的量 1 标的：BTCUSD 开始日期：2023-1-1 结束日期：2023-12-8 手续费率：千分之2 资金：100000\n策略实战 总交易日：340 盈利交易日：171 亏损交易日：158 起始资金：100，000 结束资金：352，001 收益率：252% 年化收益率：270% 百分比最大回撤: 28.7% 总盈亏：252,001.83 总手续费：372.33 总成交额：186,165.84 总成交笔数：10 夏普比率：1.70 收益回撤比：8.78\n策略曲线 回测结果二： 可以看出回测结果一交易次数过少，属于过拟合，以下给出另一个回测结果：\n参数： 结论 可以看出回测二的成交次数提升了，为了防止交易次数过少可以选择减小周期。\n策略代码 from vnpy_ctastrategy import ( CtaTemplate, StopOrder, TickData, BarData, TradeData, OrderData, BarGenerator, ArrayManager, ) import numpy as np class BayesBetaBinomial(CtaTemplate): author = \"vnpy\" prior = 0 pyramiding = 1 long_trend_window_size = 5 short_trend_window_size = 5 long_trend_period = 60 short_trend_period = 5 fix_size = 1 buy_threshold = 0.55 sell_threshold = 0.45 dual_side = 1 parameters = [\"dual_side\", \"pyramiding\", \"long_trend_window_size\",\"short_trend_window_size\",\"long_trend_period\", \"short_trend_period\" ,\"fix_size\", \"buy_threshold\", \"sell_threshold\"] def __init__(self, cta_engine, strategy_name, vt_symbol, setting): super().__init__(cta_engine, strategy_name, vt_symbol, setting) self.bg_long = BarGenerator(self.on_bar, self.long_trend_period, self.on_long_bar) self.bg_short = BarGenerator(self.on_bar, self.short_trend_period, self.on_short_bar) self.am_long = ArrayManager(self.long_trend_window_size) self.am_short = ArrayManager(self.short_trend_window_size) self.priors_inited = False def on_init(self): self.write_log(\"策略初始化\") self.load_bar(10) def on_start(self): self.write_log(\"策略启动\") self.put_event() def on_stop(self): self.write_log(\"策略停止\") self.put_event() def on_bar(self, bar: BarData): self.bg_long.update_bar(bar) self.bg_short.update_bar(bar) def on_long_bar(self, long_bar: BarData): self.am_long.update_bar(long_bar) if not self.am_long.inited: return ups = sum(1 for index in range(self.am_long.size) if self.am_long.close_array[index] \u003e self.am_long.open_array[index]) self.alpha = ups + 1 self.beta_param = self.am_long.size - ups + 1 self.priors_inited = True def on_short_bar(self, short_bar: BarData): self.am_short.update_bar(short_bar) if not self.am_short.inited: return if not self.priors_inited: return ups = sum(1 for index in range(self.am_short.size) if self.am_short.close_array[index] \u003e self.am_short.open_array[index]) pred_post = (self.alpha + ups) / (self.alpha + self.beta_param + self.am_short.size) random_number = np.random.rand() if self.dual_side: if random_number \u003c 1: # \u003c 1时即是忽略此条件 # both long and short if pred_post \u003e self.buy_threshold: if self.pos \u003e= 0: if abs(self.pos) \u003c self.pyramiding: self.buy(short_bar.close_price, self.fix_size) else: self.cover(short_bar.close_price, abs(self.pos)) self.buy(short_bar.close_price, self.fix_size) if pred_post \u003c self.sell_threshold: if self.pos \u003c= 0: if abs(self.pos) \u003c self.pyramiding: self.short(short_bar.close_price, self.fix_size) else: self.sell(short_bar.close_price, abs(self.pos)) self.short(short_bar.close_price, self.fix_size) else: if pred_post \u003e self.buy_threshold: if self.pos \u003e= 0 and self.pos \u003c self.pyramiding: self.buy(short_bar.close_price, self.fix_size) if pred_post \u003c self.sell_threshold: if self.pos != 0: self.sell(short_bar.close_price, self.pos) ",
-  "wordCount" : "420",
+  "articleBody": "Model Logic Assuming that the long cycle can reflect the trend, and after observing the short-term data, we can better judge the long-term trend.\nGoal: Predict whether there will be a trend in the future Parameter：$\\theta$ ：The probability of rising is a float between 0 and 1. Model：Based on long-term data，Determine the prior distribution of $\\theta$, and then update our belief in $\\theta$ based on short-term data to obtain the posterior distribution. prior：Because $\\theta$ is a continuous distribution from 0 to 1, we choose Beta distribution. likelihood：Because we want to predict the rise and fall, we can simplify the data to tossing a coin, which is a binomial distribution. beta - binomial conjugate, if beta distribution is used as the prior distribution and binomial distribution is used as the Siran function, then the posterior distribution is also beta distribution, which can simplify the calculation. Applying Bayesian theory $f(\\theta)$ is the prior distribution prior $f(\\theta|X)$ is the posterior distribution posterior $f(X|\\theta)$ is the likelihood function $$f(\\theta|X) = \\frac{f(X|\\theta) \\cdot f(\\theta)}{\\int f(X|\\theta) \\cdot f(\\theta) \\, d\\theta}$$According to the assumptions of our model, $\\theta$ (the probability of rising, the probability that the open is less than the close) conforms to the beta distribution. The shape parameter $\\alpha$ of the beta distribution is the number of K-lines with an open price less than the close price in the long-period sequence, and $\\beta$ is the number of K-lines with an open price greater than the close price. Probability density function of Beta distribution: $$\\text{Beta}(\\theta | \\alpha, \\beta) = \\frac{\\theta^{\\alpha - 1} (1 - \\theta)^{\\beta - 1}}{B(\\alpha, \\beta)}$$ The binomial function conforms to the binomial distribution, $n$ is the length of the short-period sequence, and $k$ is the number of K-lines whose open price is less than the close price: $$\\text{Binomial}(k | n, \\theta) = \\binom{n}{k} \\theta^k (1 - \\theta)^{n-k}$$ The parameters of the posterior distribution are obtained after calculation according to the Bayesian formula: $$ \\alpha_{\\text{post}} = \\alpha + k, \\beta_{\\text{post}} = \\beta + n - k$$ So the posterior distribution is: $$\\text{Beta}(\\theta | \\alpha_{\\text{post}}, \\beta_{\\text{post}}) = \\frac{\\theta^{\\alpha_{\\text{post}} - 1} (1 - \\theta)^{\\beta_{\\text{post}} - 1}}{B(\\alpha_{\\text{post}}, \\beta_{\\text{post}})}$$ In this way, we get the posterior distribution of $\\theta$ updated with short-term data, and then we use the mean of the posterior distribution as an estimate of $\\theta$, and we get the posterior probability of increase.\nExample Long cycle sequence length: 30, rise times 20. Short cycle sequence length: 10, rise times 2. The above figure is a priori and posterior probability distribution diagram. It can be seen that in the short-period sequence, only two of the 10 K-lines are rising, and the posterior distribution of $\\theta$ (up) is closer to the left than the prior distribution. Strategy parameters dual_side: whether to open a position in both directions pyramiding: maximum number of openings in the same direction long_trend_window_size: length of long-period sequence short_trend_window_size: length of short-period sequence long_trend_period: long-period granularity, short_trend_period: short-period granularity buy_threshold: long threshold sell_threshold: short threshold fix_size: the amount of each opening Default parameters:\ndual_side : 1 pyramiding: 10 long_trend_window_size: 300 # hourly k sequence with a length of 300 short_trend_window_size: 30 # 5-minute k sequence with a length of 30 long_trend_period: 60 # represents 60-minute k, i.e. hourly k short_trend_period: 5 # represents 5-minute k buy_threshold: long threshold 0.54 sell_threshold: short threshold 0.45 fix_size: the amount of each position opened 1 Asset: BTCUSD Start date: 2023-1-1 End date: 2023-12-8 Fee rate: 0.2% Capital: 100000\nStrategy practice Total trading days: 340\nProfitable trading days: 171\nLoss trading days: 158\nStarting capital: 100,000\nEnding capital: 352,001\nRate of return: 252%\nAnnualized rate of return: 270%\nMaximum percentage retracement: 28.7%\nTotal profit and loss: 252,001.83\nTotal fee: 372.33\nTotal transaction volume: 186,165.84\nTotal number of transactions: 10\nSharp ratio: 1.70\nReturn-retracement ratio: 8.78\nStrategy performance Backtest result 2： It can be seen that the number of transactions in the backtest result is too small, which is overfitting. Here is another backtest result: Parameters： Conclusion It can be seen that the number of transactions in backtest 2 has increased. In order to prevent too few transactions, you can choose to reduce the cycle.## 策略代码\nfrom vnpy_ctastrategy import ( CtaTemplate, StopOrder, TickData, BarData, TradeData, OrderData, BarGenerator, ArrayManager, ) import numpy as np class BayesBetaBinomial(CtaTemplate): author = \"vnpy\" prior = 0 pyramiding = 1 long_trend_window_size = 5 short_trend_window_size = 5 long_trend_period = 60 short_trend_period = 5 fix_size = 1 buy_threshold = 0.55 sell_threshold = 0.45 dual_side = 1 parameters = [\"dual_side\", \"pyramiding\", \"long_trend_window_size\",\"short_trend_window_size\",\"long_trend_period\", \"short_trend_period\" ,\"fix_size\", \"buy_threshold\", \"sell_threshold\"] def __init__(self, cta_engine, strategy_name, vt_symbol, setting): super().__init__(cta_engine, strategy_name, vt_symbol, setting) self.bg_long = BarGenerator(self.on_bar, self.long_trend_period, self.on_long_bar) self.bg_short = BarGenerator(self.on_bar, self.short_trend_period, self.on_short_bar) self.am_long = ArrayManager(self.long_trend_window_size) self.am_short = ArrayManager(self.short_trend_window_size) self.priors_inited = False def on_init(self): self.write_log(\"策略初始化\") self.load_bar(10) def on_start(self): self.write_log(\"策略启动\") self.put_event() def on_stop(self): self.write_log(\"策略停止\") self.put_event() def on_bar(self, bar: BarData): self.bg_long.update_bar(bar) self.bg_short.update_bar(bar) def on_long_bar(self, long_bar: BarData): self.am_long.update_bar(long_bar) if not self.am_long.inited: return ups = sum(1 for index in range(self.am_long.size) if self.am_long.close_array[index] \u003e self.am_long.open_array[index]) self.alpha = ups + 1 self.beta_param = self.am_long.size - ups + 1 self.priors_inited = True def on_short_bar(self, short_bar: BarData): self.am_short.update_bar(short_bar) if not self.am_short.inited: return if not self.priors_inited: return ups = sum(1 for index in range(self.am_short.size) if self.am_short.close_array[index] \u003e self.am_short.open_array[index]) pred_post = (self.alpha + ups) / (self.alpha + self.beta_param + self.am_short.size) random_number = np.random.rand() if self.dual_side: if random_number \u003c 1: # \u003c 1时即是忽略此条件 # both long and short if pred_post \u003e self.buy_threshold: if self.pos \u003e= 0: if abs(self.pos) \u003c self.pyramiding: self.buy(short_bar.close_price, self.fix_size) else: self.cover(short_bar.close_price, abs(self.pos)) self.buy(short_bar.close_price, self.fix_size) if pred_post \u003c self.sell_threshold: if self.pos \u003c= 0: if abs(self.pos) \u003c self.pyramiding: self.short(short_bar.close_price, self.fix_size) else: self.sell(short_bar.close_price, abs(self.pos)) self.short(short_bar.close_price, self.fix_size) else: if pred_post \u003e self.buy_threshold: if self.pos \u003e= 0 and self.pos \u003c self.pyramiding: self.buy(short_bar.close_price, self.fix_size) if pred_post \u003c self.sell_threshold: if self.pos != 0: self.sell(short_bar.close_price, self.pos) ",
+  "wordCount" : "944",
   "inLanguage": "en",
   "datePublished": "2024-11-11T19:12:16+01:00",
   "dateModified": "2024-11-11T19:12:16+01:00",
@@ -244,109 +218,107 @@ $$ \alpha_{\text{post}} = \alpha &#43; k, \beta_{\text{post}} = \beta &#43; n - 
   <header class="post-header">
     
     <h1 class="post-title entry-hint-parent">
-      BetaBinomial
+      Trading strategies based on Bayesian theory (Part 1)
     </h1>
-    <div class="post-meta"><span title='2024-11-11 19:12:16 +0100 CET'>November 11, 2024</span>&nbsp;·&nbsp;2 min
+    <div class="post-meta"><span title='2024-11-11 19:12:16 +0100 CET'>November 11, 2024</span>&nbsp;·&nbsp;5 min
 
 </div>
   </header> 
-  <div class="post-content"><h1 id="基于贝叶斯理论的交易策略">基于贝叶斯理论的交易策略<a hidden class="anchor" aria-hidden="true" href="#基于贝叶斯理论的交易策略">#</a></h1>
-<h2 id="模型逻辑">模型逻辑<a hidden class="anchor" aria-hidden="true" href="#模型逻辑">#</a></h2>
-<p>假设长周期是能够体现趋势的，并且再观测了短周期的数据之后，能够更好的对长周期的趋势作出判断。</p>
+  <div class="post-content"><h2 id="model-logic">Model Logic<a hidden class="anchor" aria-hidden="true" href="#model-logic">#</a></h2>
+<p>Assuming that the long cycle can reflect the trend, and after observing the short-term data, we can better judge the long-term trend.</p>
 <ul>
-<li>目标： 预测未来是否有趋势</li>
-<li>参数：$\theta$ ：上涨的概率，是一个0到1的float</li>
-<li>模型：根据长周期数据，决定$\theta$ 的先验分布，再根据短周期数据，更新我们对$\theta$ 的信念得到后验分布。</li>
-<li>先验分布（prior）的选择：因为$\theta$ 是0到1的连续分布，于是我们选择Beta分布。</li>
-<li>斯然函数（likelihood）的选择：因为我们想预测涨跌，可以把数据简化成抛硬币，即是二项分布。</li>
-<li>beta - binomial 共轭，如果以beta分布为先验分布，二项分布为斯然函数，则后验分布也为beta分布，这样子能够简化计算。</li>
+<li>Goal: Predict whether there will be a trend in the future</li>
+<li>Parameter：$\theta$ ：The probability of rising is a float between 0 and 1.</li>
+<li>Model：Based on long-term data，Determine the prior distribution of $\theta$, and then update our belief in $\theta$ based on short-term data to obtain the posterior distribution.</li>
+<li>prior：Because $\theta$ is a continuous distribution from 0 to 1, we choose Beta distribution.</li>
+<li>likelihood：Because we want to predict the rise and fall, we can simplify the data to tossing a coin, which is a binomial distribution.</li>
+<li>beta - binomial conjugate, if beta distribution is used as the prior distribution and binomial distribution is used as the Siran function, then the posterior distribution is also beta distribution, which can simplify the calculation.</li>
 </ul>
-<h3 id="套用贝叶斯理论">套用贝叶斯理论<a hidden class="anchor" aria-hidden="true" href="#套用贝叶斯理论">#</a></h3>
-<p>$f(\theta)$ 为先验分布 prior
-$f(\theta|X)$ 为后验分布 posterior
-$f(X|\theta)$ 为斯然函数 likelihood
+<h3 id="applying-bayesian-theory">Applying Bayesian theory<a hidden class="anchor" aria-hidden="true" href="#applying-bayesian-theory">#</a></h3>
+<p>$f(\theta)$ is the prior distribution prior
+$f(\theta|X)$ is the posterior distribution posterior
+$f(X|\theta)$ is the likelihood function
 </p>
-$$f(\theta|X) = \frac{f(X|\theta) \cdot f(\theta)}{\int f(X|\theta) \cdot f(\theta) \, d\theta}$$<p>根据我们模型的假设， $\theta$ （上涨的概率，open小于close的概率）符合beta分布。beta分布的形状参数$\alpha$为长周期序列中，open小于close价格的k线的个数，$\beta$为open大于close价格的k线的个数。
-Beta分布的概率密度函数：
+$$f(\theta|X) = \frac{f(X|\theta) \cdot f(\theta)}{\int f(X|\theta) \cdot f(\theta) \, d\theta}$$<p>According to the assumptions of our model, $\theta$ (the probability of rising, the probability that the open is less than the close) conforms to the beta distribution. The shape parameter $\alpha$ of the beta distribution is the number of K-lines with an open price less than the close price in the long-period sequence, and $\beta$ is the number of K-lines with an open price greater than the close price.
+Probability density function of Beta distribution:
 </p>
 $$\text{Beta}(\theta | \alpha, \beta) = \frac{\theta^{\alpha - 1} (1 - \theta)^{\beta - 1}}{B(\alpha, \beta)}$$<p>
-斯然函数符合二项分布，$n$为短周期序列的长度，$k$为open小于close价格的k线的个数：
+The binomial function conforms to the binomial distribution, $n$ is the length of the short-period sequence, and $k$ is the number of K-lines whose open price is less than the close price:
 </p>
 $$\text{Binomial}(k | n, \theta) = \binom{n}{k} \theta^k (1 - \theta)^{n-k}$$<p>
-根据贝叶斯公式计算后得到后验分布的参数：
+The parameters of the posterior distribution are obtained after calculation according to the Bayesian formula:
 </p>
 $$ \alpha_{\text{post}} = \alpha + k, \beta_{\text{post}} = \beta + n - k$$<p>
-所以后验分布为：
+So the posterior distribution is:
 </p>
 $$\text{Beta}(\theta | \alpha_{\text{post}}, \beta_{\text{post}}) = \frac{\theta^{\alpha_{\text{post}} - 1} (1 - \theta)^{\beta_{\text{post}} - 1}}{B(\alpha_{\text{post}}, \beta_{\text{post}})}$$<p>
-这样我们就得到了经过短周期数据更新的$\theta$的后验分布，然后我们用后验分布的均值来作为$\theta$的估计，也就得到了后验上涨概率。</p>
+In this way, we get the posterior distribution of $\theta$ updated with short-term data, and then we use the mean of the posterior distribution as an estimate of $\theta$, and we get the posterior probability of increase.</p>
 <ul>
-<li>例子
-长周期序列长度：30，上涨次数20。
-短周期序列长度：10，上涨次数2。
+<li>Example
+Long cycle sequence length: 30, rise times 20.
+Short cycle sequence length: 10, rise times 2.
 <img alt="Alt text" loading="lazy" src="/images/beta_1.png">
-上图为先验和后验概率分布图，可以看出，又于短周期序列中10个k线只有两个k线是上涨的，$\theta$（上涨）的后验分布比先验分布更加靠近左边了。</li>
+The above figure is a priori and posterior probability distribution diagram. It can be seen that in the short-period sequence, only two of the 10 K-lines are rising, and the posterior distribution of $\theta$ (up) is closer to the left than the prior distribution.</li>
 </ul>
-<h2 id="策略参数">策略参数<a hidden class="anchor" aria-hidden="true" href="#策略参数">#</a></h2>
+<h2 id="strategy-parameters">Strategy parameters<a hidden class="anchor" aria-hidden="true" href="#strategy-parameters">#</a></h2>
 <ul>
-<li>dual_side : 是否双向开仓</li>
-<li>pyramiding：同方向最大开仓次数</li>
-<li>long_trend_window_size：长周期序列长度</li>
-<li>short_trend_window_size：短周期序列长度</li>
-<li>long_trend_period：长周期粒度，</li>
-<li>short_trend_period：短周期粒度</li>
-<li>buy_threshold：做多阈值</li>
-<li>sell_threshold：做空阈值</li>
-<li>fix_size：每次开仓的量</li>
+<li>dual_side: whether to open a position in both directions</li>
+<li>pyramiding: maximum number of openings in the same direction</li>
+<li>long_trend_window_size: length of long-period sequence</li>
+<li>short_trend_window_size: length of short-period sequence</li>
+<li>long_trend_period: long-period granularity,</li>
+<li>short_trend_period: short-period granularity</li>
+<li>buy_threshold: long threshold</li>
+<li>sell_threshold: short threshold</li>
+<li>fix_size: the amount of each opening</li>
 </ul>
-<p>默认参数：</p>
+<p>Default parameters:</p>
 <ul>
 <li>dual_side : 1</li>
-<li>pyramiding：10</li>
-<li>long_trend_window_size：300 # 长度为300的小时k序列</li>
-<li>short_trend_window_size：30 # 长度为30的5分钟k序列</li>
-<li>long_trend_period：60  # 代表60分钟k即小时k</li>
-<li>short_trend_period：5  # 代表5分钟k</li>
-<li>buy_threshold：做多阈值 0.54</li>
-<li>sell_threshold：做空阈值 0.45</li>
-<li>fix_size：每次开仓的量 1</li>
+<li>pyramiding: 10</li>
+<li>long_trend_window_size: 300 # hourly k sequence with a length of 300</li>
+<li>short_trend_window_size: 30 # 5-minute k sequence with a length of 30</li>
+<li>long_trend_period: 60 # represents 60-minute k, i.e. hourly k</li>
+<li>short_trend_period: 5 # represents 5-minute k</li>
+<li>buy_threshold: long threshold 0.54</li>
+<li>sell_threshold: short threshold 0.45</li>
+<li>fix_size: the amount of each position opened 1</li>
 </ul>
-<p>标的：BTCUSD
-开始日期：2023-1-1
-结束日期：2023-12-8
-手续费率：千分之2
-资金：100000</p>
-<h2 id="策略实战">策略实战<a hidden class="anchor" aria-hidden="true" href="#策略实战">#</a></h2>
-<p>总交易日：340
-盈利交易日：171
-亏损交易日：158
-起始资金：100，000
-结束资金：352，001
-收益率：252%
-年化收益率：270%
-百分比最大回撤: 28.7%
-总盈亏：252,001.83
-总手续费：372.33
-总成交额：186,165.84
-总成交笔数：10
-夏普比率：1.70
-收益回撤比：8.78</p>
+<p>Asset: BTCUSD
+Start date: 2023-1-1
+End date: 2023-12-8
+Fee rate: 0.2%
+Capital: 100000</p>
+<h2 id="strategy-practice">Strategy practice<a hidden class="anchor" aria-hidden="true" href="#strategy-practice">#</a></h2>
+<p>Total trading days: 340</p>
+<p>Profitable trading days: 171</p>
+<p>Loss trading days: 158</p>
+<p>Starting capital: 100,000</p>
+<p>Ending capital: 352,001</p>
+<p>Rate of return: 252%</p>
+<p>Annualized rate of return: 270%</p>
+<p>Maximum percentage retracement: 28.7%</p>
+<p>Total profit and loss: 252,001.83</p>
+<p>Total fee: 372.33</p>
+<p>Total transaction volume: 186,165.84</p>
+<p>Total number of transactions: 10</p>
+<p>Sharp ratio: 1.70</p>
+<p>Return-retracement ratio: 8.78</p>
 <ul>
-<li>策略曲线
+<li>Strategy performance
 <img alt="Alt text" loading="lazy" src="/images/beta_2.png">
 <img alt="Alt text" loading="lazy" src="/images/beta_3.png"></li>
 </ul>
-<h2 id="回测结果二">回测结果二：<a hidden class="anchor" aria-hidden="true" href="#回测结果二">#</a></h2>
-<p>可以看出回测结果一交易次数过少，属于过拟合，以下给出另一个回测结果：</p>
-<p>参数：
+<h2 id="backtest-result-2">Backtest result 2：<a hidden class="anchor" aria-hidden="true" href="#backtest-result-2">#</a></h2>
+<p>It can be seen that the number of transactions in the backtest result is too small, which is overfitting. Here is another backtest result:
+Parameters：
 <img alt="Alt text" loading="lazy" src="/images/beta_4.png">
 <img alt="Alt text" loading="lazy" src="/images/beta_5.png">
 <img alt="Alt text" loading="lazy" src="/images/beta_6.png">
 <img alt="Alt text" loading="lazy" src="/images/beta_7.png">
 <img alt="Alt text" loading="lazy" src="/images/beta_8.png"></p>
-<h2 id="结论">结论<a hidden class="anchor" aria-hidden="true" href="#结论">#</a></h2>
-<p>可以看出回测二的成交次数提升了，为了防止交易次数过少可以选择减小周期。</p>
-<h2 id="策略代码">策略代码<a hidden class="anchor" aria-hidden="true" href="#策略代码">#</a></h2>
+<h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
+<p>It can be seen that the number of transactions in backtest 2 has increased. In order to prevent too few transactions, you can choose to reduce the cycle.## 策略代码</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> vnpy_ctastrategy <span style="color:#f92672">import</span> (
 </span></span><span style="display:flex;"><span>    CtaTemplate,
 </span></span><span style="display:flex;"><span>    StopOrder,
@@ -460,8 +432,8 @@ $$\text{Beta}(\theta | \alpha_{\text{post}}, \beta_{\text{post}}) = \frac{\theta
 
 <ul class="share-buttons">
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share BetaBinomial on x"
-            href="https://x.com/intent/tweet/?text=BetaBinomial&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f&amp;hashtags=">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 1) on x"
+            href="https://x.com/intent/tweet/?text=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%201%29&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f&amp;hashtags=">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
@@ -469,8 +441,8 @@ $$\text{Beta}(\theta | \alpha_{\text{post}}, \beta_{\text{post}}) = \frac{\theta
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share BetaBinomial on linkedin"
-            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f&amp;title=BetaBinomial&amp;summary=BetaBinomial&amp;source=https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 1) on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f&amp;title=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%201%29&amp;summary=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%201%29&amp;source=https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
@@ -478,8 +450,8 @@ $$\text{Beta}(\theta | \alpha_{\text{post}}, \beta_{\text{post}}) = \frac{\theta
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share BetaBinomial on reddit"
-            href="https://reddit.com/submit?url=https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f&title=BetaBinomial">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 1) on reddit"
+            href="https://reddit.com/submit?url=https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f&title=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%201%29">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
@@ -487,7 +459,7 @@ $$\text{Beta}(\theta | \alpha_{\text{post}}, \beta_{\text{post}}) = \frac{\theta
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share BetaBinomial on facebook"
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 1) on facebook"
             href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
@@ -496,8 +468,8 @@ $$\text{Beta}(\theta | \alpha_{\text{post}}, \beta_{\text{post}}) = \frac{\theta
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share BetaBinomial on whatsapp"
-            href="https://api.whatsapp.com/send?text=BetaBinomial%20-%20https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 1) on whatsapp"
+            href="https://api.whatsapp.com/send?text=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%201%29%20-%20https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
@@ -505,8 +477,8 @@ $$\text{Beta}(\theta | \alpha_{\text{post}}, \beta_{\text{post}}) = \frac{\theta
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share BetaBinomial on telegram"
-            href="https://telegram.me/share/url?text=BetaBinomial&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 1) on telegram"
+            href="https://telegram.me/share/url?text=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%201%29&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f">
             <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
@@ -514,8 +486,8 @@ $$\text{Beta}(\theta | \alpha_{\text{post}}, \beta_{\text{post}}) = \frac{\theta
         </a>
     </li>
     <li>
-        <a target="_blank" rel="noopener noreferrer" aria-label="share BetaBinomial on ycombinator"
-            href="https://news.ycombinator.com/submitlink?t=BetaBinomial&u=https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f">
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 1) on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%201%29&u=https%3a%2f%2foldhuntor.github.io%2fposts%2fbetabinomial%2f">
             <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
                 xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
                 <path
