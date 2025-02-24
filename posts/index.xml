@@ -1300,9 +1300,53 @@ $f(X|\theta)$ is the likelihood function
 &lt;/p&gt;</description>
     </item>
     <item>
+      <title>Grid trading application</title>
+      <link>https://oldhuntor.github.io/posts/gridtrading/</link>
+      <pubDate>Mon, 21 Jun 2021 19:12:16 +0100</pubDate>
+      <guid>https://oldhuntor.github.io/posts/gridtrading/</guid>
+      <description>&lt;h1 id=&#34;parameter-definition&#34;&gt;Parameter Definition&lt;/h1&gt;
+&lt;h2 id=&#34;strategy-logic-parameters&#34;&gt;Strategy logic parameters&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;upperPrice&lt;/li&gt;
+&lt;li&gt;lowerPrice&lt;/li&gt;
+&lt;li&gt;currentPrice&lt;/li&gt;
+&lt;li&gt;gridStep&lt;/li&gt;
+&lt;li&gt;gridAmount&lt;/li&gt;
+&lt;li&gt;initPrice&lt;/li&gt;
+&lt;li&gt;initAmount&lt;/li&gt;
+&lt;li&gt;totalGrids&lt;/li&gt;
+&lt;li&gt;tarPos&lt;/li&gt;
+&lt;li&gt;baseCurrency&lt;/li&gt;
+&lt;li&gt;quoteCurrency&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;strategy-performance-calculation&#34;&gt;Strategy performance calculation&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;startPrice&lt;/li&gt;
+&lt;li&gt;initBase&lt;/li&gt;
+&lt;li&gt;initQuote&lt;/li&gt;
+&lt;li&gt;finalBase&lt;/li&gt;
+&lt;li&gt;finalQuote&lt;/li&gt;
+&lt;li&gt;initDate&lt;/li&gt;
+&lt;li&gt;unilateral&lt;/li&gt;
+&lt;li&gt;posAvg&lt;/li&gt;
+&lt;li&gt;totalDays&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;whats-grid-trading&#34;&gt;What&amp;rsquo;s grid trading&lt;/h1&gt;
+&lt;p&gt;Strategy usage background: after a big bullish market, the market starts to go bearish,
+that&amp;rsquo;s the right moment for using grid trading strategy.
+&lt;img alt=&#34;img_2.png&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/grid/img_2.png&#34;&gt;
+Just like the graph above, the green lines stand for buy limit orders, red lines stand for sell limit orders.
+The grid trading is just placing orders based on the current price, places sell orders at prices that
+are higher than current price, places buy orders at prices that are lower than current price.
+&lt;img alt=&#34;img_3.png&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/grid/img_3.png&#34;&gt;
+Assume that the price drop to 5, the limit buy order at 5 would be executed, we replenish another sell order
+at 5.1, the orders list would like the above graphs. The reverse situation would be the same,
+so during a market where the volatility is high, this strategy can generate profit.&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>About me</title>
       <link>https://oldhuntor.github.io/posts/about-me/</link>
-      <pubDate>Thu, 08 Feb 2024 19:12:16 +0100</pubDate>
+      <pubDate>Sat, 08 Feb 2020 19:12:16 +0100</pubDate>
       <guid>https://oldhuntor.github.io/posts/about-me/</guid>
       <description>&lt;h1 id=&#34;education-background&#34;&gt;Education Background&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;TU dortmund&lt;/strong&gt; 10/2022 - till now&lt;/p&gt;

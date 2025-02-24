@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Grid trading application | Xuanhao&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="Parameter Definition
+Strategy logic parameters
+
+upperPrice
+lowerPrice
+currentPrice
+gridStep
+gridAmount
+initPrice
+initAmount
+totalGrids
+tarPos
+baseCurrency
+quoteCurrency
+
+Strategy performance calculation
+
+startPrice
+initBase
+initQuote
+finalBase
+finalQuote
+initDate
+unilateral
+posAvg
+totalDays
+
+What&rsquo;s grid trading
+Strategy usage background: after a big bullish market, the market starts to go bearish,
+that&rsquo;s the right moment for using grid trading strategy.
+
+Just like the graph above, the green lines stand for buy limit orders, red lines stand for sell limit orders.
+The grid trading is just placing orders based on the current price, places sell orders at prices that
+are higher than current price, places buy orders at prices that are lower than current price.
+
+Assume that the price drop to 5, the limit buy order at 5 would be executed, we replenish another sell order
+at 5.1, the orders list would like the above graphs. The reverse situation would be the same,
+so during a market where the volatility is high, this strategy can generate profit.">
+<meta name="author" content="">
+<link rel="canonical" href="https://oldhuntor.github.io/posts/gridtrading/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.d6fcd20a4fb86efa4dfac8ec95da60244cc8871042183da1ef28e3a762ad79c8.css" integrity="sha256-1vzSCk&#43;4bvpN&#43;sjsldpgJEzIhxBCGD2h7yjjp2Ktecg=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://oldhuntor.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://oldhuntor.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://oldhuntor.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://oldhuntor.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://oldhuntor.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="https://oldhuntor.github.io/posts/gridtrading/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:url" content="https://oldhuntor.github.io/posts/gridtrading/">
+  <meta property="og:site_name" content="Xuanhao&#39;s Blog">
+  <meta property="og:title" content="Grid trading application">
+  <meta property="og:description" content="Parameter Definition Strategy logic parameters upperPrice lowerPrice currentPrice gridStep gridAmount initPrice initAmount totalGrids tarPos baseCurrency quoteCurrency Strategy performance calculation startPrice initBase initQuote finalBase finalQuote initDate unilateral posAvg totalDays What’s grid trading Strategy usage background: after a big bullish market, the market starts to go bearish, that’s the right moment for using grid trading strategy. Just like the graph above, the green lines stand for buy limit orders, red lines stand for sell limit orders. The grid trading is just placing orders based on the current price, places sell orders at prices that are higher than current price, places buy orders at prices that are lower than current price. Assume that the price drop to 5, the limit buy order at 5 would be executed, we replenish another sell order at 5.1, the orders list would like the above graphs. The reverse situation would be the same, so during a market where the volatility is high, this strategy can generate profit.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-06-21T19:12:16+01:00">
+    <meta property="article:modified_time" content="2021-06-21T19:12:16+01:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Grid trading application">
+<meta name="twitter:description" content="Parameter Definition
+Strategy logic parameters
+
+upperPrice
+lowerPrice
+currentPrice
+gridStep
+gridAmount
+initPrice
+initAmount
+totalGrids
+tarPos
+baseCurrency
+quoteCurrency
+
+Strategy performance calculation
+
+startPrice
+initBase
+initQuote
+finalBase
+finalQuote
+initDate
+unilateral
+posAvg
+totalDays
+
+What&rsquo;s grid trading
+Strategy usage background: after a big bullish market, the market starts to go bearish,
+that&rsquo;s the right moment for using grid trading strategy.
+
+Just like the graph above, the green lines stand for buy limit orders, red lines stand for sell limit orders.
+The grid trading is just placing orders based on the current price, places sell orders at prices that
+are higher than current price, places buy orders at prices that are lower than current price.
+
+Assume that the price drop to 5, the limit buy order at 5 would be executed, we replenish another sell order
+at 5.1, the orders list would like the above graphs. The reverse situation would be the same,
+so during a market where the volatility is high, this strategy can generate profit.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://oldhuntor.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Grid trading application",
+      "item": "https://oldhuntor.github.io/posts/gridtrading/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Grid trading application",
+  "name": "Grid trading application",
+  "description": "Parameter Definition Strategy logic parameters upperPrice lowerPrice currentPrice gridStep gridAmount initPrice initAmount totalGrids tarPos baseCurrency quoteCurrency Strategy performance calculation startPrice initBase initQuote finalBase finalQuote initDate unilateral posAvg totalDays What\u0026rsquo;s grid trading Strategy usage background: after a big bullish market, the market starts to go bearish, that\u0026rsquo;s the right moment for using grid trading strategy. Just like the graph above, the green lines stand for buy limit orders, red lines stand for sell limit orders. The grid trading is just placing orders based on the current price, places sell orders at prices that are higher than current price, places buy orders at prices that are lower than current price. Assume that the price drop to 5, the limit buy order at 5 would be executed, we replenish another sell order at 5.1, the orders list would like the above graphs. The reverse situation would be the same, so during a market where the volatility is high, this strategy can generate profit.\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "Parameter Definition Strategy logic parameters upperPrice lowerPrice currentPrice gridStep gridAmount initPrice initAmount totalGrids tarPos baseCurrency quoteCurrency Strategy performance calculation startPrice initBase initQuote finalBase finalQuote initDate unilateral posAvg totalDays What’s grid trading Strategy usage background: after a big bullish market, the market starts to go bearish, that’s the right moment for using grid trading strategy. Just like the graph above, the green lines stand for buy limit orders, red lines stand for sell limit orders. The grid trading is just placing orders based on the current price, places sell orders at prices that are higher than current price, places buy orders at prices that are lower than current price. Assume that the price drop to 5, the limit buy order at 5 would be executed, we replenish another sell order at 5.1, the orders list would like the above graphs. The reverse situation would be the same, so during a market where the volatility is high, this strategy can generate profit.\nSpot grid trading parameters The basic parameters from spot grid trading are :\nUpper and lower limit. e.g. [1500 ~ 3000] Grid gap. can be proportional 1 %, or a fixed number such as 50 Total asset invested. The number of quote asset that’s invested, such as 1000 usdc Grid type. Place same number of quote asset at each grid or same number of base asset Spot grid strategy by default doesn’t have leverage. In the condition where we don’t lend any asset, the strategy needs to have a clear upper and lower limit. For example, the coin pair ETHUSDT sitting at current price at 2000, we would assume that the price would fluctuate in between 1500 and 3000. Notice that if the price reaches upper limit then all we have are the quote asset USDT, the reverse situation would be the base asset ETH.\nAfter determining the upper and lower bounds, we can calculate the total number of grids based on the grid interval. After calculating the total number of grids, we can calculate the amount of pending orders or the number of coins in each grid. There are two calculation methods, corresponding to arithmetic grids and geometric grids.\nArithmetic grids and Geometric grids Arithmetic grids totalGrids = (upperPrice - lowerPrice) / gridStep gridAmount = initAmount / totalGrids Geometric grids totalGrids = log(upperPrice/lowerPrice)/log(1 + gridStep) gridAmount = initAmount / totalGrids What is the price pivot and target position Note that since the upper and lower bounds as well as the investment amount are fixed, we can actually calculate the ratio of base to quote at any given price, and since base can be thought of as our position and quote as our money, we can calculate the ratio of our position at any given price.\nIt is worth noting that when the price is at the price pivot, as shown in the figure below, the value of the base and the quote are equal, i.e., they are in the state of “half-position”, with a value of (initAmount/2), or, in other words, the price at which the position is in the state of half-position is the price pivot, and the price is the price at which the position is in the state of half-position, and the price is the price pivot. When the price oscillates around the price pivot, it is the ideal state for the strategy, because there are im losses. The following pivot price is calculated：\nArithmetic grids initPrice = (upperPrice + lowerPrice)/2 Geometric grids initPrice = exp(0.5 * log(upperPrice*lowerPrice)) Here is how we calculate the target position:\nArithmetic grids tarPos = (initPrice - currentPrice)/gridStep * gridAmount + initAmount/2 Geometric grids tarPos = log(initPrice/currentPrice)/log(1 + gridStep)*gridAmount + initAmount/2 Impermanent loss and performance calculation First, let’s look at the components of performance:\nBased on the price Total performance = profit and loss caused by currency price fluctuations + profit and loss caused by transactions = current assets - initial assets / initial assets * 100% The profit and loss caused by currency price fluctuations is what we call impermanent loss.\nBased on the strategy Total performance = Impermanent loss profit and loss + Number of transactions (take the side with less total number of buy and sell orders) * Grid interval * Grid order amount Impermanent loss: from startPrice to currentPrice, assuming that the price does not fluctuate during the period, How much loss will the trades made by the strategy bring to the total net value. The price climbed from 5.0 to 5.4. If we do not run the strategy, the rate of return is (5.4 - 5) / 5 = 8%. Assuming that we run the strategy, we have been selling our positions when the price rises. After 5.4, according to the above figure, the impermanent loss equivalent trend has executed 3 sell orders. The total assets are lower than the total assets without running the strategy. The rate of return must be less than 8%. This is the so-called “less profit”, and the less profit is what we call impermanent loss.\nIf we want to measure the performance of the strategy, we need to get the performance without the impermanent loss, because we only want to know how much money we made through market fluctuations. First, the impermanent loss opening volume, that is, the opening volume caused by price changes is:\nArithmetic posAvg = exp(0.5log(startPricecurrentPrice)) Geometric posAvg = (startPrice + currentPrice)/2 In this case, how much the base and quote are increased or decreased:\nbase = (initBase + unilateral) * currentPrice quote = initQuote - unilateral * posAvg theroyEquity = base + quote. // Current net worth for impermanent loss simulation The equity at the end of the strategy:\nfinalEquity = finalBase*currentPrice + finalQuote The equity at the start: initEquity = initBase*startPrice + initQuote Performance without impermanent losses\n(finalEquity - theroyEquity)/initEquity/totalDays*365 Performance with impermanent losses\n(finalEquity - initEquity)/initEquity/totalDays*356 Situation where we need to use market orders When prices move too quickly, there is a chance that it will be too late to fill the order, as shown below: The price pins upwards and then immediately returns. The sell orders at 5.2 and 5.3 are filled, but the strategy does not fill the buy orders in time, and the price returns to 5.1. At this point, there is a gap between the position and the target position, and in order to close this gap, we need to buy back the missing position at 5.1. It is worth noting that the market fill is beneficial to the strategy because the market fill gives us a more advantageous average price.\nAs in the above chart, if the fill order is timely, it will buy back 5.3, 5.2 when the position reaches 5.1, the average price of the position is (5.1 + 5.2 + 5.3)/3 = 5.2, if the position is not filled in a timely manner, it will be filled at the market price of 5.1, the cost of 5.1, 5.1 \u003c 5.2, the strategy to get a lower cost of ownership of the position.\nGrid trading strategy that doesn’t have a price pivots The above mentioned grid strategy, the price pivot is fixed, this type of grid is more limited, because if you want to make a profit, the price must fluctuate around the established grid pivot, and the grid has a clear upper and lower bounds, breaking through the upper and lower bounds, the strategy will be in a “full position”, can not be traded.\nIn order to solve this problem, the grid strategy and extend the grid strategy without price pivot, also known as the dynamic pivot grid strategy, which is similar to the Martin strategy, in the beginning of the strategy, buy a position, in accordance with the direction of the position to hang a number of current price single, single volume depends on the mode of addition, in the opposite direction of the position is hung on the take-profit single, whenever the direction of the position of the limit order transaction, the average price of the position and the volume of the position change, the take-profit single change operation. Take-profit order to change the order operation. The pseudo-code is as follows: After each take profit order is filled, the price at which the position is bought is the new pivot, which is where the Dynamic Pivot Grid comes from. It is worth noting that this grid can choose to do two-way.\nsituation where the initial position is long: situation where the initial position is short: Strategy in practice Margin call To successfully place a limit buy or sell order, you need to have sufficient margin. In spot trading, taking ETHBTC as an example, a buy order requires BTC as margin, and a sell order requires ETH as margin. If the margin is insufficient, the exchange will report an insufficient balance error. In general, according to the formula, all grids can be filled from the upper bound to the lower bound (all margin is used up), but sometimes due to system errors such as calculation inaccuracy, the margin may be insufficient.\nTherefore, in order to avoid this situation, we can choose to place orders only around the current price, and there is no need to place orders from the upper limit to the lower limit. As shown in the following figure: This way you can perfectly avoid the situation of insufficient margin.\nPrice list maintaining Assuming there are 1000 grids or 1000 prices from the upper bound to the lower bound, we select 100 grids around the current price as the order range. These 100 prices are a subset of the 1000 prices and move with the current price. Generally, we place 50 buy orders and 50 sell orders. When one of the 100 prices touches the boundary, the order range no longer needs to be changed: At this time, the number of buy and sell orders is not equal, as shown in the figure, there are about 30 sell orders and 70 buy orders.\nOrder replenishment The order-filling mechanism is very simple. It only requires periodic checking (once every 0.5 seconds) of the price list of online pending orders and the price list maintained locally by our strategy, and making a difference between the two lists (the difference is also a price list). The result is the price list we need to fill the order: Market order for replenishment The market price margin mechanism needs to use the formula given above to calculate the target position tarPos, and then use tarPos to make a difference with the current position. If the difference is greater than 0, it means selling at the market price. Code This code is based on VNPY, which is available under the MIT License.\nPrice list maintaining def update_grid_price(self): if not self.last_trade_price: tick = self.get_tick(self.vt_symbol) if not tick: return current_price = tick.last_price else: current_price = self.last_trade_price msg = f\"开始更新区间\" self.write_log(msg) sideLength = self.side_grid_amount midIndex = self.find_current_level(current_price) right = len(self.grid_price[midIndex:]) - 1 left = len(self.grid_price[:midIndex]) if left \u003c= self.side_grid_amount: msg = f\"区间已覆盖下界:{self.lower_price}, 不需要更新区间\" self.write_log(msg) if self.grid_price_range: return if right \u003c= self.side_grid_amount: msg = f\"区间已覆盖上界:{self.upper_price}, 不需要更新区间\" self.write_log(msg) if self.grid_price_range: return buy_count = 0 sell_count = 0 for ID in list(self.active_orders.keys()): order:OrderData = self.active_orders[ID] if order.vt_symbol == self.vt_symbol: if order.direction == Direction.LONG: buy_count+=1 else: sell_count+=1 if buy_count \u003c= 20 or sell_count \u003c= 20 or True: if right \u003e= sideLength and left \u003e= sideLength: startIndex = midIndex - sideLength endIndex = midIndex + sideLength elif right \u003c sideLength: endIndex = len(self.grid_price) - 1 startIndex = midIndex - sideLength - (sideLength - right) else: startIndex = 0 endIndex = midIndex + sideLength + (sideLength - left) if self.grid_price_range: old_range = self.grid_price_range self.grid_price_range = self.grid_price[startIndex: endIndex+1] old_left = list(set(old_range) - set(self.grid_price_range)) # 要撤的单 # new_left = list(set(old_range) - set(self.grid_price_range)) # 要下的单， 不需要处理，由replenish_grid处理 # 找出old_left中的所有价格的key cancel_index = [] for vt_orderId in list(self.active_orders.keys()): order = self.active_orders[vt_orderId] price = formatPoint(order.price, self.tick_size) if price in old_left: cancel_index.append(vt_orderId) if len(cancel_index) == 0:return self.batch_cancel(cancel_index) else: self.grid_price_range = self.grid_price[startIndex: endIndex+1] else: msg = f\"买单{buy_count}, 卖单{sell_count},足够，不需要更新区间\" self.write_log(msg) order replenishment def replenish_grid(self): \"\"\"\"\"\" if not self.grid_price_range: return tick : TickData = self.get_tick(self.vt_symbol) current_price = tick.last_price msg = f\"{datetime.datetime.now()}:开始填充网格\" self.write_log(msg) online_price_list = [] for vt_orderId in list(self.active_orders.keys()): order:OrderData = self.active_orders[vt_orderId] if order.vt_symbol != self.vt_symbol: continue price = formatPoint(order.price, self.tick_size) online_price_list.append(price) # 找出未填充的网格 diff = list(set(self.grid_price_range) - set(online_price_list)) self.write_log(f\"差集{diff}, 订单数量{len(self.active_orders)}\") reqs = [] if not self.last_trade_price: self.last_trade_price = current_price if not self.replenish_flag: self.replenish_flag = True else: msg = \"下单函数正在执行\" self.write_log(msg) return for price in diff: price = float(price) if price == self.last_trade_price: self.write_log(f\"网格：{formatPoint(price, self.tick_size)}，处于当前level，不补单\") continue if self.contract_type == '现货': volume = self.grid_amount else: if self.margin == '反向': volume = self.grid_volume else: volume = self.get_grid_volume(price) if float(price) \u003c self.last_trade_price: reqs.append({ 'vt_symbol': self.vt_symbol, 'price': formatPoint(price, self.tick_size), 'volume': volume, 'order_type': OrderType.POSTONLY, 'direction': Direction.LONG, 'offset': Offset.NONE }) else: reqs.append({ 'vt_symbol': self.vt_symbol, 'price': formatPoint(price, self.tick_size), 'volume': volume, 'order_type': OrderType.POSTONLY, 'direction': Direction.SHORT, 'offset': Offset.NONE }) if len(reqs) \u003e 0: if len(reqs) \u003e 100: self.batch_order(self.vt_symbol, reqs[:100]) else: self.batch_order(self.vt_symbol, reqs) self.replenish_flag = False Market order for replenishment def regular_rebalance(self): is_refill = False tick: TickData = self.get_tick(self.vt_symbol) current_price = tick.last_price if current_price \u003e self.upper_price or current_price \u003c self.lower_price: print( f\"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}:现价：{current_price}, 超过网格上界:{self.upper_price}或下界:{self.lower_price}，\") return current_price = self.last_trade_price if not self.last_trade_price: current_price = tick.last_price actual_pos = self.pos if self.contract_type == '现货': if not self.equal_gap: actual_pos = self.pos # 现在有多少现货 self.virtual_tar_pos = (math.log(self.init_price / current_price) / math.log(1 + self.grid_step)) * float( self.grid_amount) + self.init_amount / 2 # 目标仓位有多少base currency actual_tar_pos = self.leverage * (self.virtual_tar_pos) else: # 等差现货 actual_pos = self.pos # 现在有多少现货 self.virtual_tar_pos = int((self.init_price - current_price)/self.contract.pricetick)*float(self.grid_amount) + self.init_amount / 2 actual_tar_pos = self.leverage * (self.virtual_tar_pos) else: if self.gateway_name == 'OUYI': if self.margin == '反向': self.virtual_tar_pos = (math.log(self.init_price / current_price) / math.log( 1 + self.grid_step)) * self.grid_volume # 目标仓位有多少张 actual_tar_pos = self.leverage * (self.virtual_tar_pos) else: self.virtual_tar_pos = (math.log(self.init_price / current_price) / math.log( 1 + self.grid_step)) * self.grid_amount / (self.contract_val * current_price) # 目标仓位有多少张 actual_tar_pos = self.leverage * (self.virtual_tar_pos) if self.gateway_name == \"BIAN\": self.virtual_tar_pos = (math.log(self.init_price / current_price) / math.log( 1 + self.grid_step)) * self.grid_amount / (current_price) # 目标仓位有多少张 actual_tar_pos = self.leverage * (self.virtual_tar_pos) if actual_pos \u003e actual_tar_pos: if self.contract_type == '现货': pos_diff = actual_pos - actual_tar_pos msg = f\"与目标仓位差{pos_diff / float(self.grid_amount)}个网格\" self.write_log(msg) if pos_diff / float(self.grid_amount) \u003e= 3: pos_diff = formatPoint(actual_pos - actual_tar_pos, self.min_size) is_refill = True elif self.margin == '反向': pos_diff = actual_pos - actual_tar_pos msg = f\"与目标仓位差{pos_diff / float(self.grid_volume)}个网格\" self.write_log(msg) if pos_diff / self.grid_volume \u003e= 3: is_refill = True else: if self.gateway_name == 'OUYI': pos_diff = actual_pos - actual_tar_pos msg = f\"与目标仓位差{pos_diff*self.contract_val*current_price / self.grid_amount}个网格\" self.write_log(msg) if pos_diff*self.contract_val*current_price / self.grid_amount \u003e= 3: is_refill = True else: pos_diff = actual_pos - actual_tar_pos msg = f\"与目标仓位差{pos_diff*current_price / self.grid_amount}个网格\" self.write_log(msg) if pos_diff*current_price / self.grid_amount \u003e= 3: is_refill = True if is_refill: msg = f\"开始补仓: {pos_diff}\" self.write_log(msg) self.restart_orderId = self.sell( vt_symbol=self.vt_symbol, price=formatPoint(tick.bid_price_5, self.tick_size), volume=pos_diff, order_type=OrderType.LIMIT ) elif actual_pos \u003c actual_tar_pos: if self.contract_type == '现货': pos_diff = actual_tar_pos - actual_pos msg = f\"与目标仓位差{pos_diff / float(self.grid_amount)}个网格\" self.write_log(msg) if pos_diff / float(self.grid_amount) \u003e= 3: pos_diff = formatPoint(actual_tar_pos - actual_pos, self.min_size) is_refill = True elif self.margin == '反向': pos_diff = actual_tar_pos - actual_pos msg = f\"与目标仓位差{pos_diff / float(self.grid_volume)}个网格\" self.write_log(msg) if pos_diff / self.grid_volume \u003e= 3: is_refill = True else: if self.gateway_name == 'OUYI': pos_diff = actual_tar_pos - actual_pos msg = f\"与目标仓位差{pos_diff * self.contract_val * current_price / self.grid_amount}个网格，不需补仓\" self.write_log(msg) if pos_diff * self.contract_val * current_price / self.grid_amount \u003e= 3: is_refill = True else: pos_diff = actual_tar_pos - actual_pos msg = f\"与目标仓位差{pos_diff * current_price / self.grid_amount}个网格\" self.write_log(msg) if pos_diff * current_price / self.grid_amount \u003e= 3: is_refill = True if is_refill: msg = f\"开始补仓: {pos_diff}\" self.write_log(msg) self.restart_orderId = self.buy( vt_symbol=self.vt_symbol, price=formatPoint(tick.ask_price_5, self.tick_size), volume=pos_diff, order_type=OrderType.LIMIT ) else: print(f\"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: 无需补仓\") ",
+  "wordCount" : "2579",
+  "inLanguage": "en",
+  "datePublished": "2021-06-21T19:12:16+01:00",
+  "dateModified": "2021-06-21T19:12:16+01:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://oldhuntor.github.io/posts/gridtrading/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Xuanhao's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://oldhuntor.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/katex.min.css">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/katex.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body);"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "$", right: "$", display: false}
+          ]
+        });
+      });
+    </script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://oldhuntor.github.io/" accesskey="h" title="Xuanhao&#39;s Blog (Alt + H)">Xuanhao&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="https://oldhuntor.github.io/posts/about-me" title="About Me">
+                    <span>About Me</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Grid trading application
+    </h1>
+    <div class="post-meta"><span title='2021-06-21 19:12:16 +0100 +0100'>June 21, 2021</span>&nbsp;·&nbsp;13 min
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#parameter-definition" aria-label="Parameter Definition">Parameter Definition</a><ul>
+                        
+                <li>
+                    <a href="#strategy-logic-parameters" aria-label="Strategy logic parameters">Strategy logic parameters</a></li>
+                <li>
+                    <a href="#strategy-performance-calculation" aria-label="Strategy performance calculation">Strategy performance calculation</a></li></ul>
+                </li>
+                <li>
+                    <a href="#whats-grid-trading" aria-label="What&rsquo;s grid trading">What&rsquo;s grid trading</a></li>
+                <li>
+                    <a href="#spot-grid-trading-parameters" aria-label="Spot grid trading parameters">Spot grid trading parameters</a><ul>
+                        
+                <li>
+                    <a href="#arithmetic-grids-and-geometric-grids" aria-label="Arithmetic grids and Geometric grids">Arithmetic grids and Geometric grids</a></li>
+                <li>
+                    <a href="#what-is-the-price-pivot-and-target-position" aria-label="What is the price pivot and target position">What is the price pivot and target position</a></li>
+                <li>
+                    <a href="#impermanent-loss-and-performance-calculation" aria-label="Impermanent loss and performance calculation">Impermanent loss and performance calculation</a></li>
+                <li>
+                    <a href="#situation-where-we-need-to-use-market-orders" aria-label="Situation where we need to use market orders">Situation where we need to use market orders</a></li></ul>
+                </li>
+                <li>
+                    <a href="#grid-trading-strategy-that-doesnt-have-a-price-pivots" aria-label="Grid trading strategy that doesn&rsquo;t have a price pivots">Grid trading strategy that doesn&rsquo;t have a price pivots</a></li>
+                <li>
+                    <a href="#strategy-in-practice" aria-label="Strategy in practice">Strategy in practice</a><ul>
+                        
+                <li>
+                    <a href="#margin-call" aria-label="Margin call">Margin call</a></li>
+                <li>
+                    <a href="#price-list-maintaining" aria-label="Price list maintaining">Price list maintaining</a></li>
+                <li>
+                    <a href="#order-replenishment" aria-label="Order replenishment">Order replenishment</a></li>
+                <li>
+                    <a href="#market-order-for-replenishment" aria-label="Market order for replenishment">Market order for replenishment</a></li></ul>
+                </li>
+                <li>
+                    <a href="#code" aria-label="Code">Code</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="parameter-definition">Parameter Definition<a hidden class="anchor" aria-hidden="true" href="#parameter-definition">#</a></h1>
+<h2 id="strategy-logic-parameters">Strategy logic parameters<a hidden class="anchor" aria-hidden="true" href="#strategy-logic-parameters">#</a></h2>
+<ul>
+<li>upperPrice</li>
+<li>lowerPrice</li>
+<li>currentPrice</li>
+<li>gridStep</li>
+<li>gridAmount</li>
+<li>initPrice</li>
+<li>initAmount</li>
+<li>totalGrids</li>
+<li>tarPos</li>
+<li>baseCurrency</li>
+<li>quoteCurrency</li>
+</ul>
+<h2 id="strategy-performance-calculation">Strategy performance calculation<a hidden class="anchor" aria-hidden="true" href="#strategy-performance-calculation">#</a></h2>
+<ul>
+<li>startPrice</li>
+<li>initBase</li>
+<li>initQuote</li>
+<li>finalBase</li>
+<li>finalQuote</li>
+<li>initDate</li>
+<li>unilateral</li>
+<li>posAvg</li>
+<li>totalDays</li>
+</ul>
+<h1 id="whats-grid-trading">What&rsquo;s grid trading<a hidden class="anchor" aria-hidden="true" href="#whats-grid-trading">#</a></h1>
+<p>Strategy usage background: after a big bullish market, the market starts to go bearish,
+that&rsquo;s the right moment for using grid trading strategy.
+<img alt="img_2.png" loading="lazy" src="/images/grid/img_2.png">
+Just like the graph above, the green lines stand for buy limit orders, red lines stand for sell limit orders.
+The grid trading is just placing orders based on the current price, places sell orders at prices that
+are higher than current price, places buy orders at prices that are lower than current price.
+<img alt="img_3.png" loading="lazy" src="/images/grid/img_3.png">
+Assume that the price drop to 5, the limit buy order at 5 would be executed, we replenish another sell order
+at 5.1, the orders list would like the above graphs. The reverse situation would be the same,
+so during a market where the volatility is high, this strategy can generate profit.</p>
+<h1 id="spot-grid-trading-parameters">Spot grid trading parameters<a hidden class="anchor" aria-hidden="true" href="#spot-grid-trading-parameters">#</a></h1>
+<p>The basic parameters from spot grid trading are :</p>
+<ul>
+<li>Upper and lower limit. e.g. [1500 ~ 3000]</li>
+<li>Grid gap. can be  proportional 1 %, or a fixed number such as 50</li>
+<li>Total asset invested. The number of quote asset that&rsquo;s invested, such as 1000 usdc</li>
+<li>Grid type. Place same number of quote asset at each grid or same number of base asset</li>
+</ul>
+<p>Spot grid strategy by default doesn&rsquo;t have leverage. In the condition where we don&rsquo;t
+lend any asset, the strategy needs to have a clear upper and lower limit.
+For example, the coin pair ETHUSDT sitting at current price at 2000, we would
+assume that the price would fluctuate in between 1500 and 3000. Notice that
+if the price reaches upper limit then all we have are the quote asset USDT,
+the reverse situation would be the base asset ETH.</p>
+<p>After determining the upper and lower bounds, we can calculate the total
+number of grids based on the grid interval. After calculating the total number
+of grids, we can calculate the amount of pending orders or the number of coins in each grid.
+There are two calculation methods, corresponding to <strong>arithmetic grids</strong> and <strong>geometric grids</strong>.</p>
+<h2 id="arithmetic-grids-and-geometric-grids">Arithmetic grids and Geometric grids<a hidden class="anchor" aria-hidden="true" href="#arithmetic-grids-and-geometric-grids">#</a></h2>
+<ul>
+<li>Arithmetic grids
+totalGrids = (upperPrice - lowerPrice) / gridStep
+gridAmount = initAmount / totalGrids</li>
+<li>Geometric grids
+totalGrids = log(upperPrice/lowerPrice)/log(1 + gridStep)
+gridAmount = initAmount / totalGrids</li>
+</ul>
+<h2 id="what-is-the-price-pivot-and-target-position">What is the price pivot and target position<a hidden class="anchor" aria-hidden="true" href="#what-is-the-price-pivot-and-target-position">#</a></h2>
+<p>Note that since the upper and lower bounds as well as the investment amount are fixed,
+we can actually calculate the ratio of base to quote at any given price, and since base
+can be thought of as our position and quote as our money, we can calculate the ratio of our position at any given price.</p>
+<p>It is worth noting that when the price is at the price pivot, as shown in the figure below,
+the value of the base and the quote are equal, i.e., they are in the state of “half-position”, with a value of (initAmount/2), or,
+in other words, <strong>the price at which the position is in the state of half-position is the price pivot,
+and the price is the price at which the position is in the state of half-position,
+and the price is the price pivot. When the price oscillates around the price pivot,
+it is the ideal state for the strategy, because there are im losses.</strong>
+<img alt="img_4.png" loading="lazy" src="/images/grid/img_4.png">
+The following pivot price is calculated：</p>
+<ul>
+<li>Arithmetic grids
+initPrice = (upperPrice + lowerPrice)/2</li>
+<li>Geometric grids
+initPrice = exp(0.5 * log(upperPrice*lowerPrice))</li>
+</ul>
+<p>Here is how we calculate the target position:</p>
+<ul>
+<li>Arithmetic grids
+tarPos = (initPrice - currentPrice)/gridStep * gridAmount + initAmount/2</li>
+<li>Geometric grids
+tarPos = log(initPrice/currentPrice)/log(1 + gridStep)*gridAmount + initAmount/2</li>
+</ul>
+<h2 id="impermanent-loss-and-performance-calculation">Impermanent loss and performance calculation<a hidden class="anchor" aria-hidden="true" href="#impermanent-loss-and-performance-calculation">#</a></h2>
+<p>First, let’s look at the components of performance:</p>
+<ul>
+<li>Based on the price</li>
+</ul>
+<p>Total performance = profit and loss caused by currency price fluctuations + profit and loss caused by transactions = current assets - initial assets / initial assets * 100%
+The profit and loss caused by currency price fluctuations is what we call impermanent loss.</p>
+<ul>
+<li>Based on the strategy</li>
+</ul>
+<p>Total performance = Impermanent loss profit and loss + Number of transactions (take the side with less total number of buy and sell orders) * Grid interval * Grid order amount
+Impermanent loss: from startPrice to currentPrice, assuming that the price does not fluctuate during the period, How much loss will the trades made by the strategy bring to the total net value.
+<img alt="img_5.png" loading="lazy" src="/images/grid/img_5.png">
+The price climbed from 5.0 to 5.4. If we do not run the strategy, the
+rate of return is (5.4 - 5) / 5 = 8%. Assuming that we run the strategy, we
+have been selling our positions when the price rises. After 5.4, according
+to the above figure, the impermanent loss equivalent trend has executed 3
+sell orders. The total assets are lower than the total assets without running
+the strategy. The rate of return must be less than 8%. <strong>This is the so-called
+&ldquo;less profit&rdquo;, and the less profit is what we call impermanent loss.</strong></p>
+<p>If we want to measure the performance of the strategy, we need to get the performance without the impermanent loss, because we only want to know how much money we made through market fluctuations.
+First, the impermanent loss opening volume, that is, the opening volume caused by price changes is:</p>
+<ul>
+<li>Arithmetic
+posAvg = exp(0.5log(startPricecurrentPrice))</li>
+<li>Geometric
+posAvg = (startPrice + currentPrice)/2</li>
+</ul>
+<p>In this case, how much the base and quote are increased or decreased:</p>
+<ul>
+<li>base = (initBase + unilateral) * currentPrice</li>
+<li>quote = initQuote - unilateral * posAvg</li>
+<li>theroyEquity = base + quote. // Current net worth for impermanent loss simulation</li>
+</ul>
+<p>The equity at the end of the strategy:</p>
+<ul>
+<li>finalEquity = finalBase*currentPrice + finalQuote
+The equity at the start:</li>
+<li>initEquity = initBase*startPrice + initQuote</li>
+</ul>
+<p>Performance without impermanent losses</p>
+<ul>
+<li>(finalEquity - theroyEquity)/initEquity/totalDays*365</li>
+</ul>
+<p>Performance with impermanent losses</p>
+<ul>
+<li>(finalEquity - initEquity)/initEquity/totalDays*356</li>
+</ul>
+<h2 id="situation-where-we-need-to-use-market-orders">Situation where we need to use market orders<a hidden class="anchor" aria-hidden="true" href="#situation-where-we-need-to-use-market-orders">#</a></h2>
+<p>When prices move too quickly, there is a chance that it will be too late to fill the order, as shown below:
+<img alt="img_6.png" loading="lazy" src="/images/grid/img_6.png">
+The price pins upwards and then immediately returns. The sell orders at
+5.2 and 5.3 are filled, but the strategy does not fill the buy orders in time,
+and the price returns to 5.1. At this point, there is a gap between the position
+and the target position, and in order to close this gap, we need to buy back
+the missing position at 5.1. <strong>It is worth noting that the market fill is beneficial
+to the strategy because the market fill gives us a more advantageous average price.</strong></p>
+<p>As in the above chart, if the fill order is timely, it will buy back 5.3, 5.2 when
+the position reaches 5.1, the average price of the position is (5.1 + 5.2 + 5.3)/3 = 5.2,
+if the position is not filled in a timely manner, it will be filled at the market price of 5.1,
+the cost of 5.1, 5.1 &lt; 5.2, the strategy to get a lower cost of ownership of the position.</p>
+<h1 id="grid-trading-strategy-that-doesnt-have-a-price-pivots">Grid trading strategy that doesn&rsquo;t have a price pivots<a hidden class="anchor" aria-hidden="true" href="#grid-trading-strategy-that-doesnt-have-a-price-pivots">#</a></h1>
+<p>The above mentioned grid strategy, the price pivot is fixed, this type of
+grid is more limited, because if you want to make a profit, the price must
+fluctuate around the established grid pivot, and the grid has a clear upper
+and lower bounds, <strong>breaking through the upper and lower bounds, the strategy
+will be in a “full position”, can not be traded.</strong></p>
+<p>In order to solve this problem, the grid strategy and extend the grid strategy
+without price pivot, also known as the dynamic pivot grid strategy,
+which is similar to the Martin strategy, in the beginning of the strategy,
+buy a position, in accordance with the direction of the position to hang
+a number of current price single, single volume depends on the mode of addition,
+in the opposite direction of the position is hung on the take-profit single,
+whenever the direction of the position of the limit order transaction, the
+average price of the position and the volume of the position change, the
+take-profit single change operation. Take-profit order to change the order operation.
+The pseudo-code is as follows:
+<img alt="img.png" loading="lazy" src="/images/grid/img.png">
+After each take profit order is filled, the price at which the position is bought
+is the new pivot, which is where the Dynamic Pivot Grid comes from. It is
+worth noting that this grid can choose to do two-way.</p>
+<ul>
+<li>situation where the initial position is long:
+<img alt="img_7.png" loading="lazy" src="/images/grid/img_7.png"></li>
+<li>situation where the initial position is short:
+<img alt="img_8.png" loading="lazy" src="/images/grid/img_8.png"></li>
+</ul>
+<h1 id="strategy-in-practice">Strategy in practice<a hidden class="anchor" aria-hidden="true" href="#strategy-in-practice">#</a></h1>
+<h2 id="margin-call">Margin call<a hidden class="anchor" aria-hidden="true" href="#margin-call">#</a></h2>
+<p>To successfully place a limit buy or sell order, you need to have sufficient margin.
+In spot trading, taking ETHBTC as an example, a buy order requires BTC as margin,
+and a sell order requires ETH as margin. If the margin is insufficient, the
+exchange will report an insufficient balance error. In general, according to the formula,
+all grids can be filled from the upper bound to the lower bound (all margin is used up),
+but sometimes due to system errors such as calculation inaccuracy, the margin may be insufficient.</p>
+<p>Therefore, in order to avoid this situation, we can choose to place orders only around the current price,
+and there is no need to place orders from the upper limit to the lower limit. As shown in the following figure:
+<img alt="img_9.png" loading="lazy" src="/images/grid/img_9.png">
+This way you can perfectly avoid the situation of insufficient margin.</p>
+<h2 id="price-list-maintaining">Price list maintaining<a hidden class="anchor" aria-hidden="true" href="#price-list-maintaining">#</a></h2>
+<p>Assuming there are 1000 grids or 1000 prices from the upper bound to the lower bound,
+we select 100 grids around the current price as the order range. These 100
+prices are a subset of the 1000 prices and move with the current price.
+Generally, we place 50 buy orders and 50 sell orders.
+<img alt="img_10.png" loading="lazy" src="/images/grid/img_10.png">
+When one of the 100 prices touches the boundary, the order range no longer needs to be changed:
+<img alt="img_11.png" loading="lazy" src="/images/grid/img_11.png">
+At this time, the number of buy and sell orders is not equal, as shown in the figure, there are about 30 sell orders and 70 buy orders.</p>
+<h2 id="order-replenishment">Order replenishment<a hidden class="anchor" aria-hidden="true" href="#order-replenishment">#</a></h2>
+<p>The order-filling mechanism is very simple. It only requires periodic checking
+(once every 0.5 seconds) of the price list of online pending orders and the
+price list maintained locally by our strategy, and making a difference between
+the two lists (the difference is also a price list). The result is the price list we need to fill the order:
+<img alt="img_12.png" loading="lazy" src="/images/grid/img_12.png"></p>
+<h2 id="market-order-for-replenishment">Market order for replenishment<a hidden class="anchor" aria-hidden="true" href="#market-order-for-replenishment">#</a></h2>
+<p>The market price margin mechanism needs to use the formula given above
+to calculate the target position tarPos, and then use tarPos to make a difference
+with the current position. If the difference is greater than 0, it means selling at the market price.
+<img alt="img_1.png" loading="lazy" src="/images/grid/img_1.png"></p>
+<h1 id="code">Code<a hidden class="anchor" aria-hidden="true" href="#code">#</a></h1>
+<p>This code is based on <a href="https://github.com/vnpy/vnpy">VNPY</a>, which is available under the MIT License.</p>
+<ul>
+<li>Price list maintaining</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">update_grid_price</span>(self):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>last_trade_price:
+</span></span><span style="display:flex;"><span>            tick <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>get_tick(self<span style="color:#f92672">.</span>vt_symbol)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> tick:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>            current_price <span style="color:#f92672">=</span> tick<span style="color:#f92672">.</span>last_price
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            current_price <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>last_trade_price
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;开始更新区间&#34;</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        sideLength <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>side_grid_amount
+</span></span><span style="display:flex;"><span>        midIndex <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>find_current_level(current_price)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        right <span style="color:#f92672">=</span> len(self<span style="color:#f92672">.</span>grid_price[midIndex:]) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        left <span style="color:#f92672">=</span> len(self<span style="color:#f92672">.</span>grid_price[:midIndex])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> left <span style="color:#f92672">&lt;=</span> self<span style="color:#f92672">.</span>side_grid_amount:
+</span></span><span style="display:flex;"><span>            msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;区间已覆盖下界:</span><span style="color:#e6db74">{</span>self<span style="color:#f92672">.</span>lower_price<span style="color:#e6db74">}</span><span style="color:#e6db74">, 不需要更新区间&#34;</span>
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>grid_price_range:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> right <span style="color:#f92672">&lt;=</span> self<span style="color:#f92672">.</span>side_grid_amount:
+</span></span><span style="display:flex;"><span>            msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;区间已覆盖上界:</span><span style="color:#e6db74">{</span>self<span style="color:#f92672">.</span>upper_price<span style="color:#e6db74">}</span><span style="color:#e6db74">, 不需要更新区间&#34;</span>
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>grid_price_range:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        buy_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>        sell_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> ID <span style="color:#f92672">in</span> list(self<span style="color:#f92672">.</span>active_orders<span style="color:#f92672">.</span>keys()):
+</span></span><span style="display:flex;"><span>            order:OrderData <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>active_orders[ID]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> order<span style="color:#f92672">.</span>vt_symbol <span style="color:#f92672">==</span> self<span style="color:#f92672">.</span>vt_symbol:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> order<span style="color:#f92672">.</span>direction <span style="color:#f92672">==</span> Direction<span style="color:#f92672">.</span>LONG:
+</span></span><span style="display:flex;"><span>                    buy_count<span style="color:#f92672">+=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                    sell_count<span style="color:#f92672">+=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> buy_count <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">20</span> <span style="color:#f92672">or</span> sell_count <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">20</span> <span style="color:#f92672">or</span> <span style="color:#66d9ef">True</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> right <span style="color:#f92672">&gt;=</span> sideLength <span style="color:#f92672">and</span> left <span style="color:#f92672">&gt;=</span> sideLength:
+</span></span><span style="display:flex;"><span>                startIndex <span style="color:#f92672">=</span> midIndex <span style="color:#f92672">-</span> sideLength
+</span></span><span style="display:flex;"><span>                endIndex <span style="color:#f92672">=</span> midIndex <span style="color:#f92672">+</span> sideLength
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">elif</span> right <span style="color:#f92672">&lt;</span> sideLength:
+</span></span><span style="display:flex;"><span>                endIndex <span style="color:#f92672">=</span> len(self<span style="color:#f92672">.</span>grid_price) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                startIndex <span style="color:#f92672">=</span> midIndex <span style="color:#f92672">-</span> sideLength <span style="color:#f92672">-</span> (sideLength <span style="color:#f92672">-</span> right)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                startIndex <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>                endIndex <span style="color:#f92672">=</span> midIndex <span style="color:#f92672">+</span> sideLength <span style="color:#f92672">+</span> (sideLength <span style="color:#f92672">-</span> left)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>grid_price_range:
+</span></span><span style="display:flex;"><span>                old_range <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>grid_price_range
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>grid_price_range <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>grid_price[startIndex: endIndex<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                old_left <span style="color:#f92672">=</span> list(set(old_range) <span style="color:#f92672">-</span> set(self<span style="color:#f92672">.</span>grid_price_range)) <span style="color:#75715e"># 要撤的单</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># new_left = list(set(old_range) - set(self.grid_price_range)) # 要下的单， 不需要处理，由replenish_grid处理</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># 找出old_left中的所有价格的key</span>
+</span></span><span style="display:flex;"><span>                cancel_index <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">for</span> vt_orderId <span style="color:#f92672">in</span> list(self<span style="color:#f92672">.</span>active_orders<span style="color:#f92672">.</span>keys()):
+</span></span><span style="display:flex;"><span>                    order <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>active_orders[vt_orderId]
+</span></span><span style="display:flex;"><span>                    price <span style="color:#f92672">=</span> formatPoint(order<span style="color:#f92672">.</span>price, self<span style="color:#f92672">.</span>tick_size)
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> price <span style="color:#f92672">in</span> old_left:
+</span></span><span style="display:flex;"><span>                        cancel_index<span style="color:#f92672">.</span>append(vt_orderId)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> len(cancel_index) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:<span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>batch_cancel(cancel_index)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>grid_price_range <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>grid_price[startIndex: endIndex<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;买单</span><span style="color:#e6db74">{</span>buy_count<span style="color:#e6db74">}</span><span style="color:#e6db74">, 卖单</span><span style="color:#e6db74">{</span>sell_count<span style="color:#e6db74">}</span><span style="color:#e6db74">,足够，不需要更新区间&#34;</span>
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>write_log(msg)
+</span></span></code></pre></div><ul>
+<li>order replenishment</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">replenish_grid</span>(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>grid_price_range:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>        tick : TickData <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>get_tick(self<span style="color:#f92672">.</span>vt_symbol)
+</span></span><span style="display:flex;"><span>        current_price <span style="color:#f92672">=</span> tick<span style="color:#f92672">.</span>last_price
+</span></span><span style="display:flex;"><span>        msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>datetime<span style="color:#f92672">.</span>datetime<span style="color:#f92672">.</span>now()<span style="color:#e6db74">}</span><span style="color:#e6db74">:开始填充网格&#34;</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>        online_price_list <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> vt_orderId <span style="color:#f92672">in</span> list(self<span style="color:#f92672">.</span>active_orders<span style="color:#f92672">.</span>keys()):
+</span></span><span style="display:flex;"><span>            order:OrderData <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>active_orders[vt_orderId]
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> order<span style="color:#f92672">.</span>vt_symbol <span style="color:#f92672">!=</span> self<span style="color:#f92672">.</span>vt_symbol:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>            price <span style="color:#f92672">=</span> formatPoint(order<span style="color:#f92672">.</span>price, self<span style="color:#f92672">.</span>tick_size)
+</span></span><span style="display:flex;"><span>            online_price_list<span style="color:#f92672">.</span>append(price)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 找出未填充的网格</span>
+</span></span><span style="display:flex;"><span>        diff <span style="color:#f92672">=</span> list(set(self<span style="color:#f92672">.</span>grid_price_range) <span style="color:#f92672">-</span> set(online_price_list))
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>write_log(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;差集</span><span style="color:#e6db74">{</span>diff<span style="color:#e6db74">}</span><span style="color:#e6db74">, 订单数量</span><span style="color:#e6db74">{</span>len(self<span style="color:#f92672">.</span>active_orders)<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        reqs <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>last_trade_price:
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>last_trade_price <span style="color:#f92672">=</span> current_price
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>replenish_flag:
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>replenish_flag <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            msg <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;下单函数正在执行&#34;</span>
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> price <span style="color:#f92672">in</span> diff:
+</span></span><span style="display:flex;"><span>            price <span style="color:#f92672">=</span> float(price)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> price <span style="color:#f92672">==</span> self<span style="color:#f92672">.</span>last_trade_price:
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>write_log(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;网格：</span><span style="color:#e6db74">{</span>formatPoint(price, self<span style="color:#f92672">.</span>tick_size)<span style="color:#e6db74">}</span><span style="color:#e6db74">，处于当前level，不补单&#34;</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>contract_type <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;现货&#39;</span>:
+</span></span><span style="display:flex;"><span>                volume <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>grid_amount
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>margin <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;反向&#39;</span>:
+</span></span><span style="display:flex;"><span>                    volume <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>grid_volume
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                    volume <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>get_grid_volume(price)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> float(price) <span style="color:#f92672">&lt;</span> self<span style="color:#f92672">.</span>last_trade_price:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                reqs<span style="color:#f92672">.</span>append({
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;vt_symbol&#39;</span>: self<span style="color:#f92672">.</span>vt_symbol,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;price&#39;</span>: formatPoint(price, self<span style="color:#f92672">.</span>tick_size),
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;volume&#39;</span>: volume,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;order_type&#39;</span>: OrderType<span style="color:#f92672">.</span>POSTONLY,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;direction&#39;</span>: Direction<span style="color:#f92672">.</span>LONG,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;offset&#39;</span>: Offset<span style="color:#f92672">.</span>NONE
+</span></span><span style="display:flex;"><span>                })
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                reqs<span style="color:#f92672">.</span>append({
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;vt_symbol&#39;</span>: self<span style="color:#f92672">.</span>vt_symbol,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;price&#39;</span>: formatPoint(price, self<span style="color:#f92672">.</span>tick_size),
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;volume&#39;</span>: volume,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;order_type&#39;</span>: OrderType<span style="color:#f92672">.</span>POSTONLY,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;direction&#39;</span>: Direction<span style="color:#f92672">.</span>SHORT,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;offset&#39;</span>: Offset<span style="color:#f92672">.</span>NONE
+</span></span><span style="display:flex;"><span>                })
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> len(reqs) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> len(reqs) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">100</span>:
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>batch_order(self<span style="color:#f92672">.</span>vt_symbol, reqs[:<span style="color:#ae81ff">100</span>])
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>batch_order(self<span style="color:#f92672">.</span>vt_symbol, reqs)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>replenish_flag <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span></code></pre></div><ul>
+<li>Market order for replenishment</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>   <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">regular_rebalance</span>(self):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        is_refill <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        tick: TickData <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>get_tick(self<span style="color:#f92672">.</span>vt_symbol)
+</span></span><span style="display:flex;"><span>        current_price <span style="color:#f92672">=</span> tick<span style="color:#f92672">.</span>last_price
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> current_price <span style="color:#f92672">&gt;</span> self<span style="color:#f92672">.</span>upper_price <span style="color:#f92672">or</span> current_price <span style="color:#f92672">&lt;</span> self<span style="color:#f92672">.</span>lower_price:
+</span></span><span style="display:flex;"><span>            print(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>datetime<span style="color:#f92672">.</span>datetime<span style="color:#f92672">.</span>now()<span style="color:#f92672">.</span>strftime(<span style="color:#e6db74">&#39;%Y-%m-</span><span style="color:#e6db74">%d</span><span style="color:#e6db74"> %H:%M:%S&#39;</span>)<span style="color:#e6db74">}</span><span style="color:#e6db74">:现价：</span><span style="color:#e6db74">{</span>current_price<span style="color:#e6db74">}</span><span style="color:#e6db74">, 超过网格上界:</span><span style="color:#e6db74">{</span>self<span style="color:#f92672">.</span>upper_price<span style="color:#e6db74">}</span><span style="color:#e6db74">或下界:</span><span style="color:#e6db74">{</span>self<span style="color:#f92672">.</span>lower_price<span style="color:#e6db74">}</span><span style="color:#e6db74">，&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        current_price <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>last_trade_price
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>last_trade_price:
+</span></span><span style="display:flex;"><span>            current_price <span style="color:#f92672">=</span> tick<span style="color:#f92672">.</span>last_price
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        actual_pos <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>pos
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>contract_type <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;现货&#39;</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>equal_gap:
+</span></span><span style="display:flex;"><span>                actual_pos <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>pos  <span style="color:#75715e"># 现在有多少现货</span>
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>virtual_tar_pos <span style="color:#f92672">=</span> (math<span style="color:#f92672">.</span>log(self<span style="color:#f92672">.</span>init_price <span style="color:#f92672">/</span> current_price) <span style="color:#f92672">/</span> math<span style="color:#f92672">.</span>log(<span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>grid_step)) <span style="color:#f92672">*</span> float(
+</span></span><span style="display:flex;"><span>                    self<span style="color:#f92672">.</span>grid_amount) <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>init_amount <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span>  <span style="color:#75715e"># 目标仓位有多少base currency</span>
+</span></span><span style="display:flex;"><span>                actual_tar_pos <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>leverage <span style="color:#f92672">*</span> (self<span style="color:#f92672">.</span>virtual_tar_pos)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e"># 等差现货</span>
+</span></span><span style="display:flex;"><span>                actual_pos <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>pos  <span style="color:#75715e"># 现在有多少现货</span>
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>virtual_tar_pos <span style="color:#f92672">=</span> int((self<span style="color:#f92672">.</span>init_price <span style="color:#f92672">-</span> current_price)<span style="color:#f92672">/</span>self<span style="color:#f92672">.</span>contract<span style="color:#f92672">.</span>pricetick)<span style="color:#f92672">*</span>float(self<span style="color:#f92672">.</span>grid_amount) <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>init_amount <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>                actual_tar_pos <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>leverage <span style="color:#f92672">*</span> (self<span style="color:#f92672">.</span>virtual_tar_pos)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>gateway_name <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;OUYI&#39;</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>margin <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;反向&#39;</span>:
+</span></span><span style="display:flex;"><span>                    self<span style="color:#f92672">.</span>virtual_tar_pos <span style="color:#f92672">=</span> (math<span style="color:#f92672">.</span>log(self<span style="color:#f92672">.</span>init_price <span style="color:#f92672">/</span> current_price) <span style="color:#f92672">/</span> math<span style="color:#f92672">.</span>log(
+</span></span><span style="display:flex;"><span>                        <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>grid_step)) <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>grid_volume  <span style="color:#75715e"># 目标仓位有多少张</span>
+</span></span><span style="display:flex;"><span>                    actual_tar_pos <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>leverage <span style="color:#f92672">*</span> (self<span style="color:#f92672">.</span>virtual_tar_pos)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                    self<span style="color:#f92672">.</span>virtual_tar_pos <span style="color:#f92672">=</span> (math<span style="color:#f92672">.</span>log(self<span style="color:#f92672">.</span>init_price <span style="color:#f92672">/</span> current_price) <span style="color:#f92672">/</span> math<span style="color:#f92672">.</span>log(
+</span></span><span style="display:flex;"><span>                        <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>grid_step)) <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>grid_amount <span style="color:#f92672">/</span> (self<span style="color:#f92672">.</span>contract_val <span style="color:#f92672">*</span> current_price)  <span style="color:#75715e"># 目标仓位有多少张</span>
+</span></span><span style="display:flex;"><span>                    actual_tar_pos <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>leverage <span style="color:#f92672">*</span> (self<span style="color:#f92672">.</span>virtual_tar_pos)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>gateway_name <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;BIAN&#34;</span>:
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>virtual_tar_pos <span style="color:#f92672">=</span> (math<span style="color:#f92672">.</span>log(self<span style="color:#f92672">.</span>init_price <span style="color:#f92672">/</span> current_price) <span style="color:#f92672">/</span> math<span style="color:#f92672">.</span>log(
+</span></span><span style="display:flex;"><span>                    <span style="color:#ae81ff">1</span> <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>grid_step)) <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>grid_amount <span style="color:#f92672">/</span> (current_price)  <span style="color:#75715e"># 目标仓位有多少张</span>
+</span></span><span style="display:flex;"><span>                actual_tar_pos <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>leverage <span style="color:#f92672">*</span> (self<span style="color:#f92672">.</span>virtual_tar_pos)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> actual_pos <span style="color:#f92672">&gt;</span> actual_tar_pos:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>contract_type <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;现货&#39;</span>:
+</span></span><span style="display:flex;"><span>                pos_diff <span style="color:#f92672">=</span> actual_pos <span style="color:#f92672">-</span> actual_tar_pos
+</span></span><span style="display:flex;"><span>                msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;与目标仓位差</span><span style="color:#e6db74">{</span>pos_diff <span style="color:#f92672">/</span> float(self<span style="color:#f92672">.</span>grid_amount)<span style="color:#e6db74">}</span><span style="color:#e6db74">个网格&#34;</span>
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> pos_diff <span style="color:#f92672">/</span> float(self<span style="color:#f92672">.</span>grid_amount) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>                    pos_diff <span style="color:#f92672">=</span> formatPoint(actual_pos <span style="color:#f92672">-</span> actual_tar_pos, self<span style="color:#f92672">.</span>min_size)
+</span></span><span style="display:flex;"><span>                    is_refill <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">elif</span> self<span style="color:#f92672">.</span>margin <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;反向&#39;</span>:
+</span></span><span style="display:flex;"><span>                pos_diff <span style="color:#f92672">=</span> actual_pos <span style="color:#f92672">-</span> actual_tar_pos
+</span></span><span style="display:flex;"><span>                msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;与目标仓位差</span><span style="color:#e6db74">{</span>pos_diff <span style="color:#f92672">/</span> float(self<span style="color:#f92672">.</span>grid_volume)<span style="color:#e6db74">}</span><span style="color:#e6db74">个网格&#34;</span>
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> pos_diff <span style="color:#f92672">/</span> self<span style="color:#f92672">.</span>grid_volume <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>                    is_refill <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>gateway_name <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;OUYI&#39;</span>:
+</span></span><span style="display:flex;"><span>                    pos_diff <span style="color:#f92672">=</span> actual_pos <span style="color:#f92672">-</span> actual_tar_pos
+</span></span><span style="display:flex;"><span>                    msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;与目标仓位差</span><span style="color:#e6db74">{</span>pos_diff<span style="color:#f92672">*</span>self<span style="color:#f92672">.</span>contract_val<span style="color:#f92672">*</span>current_price <span style="color:#f92672">/</span> self<span style="color:#f92672">.</span>grid_amount<span style="color:#e6db74">}</span><span style="color:#e6db74">个网格&#34;</span>
+</span></span><span style="display:flex;"><span>                    self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> pos_diff<span style="color:#f92672">*</span>self<span style="color:#f92672">.</span>contract_val<span style="color:#f92672">*</span>current_price <span style="color:#f92672">/</span> self<span style="color:#f92672">.</span>grid_amount <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>                        is_refill <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                    pos_diff <span style="color:#f92672">=</span> actual_pos <span style="color:#f92672">-</span> actual_tar_pos
+</span></span><span style="display:flex;"><span>                    msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;与目标仓位差</span><span style="color:#e6db74">{</span>pos_diff<span style="color:#f92672">*</span>current_price <span style="color:#f92672">/</span> self<span style="color:#f92672">.</span>grid_amount<span style="color:#e6db74">}</span><span style="color:#e6db74">个网格&#34;</span>
+</span></span><span style="display:flex;"><span>                    self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> pos_diff<span style="color:#f92672">*</span>current_price <span style="color:#f92672">/</span> self<span style="color:#f92672">.</span>grid_amount <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>                        is_refill <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> is_refill:
+</span></span><span style="display:flex;"><span>                msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;开始补仓: </span><span style="color:#e6db74">{</span>pos_diff<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>restart_orderId <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>sell(
+</span></span><span style="display:flex;"><span>                    vt_symbol<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>vt_symbol,
+</span></span><span style="display:flex;"><span>                    price<span style="color:#f92672">=</span>formatPoint(tick<span style="color:#f92672">.</span>bid_price_5, self<span style="color:#f92672">.</span>tick_size),
+</span></span><span style="display:flex;"><span>                    volume<span style="color:#f92672">=</span>pos_diff,
+</span></span><span style="display:flex;"><span>                    order_type<span style="color:#f92672">=</span>OrderType<span style="color:#f92672">.</span>LIMIT
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">elif</span> actual_pos <span style="color:#f92672">&lt;</span> actual_tar_pos:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>contract_type <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;现货&#39;</span>:
+</span></span><span style="display:flex;"><span>                pos_diff <span style="color:#f92672">=</span> actual_tar_pos <span style="color:#f92672">-</span> actual_pos
+</span></span><span style="display:flex;"><span>                msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;与目标仓位差</span><span style="color:#e6db74">{</span>pos_diff <span style="color:#f92672">/</span> float(self<span style="color:#f92672">.</span>grid_amount)<span style="color:#e6db74">}</span><span style="color:#e6db74">个网格&#34;</span>
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> pos_diff <span style="color:#f92672">/</span> float(self<span style="color:#f92672">.</span>grid_amount) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>                    pos_diff <span style="color:#f92672">=</span> formatPoint(actual_tar_pos <span style="color:#f92672">-</span> actual_pos, self<span style="color:#f92672">.</span>min_size)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                    is_refill <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">elif</span> self<span style="color:#f92672">.</span>margin <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;反向&#39;</span>:
+</span></span><span style="display:flex;"><span>                pos_diff <span style="color:#f92672">=</span> actual_tar_pos <span style="color:#f92672">-</span> actual_pos
+</span></span><span style="display:flex;"><span>                msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;与目标仓位差</span><span style="color:#e6db74">{</span>pos_diff <span style="color:#f92672">/</span> float(self<span style="color:#f92672">.</span>grid_volume)<span style="color:#e6db74">}</span><span style="color:#e6db74">个网格&#34;</span>
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> pos_diff <span style="color:#f92672">/</span> self<span style="color:#f92672">.</span>grid_volume <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>                    is_refill <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> self<span style="color:#f92672">.</span>gateway_name <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;OUYI&#39;</span>:
+</span></span><span style="display:flex;"><span>                    pos_diff <span style="color:#f92672">=</span> actual_tar_pos <span style="color:#f92672">-</span> actual_pos
+</span></span><span style="display:flex;"><span>                    msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;与目标仓位差</span><span style="color:#e6db74">{</span>pos_diff <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>contract_val <span style="color:#f92672">*</span> current_price <span style="color:#f92672">/</span> self<span style="color:#f92672">.</span>grid_amount<span style="color:#e6db74">}</span><span style="color:#e6db74">个网格，不需补仓&#34;</span>
+</span></span><span style="display:flex;"><span>                    self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> pos_diff <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>contract_val <span style="color:#f92672">*</span> current_price <span style="color:#f92672">/</span> self<span style="color:#f92672">.</span>grid_amount <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>                        is_refill <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                    pos_diff <span style="color:#f92672">=</span> actual_tar_pos <span style="color:#f92672">-</span> actual_pos
+</span></span><span style="display:flex;"><span>                    msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;与目标仓位差</span><span style="color:#e6db74">{</span>pos_diff <span style="color:#f92672">*</span> current_price <span style="color:#f92672">/</span> self<span style="color:#f92672">.</span>grid_amount<span style="color:#e6db74">}</span><span style="color:#e6db74">个网格&#34;</span>
+</span></span><span style="display:flex;"><span>                    self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> pos_diff <span style="color:#f92672">*</span> current_price <span style="color:#f92672">/</span> self<span style="color:#f92672">.</span>grid_amount <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">3</span>:
+</span></span><span style="display:flex;"><span>                        is_refill <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> is_refill:
+</span></span><span style="display:flex;"><span>                msg <span style="color:#f92672">=</span> <span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;开始补仓: </span><span style="color:#e6db74">{</span>pos_diff<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>write_log(msg)
+</span></span><span style="display:flex;"><span>                self<span style="color:#f92672">.</span>restart_orderId <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>buy(
+</span></span><span style="display:flex;"><span>                    vt_symbol<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>vt_symbol,
+</span></span><span style="display:flex;"><span>                    price<span style="color:#f92672">=</span>formatPoint(tick<span style="color:#f92672">.</span>ask_price_5, self<span style="color:#f92672">.</span>tick_size),
+</span></span><span style="display:flex;"><span>                    volume<span style="color:#f92672">=</span>pos_diff,
+</span></span><span style="display:flex;"><span>                    order_type<span style="color:#f92672">=</span>OrderType<span style="color:#f92672">.</span>LIMIT
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            print(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>datetime<span style="color:#f92672">.</span>datetime<span style="color:#f92672">.</span>now()<span style="color:#f92672">.</span>strftime(<span style="color:#e6db74">&#39;%Y-%m-</span><span style="color:#e6db74">%d</span><span style="color:#e6db74"> %H:%M:%S&#39;</span>)<span style="color:#e6db74">}</span><span style="color:#e6db74">: 无需补仓&#34;</span>)
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Grid trading application on x"
+            href="https://x.com/intent/tweet/?text=Grid%20trading%20application&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fgridtrading%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Grid trading application on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fgridtrading%2f&amp;title=Grid%20trading%20application&amp;summary=Grid%20trading%20application&amp;source=https%3a%2f%2foldhuntor.github.io%2fposts%2fgridtrading%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Grid trading application on reddit"
+            href="https://reddit.com/submit?url=https%3a%2f%2foldhuntor.github.io%2fposts%2fgridtrading%2f&title=Grid%20trading%20application">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Grid trading application on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2foldhuntor.github.io%2fposts%2fgridtrading%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Grid trading application on whatsapp"
+            href="https://api.whatsapp.com/send?text=Grid%20trading%20application%20-%20https%3a%2f%2foldhuntor.github.io%2fposts%2fgridtrading%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Grid trading application on telegram"
+            href="https://telegram.me/share/url?text=Grid%20trading%20application&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fgridtrading%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Grid trading application on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Grid%20trading%20application&u=https%3a%2f%2foldhuntor.github.io%2fposts%2fgridtrading%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="https://oldhuntor.github.io/">Xuanhao&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>
