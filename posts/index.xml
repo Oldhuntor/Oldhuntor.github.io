@@ -1344,16 +1344,38 @@ at 5.1, the orders list would like the above graphs. The reverse situation would
 so during a market where the volatility is high, this strategy can generate profit.&lt;/p&gt;</description>
     </item>
     <item>
+      <title>Event driven trading system</title>
+      <link>https://oldhuntor.github.io/posts/event_driven_trading_system/</link>
+      <pubDate>Wed, 09 Jun 2021 19:12:16 +0100</pubDate>
+      <guid>https://oldhuntor.github.io/posts/event_driven_trading_system/</guid>
+      <description>&lt;h1 id=&#34;event-driven-trading-system&#34;&gt;Event driven trading system&lt;/h1&gt;
+&lt;p&gt;This article is inspired by &lt;a href=&#34;https://github.com/vnpy/vnpy&#34;&gt;VNPY&lt;/a&gt;, which is available under the MIT License.
+And the official ByBit python SDK &lt;a href=&#34;https://github.com/bybit-exchange/pybit?tab=readme-ov-file&#34;&gt;PyBit&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Algorithmic trading has inspired many people to implement their strategies.
+It frees the hands of the traders and materialize doesn&amp;rsquo;t suffer from the human emotion.&lt;/p&gt;
+&lt;p&gt;Here I will introduce an event-driven trading system:
+&lt;img alt=&#34;img.png&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/event/img.png&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Websocket and Rest API
+As the graph above shows, we have two data sources which are websocket
+and rest api, we usually use websocket API for market data stream since
+it&amp;rsquo;s a long connection, and we use Rest API for sending order and it&amp;rsquo;s a quick
+one time connection, but the function from these two types of API are interchangable.&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>About me</title>
       <link>https://oldhuntor.github.io/posts/about-me/</link>
       <pubDate>Sat, 08 Feb 2020 19:12:16 +0100</pubDate>
       <guid>https://oldhuntor.github.io/posts/about-me/</guid>
       <description>&lt;h1 id=&#34;education-background&#34;&gt;Education Background&lt;/h1&gt;
+&lt;hr&gt;
 &lt;p&gt;&lt;strong&gt;TU dortmund&lt;/strong&gt; 10/2022 - till now&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Major&lt;/strong&gt; M.Sc. Data Science&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Beijng Institute of Technology, Zhuhai&lt;/strong&gt; 2016 - 2020&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Major&lt;/strong&gt; B.Sc. Applied Statistics&lt;/p&gt;
 &lt;h1 id=&#34;work-experience&#34;&gt;Work Experience&lt;/h1&gt;
+&lt;hr&gt;
 &lt;h2 id=&#34;beijing-fengyuntiandi-2021&#34;&gt;Beijing FengYunTianDi (2021)&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;Job title:&lt;/strong&gt; Data Analyst Python&lt;/p&gt;
 &lt;ul&gt;
@@ -1380,6 +1402,7 @@ so during a market where the volatility is high, this strategy can generate prof
 &lt;li&gt;Push products: issued data leak prevention software to users by company&amp;rsquo;s server&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h1 id=&#34;prize&#34;&gt;Prize&lt;/h1&gt;
+&lt;hr&gt;
 &lt;p&gt;&lt;strong&gt;Mathematical Contest in Modeling (Honorable Mention Winner 2019)&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
   </channel>
