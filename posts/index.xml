@@ -6,8 +6,24 @@
     <description>Recent content in Posts on Xuanhao&#39;s Blog</description>
     <generator>Hugo -- 0.138.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 09 Feb 2025 19:12:16 +0100</lastBuildDate>
+    <lastBuildDate>Tue, 25 Feb 2025 19:12:16 +0100</lastBuildDate>
     <atom:link href="https://oldhuntor.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Regime Changing detection</title>
+      <link>https://oldhuntor.github.io/posts/regime-changing-detection/</link>
+      <pubDate>Tue, 25 Feb 2025 19:12:16 +0100</pubDate>
+      <guid>https://oldhuntor.github.io/posts/regime-changing-detection/</guid>
+      <description>&lt;p&gt;Regime Changing detection is useful in many cases, including finance, economics, climate science, and engineering.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Financial Market Analysis:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Helps identify shifts in market trends (e.g., bull vs. bear markets).
+Improves trading strategies by adjusting risk management based on detected changes.
+Can be used to detect changes in volatility, correlation, or liquidity.
+Algorithmic Trading &amp;amp; Quantitative Finance:&lt;/p&gt;
+&lt;p&gt;Useful for adapting trading algorithms when market conditions change.
+Helps optimize stop-loss and take-profit levels by recognizing trend shifts.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Journey to a universal hedge system (part 2)</title>
       <link>https://oldhuntor.github.io/posts/story-of-arbitrage2/</link>
