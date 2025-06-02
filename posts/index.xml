@@ -14,7 +14,9 @@
       <pubDate>Thu, 01 May 2025 00:00:00 +0000</pubDate>
       <guid>https://oldhuntor.github.io/posts/plotly/</guid>
       <description>&lt;p&gt;Uncertainty metrics：&lt;/p&gt;
-&lt;iframe src=&#34;https://oldhuntor.github.io/htmls/uncertainty_metrics_plot.html&#34; width=&#34;100%&#34; height=&#34;500&#34; frameborder=&#34;0&#34;&gt;&lt;/iframe&gt;</description>
+&lt;iframe src=&#34;https://oldhuntor.github.io/htmls/uncertainty_metrics_plot.html&#34; width=&#34;100%&#34; height=&#34;500&#34; frameborder=&#34;0&#34;&gt;&lt;/iframe&gt;
+
+&lt;iframe src=&#34;https://oldhuntor.github.io/htmls/uncertainty_metrics_plot_test.html&#34; width=&#34;100%&#34; height=&#34;500&#34; frameborder=&#34;0&#34;&gt;&lt;/iframe&gt;</description>
     </item>
     <item>
       <title>Regime Changing detection</title>
