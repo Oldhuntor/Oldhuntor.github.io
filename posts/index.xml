@@ -2,27 +2,29 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on Xuanhao&#39;s Blog</title>
-    <link>https://oldhuntor.github.io/posts/</link>
+    <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on Xuanhao&#39;s Blog</description>
     <generator>Hugo -- 0.138.0</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 01 May 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="https://oldhuntor.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Plotly </title>
-      <link>https://oldhuntor.github.io/posts/plotly/</link>
+      <link>http://localhost:1313/posts/plotly/</link>
       <pubDate>Thu, 01 May 2025 00:00:00 +0000</pubDate>
-      <guid>https://oldhuntor.github.io/posts/plotly/</guid>
+      <guid>http://localhost:1313/posts/plotly/</guid>
       <description>&lt;p&gt;Uncertainty metrics：&lt;/p&gt;
-&lt;iframe src=&#34;https://oldhuntor.github.io/htmls/uncertainty_metrics_plot.html&#34; width=&#34;100%&#34; height=&#34;500&#34; frameborder=&#34;0&#34;&gt;&lt;/iframe&gt;
+&lt;iframe src=&#34;http://localhost:1313/htmls/uncertainty_metrics_plot.html&#34; width=&#34;100%&#34; height=&#34;500&#34; frameborder=&#34;0&#34;&gt;&lt;/iframe&gt;
 
-&lt;iframe src=&#34;https://oldhuntor.github.io/htmls/uncertainty_metrics_plot_test.html&#34; width=&#34;100%&#34; height=&#34;500&#34; frameborder=&#34;0&#34;&gt;&lt;/iframe&gt;</description>
+&lt;iframe src=&#34;http://localhost:1313/htmls/uncertainty_metrics_plot_test.html&#34; width=&#34;100%&#34; height=&#34;500&#34; frameborder=&#34;0&#34;&gt;&lt;/iframe&gt;
+
+&lt;iframe src=&#34;http://localhost:1313/htmls/online_iforest_demo.html&#34; width=&#34;100%&#34; height=&#34;1000&#34; frameborder=&#34;0&#34;&gt;&lt;/iframe&gt;</description>
     </item>
     <item>
       <title>Regime Changing detection</title>
-      <link>https://oldhuntor.github.io/posts/regime-changing-detection/</link>
+      <link>http://localhost:1313/posts/regime-changing-detection/</link>
       <pubDate>Tue, 25 Feb 2025 19:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/regime-changing-detection/</guid>
+      <guid>http://localhost:1313/posts/regime-changing-detection/</guid>
       <description>&lt;p&gt;Regime Changing detection is useful in many cases, including finance, economics, climate science, and engineering.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Financial Market Analysis:&lt;/li&gt;
@@ -36,29 +38,29 @@ Helps optimize stop-loss and take-profit levels by recognizing trend shifts.&lt;
     </item>
     <item>
       <title>Journey to a universal hedge system (part 2)</title>
-      <link>https://oldhuntor.github.io/posts/story-of-arbitrage2/</link>
+      <link>http://localhost:1313/posts/story-of-arbitrage2/</link>
       <pubDate>Sun, 09 Feb 2025 19:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/story-of-arbitrage2/</guid>
+      <guid>http://localhost:1313/posts/story-of-arbitrage2/</guid>
       <description>&lt;h1 id=&#34;journey-to-a-universal-hedge-system-part-2&#34;&gt;Journey to a universal hedge system (part 2)&lt;/h1&gt;
-&lt;p&gt;&lt;a href=&#34;https://oldhuntor.github.io/posts/story-of-arbitrage1/&#34;&gt;In the previous post&lt;/a&gt; we have talked about
+&lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/story-of-arbitrage1/&#34;&gt;In the previous post&lt;/a&gt; we have talked about
 the implementation of models in pairs trading and their experiment, now
 let&amp;rsquo;s try these strategies out using a backtesting framework.&lt;/p&gt;
 &lt;h1 id=&#34;model-budget-analysis&#34;&gt;Model budget analysis&lt;/h1&gt;
-&lt;p&gt;&lt;img alt=&#34;img_1.png&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/Hedge2/img_5.png&#34;&gt;
+&lt;p&gt;&lt;img alt=&#34;img_1.png&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/Hedge2/img_5.png&#34;&gt;
 Notice that the BSTS model has o(n) computation complexity.
 Other models have negligible complexity level.&lt;/p&gt;
 &lt;h1 id=&#34;backtesting-framework&#34;&gt;Backtesting framework&lt;/h1&gt;
 &lt;p&gt;The backtesting frame uses simple object-oriented programming structure.
-&lt;img alt=&#34;img.png&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/Hedge2/img_2.png&#34;&gt;&lt;/p&gt;
+&lt;img alt=&#34;img.png&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/Hedge2/img_2.png&#34;&gt;&lt;/p&gt;
 &lt;h1 id=&#34;strategy-flow-chart&#34;&gt;Strategy flow chart&lt;/h1&gt;
 &lt;p&gt;The strategy can multiple exit position options to prevent high drop down.
-&lt;img alt=&#34;img.png&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/Hedge2/img_3.png&#34;&gt;&lt;/p&gt;</description>
+&lt;img alt=&#34;img.png&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/Hedge2/img_3.png&#34;&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>Journey to a universal hedge system (part I)</title>
-      <link>https://oldhuntor.github.io/posts/story-of-arbitrage1/</link>
+      <link>http://localhost:1313/posts/story-of-arbitrage1/</link>
       <pubDate>Sat, 08 Feb 2025 19:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/story-of-arbitrage1/</guid>
+      <guid>http://localhost:1313/posts/story-of-arbitrage1/</guid>
       <description>&lt;h1 id=&#34;journey-to-a-universal-hedge-system&#34;&gt;Journey to a universal hedge system&lt;/h1&gt;
 &lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
 &lt;p&gt;Statistical arbitrage or hedging has already been known for a long time, people usually
@@ -70,19 +72,19 @@ or machine learning methods for hedging. We will address two questions:&lt;/p&gt
     </item>
     <item>
       <title>Trading strategies based on Bayesian theory (Part 3)</title>
-      <link>https://oldhuntor.github.io/posts/dirichletmultinominal/</link>
+      <link>http://localhost:1313/posts/dirichletmultinominal/</link>
       <pubDate>Wed, 13 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/dirichletmultinominal/</guid>
-      <description>&lt;p&gt;In the last &lt;a href=&#34;https://oldhuntor.github.io/posts/poissongamma/&#34;&gt;essay&lt;/a&gt; we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.&lt;/p&gt;
+      <guid>http://localhost:1313/posts/dirichletmultinominal/</guid>
+      <description>&lt;p&gt;In the last &lt;a href=&#34;http://localhost:1313/posts/poissongamma/&#34;&gt;essay&lt;/a&gt; we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.&lt;/p&gt;
 &lt;h2 id=&#34;what-is-dirichlet-distribution&#34;&gt;What is Dirichlet Distribution&lt;/h2&gt;
 &lt;p&gt;The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:&lt;/p&gt;</description>
     </item>
     <item>
       <title>Trading strategies based on Bayesian theory (Part 2)</title>
-      <link>https://oldhuntor.github.io/posts/poissongamma/</link>
+      <link>http://localhost:1313/posts/poissongamma/</link>
       <pubDate>Tue, 12 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/poissongamma/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;https://oldhuntor.github.io/posts/betabinomial/&#34;&gt;In the previous post&lt;/a&gt; we learned how to design trading strategies using the beta-binomial conjugate distribution. Can we design trading strategies using the gamma-Poisson conjugate distribution? This post will show an example of a trading strategy.&lt;/p&gt;
+      <guid>http://localhost:1313/posts/poissongamma/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://localhost:1313/posts/betabinomial/&#34;&gt;In the previous post&lt;/a&gt; we learned how to design trading strategies using the beta-binomial conjugate distribution. Can we design trading strategies using the gamma-Poisson conjugate distribution? This post will show an example of a trading strategy.&lt;/p&gt;
 &lt;h2 id=&#34;model&#34;&gt;Model&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;Objective: simulate the average number of increases over a period of time&lt;/li&gt;
@@ -91,14 +93,14 @@ or machine learning methods for hedging. We will address two questions:&lt;/p&gt
 $$ f(x; \alpha, \beta) = \frac{\beta^{\alpha} x^{\alpha - 1} e^{-\beta x}}{\Gamma(\alpha)}
 $$&lt;p&gt;
 Below are the images of the gamma distribution function with different parameters:：
-&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/poi_1.png&#34;&gt;
+&lt;img alt=&#34;Alt text&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/poi_1.png&#34;&gt;
 It can be seen that the domain of the gamma distribution is [0, +$\infty$], which means that we can no longer choose to study the parameter $\theta$, which is a 0 to 1 probability of increase. We can study the average number of increases $\lambda$ over a period of time. This is why we need to choose the Poisson distribution to calculate the likelihood.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Trading strategies based on Bayesian theory (Part 1)</title>
-      <link>https://oldhuntor.github.io/posts/betabinomial/</link>
+      <link>http://localhost:1313/posts/betabinomial/</link>
       <pubDate>Mon, 11 Nov 2024 19:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/betabinomial/</guid>
+      <guid>http://localhost:1313/posts/betabinomial/</guid>
       <description>&lt;h2 id=&#34;model-logic&#34;&gt;Model Logic&lt;/h2&gt;
 &lt;p&gt;Assuming that the long cycle can reflect the trend, and after observing the short-term data, we can better judge the long-term trend.&lt;/p&gt;
 &lt;ul&gt;
@@ -117,9 +119,9 @@ $f(X|\theta)$ is the likelihood function
     </item>
     <item>
       <title>Grid trading application</title>
-      <link>https://oldhuntor.github.io/posts/gridtrading/</link>
+      <link>http://localhost:1313/posts/gridtrading/</link>
       <pubDate>Mon, 21 Jun 2021 19:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/gridtrading/</guid>
+      <guid>http://localhost:1313/posts/gridtrading/</guid>
       <description>&lt;h1 id=&#34;parameter-definition&#34;&gt;Parameter Definition&lt;/h1&gt;
 &lt;h2 id=&#34;strategy-logic-parameters&#34;&gt;Strategy logic parameters&lt;/h2&gt;
 &lt;ul&gt;
@@ -150,27 +152,27 @@ $f(X|\theta)$ is the likelihood function
 &lt;h1 id=&#34;whats-grid-trading&#34;&gt;What&amp;rsquo;s grid trading&lt;/h1&gt;
 &lt;p&gt;Strategy usage background: after a big bullish market, the market starts to go bearish,
 that&amp;rsquo;s the right moment for using grid trading strategy.
-&lt;img alt=&#34;img_2.png&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/grid/img_2.png&#34;&gt;
+&lt;img alt=&#34;img_2.png&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/grid/img_2.png&#34;&gt;
 Just like the graph above, the green lines stand for buy limit orders, red lines stand for sell limit orders.
 The grid trading is just placing orders based on the current price, places sell orders at prices that
 are higher than current price, places buy orders at prices that are lower than current price.
-&lt;img alt=&#34;img_3.png&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/grid/img_3.png&#34;&gt;
+&lt;img alt=&#34;img_3.png&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/grid/img_3.png&#34;&gt;
 Assume that the price drop to 5, the limit buy order at 5 would be executed, we replenish another sell order
 at 5.1, the orders list would like the above graphs. The reverse situation would be the same,
 so during a market where the volatility is high, this strategy can generate profit.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Event driven trading system</title>
-      <link>https://oldhuntor.github.io/posts/event_driven_trading_system/</link>
+      <link>http://localhost:1313/posts/event_driven_trading_system/</link>
       <pubDate>Wed, 09 Jun 2021 19:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/event_driven_trading_system/</guid>
+      <guid>http://localhost:1313/posts/event_driven_trading_system/</guid>
       <description>&lt;h1 id=&#34;event-driven-trading-system&#34;&gt;Event driven trading system&lt;/h1&gt;
 &lt;p&gt;This article is inspired by &lt;a href=&#34;https://github.com/vnpy/vnpy&#34;&gt;VNPY&lt;/a&gt;, which is available under the MIT License.
 And the official ByBit python SDK &lt;a href=&#34;https://github.com/bybit-exchange/pybit?tab=readme-ov-file&#34;&gt;PyBit&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Algorithmic trading has inspired many people to implement their strategies.
 It frees the hands of the traders and materialize doesn&amp;rsquo;t suffer from the human emotion.&lt;/p&gt;
 &lt;p&gt;Here I will introduce an event-driven trading system:
-&lt;img alt=&#34;img.png&#34; loading=&#34;lazy&#34; src=&#34;https://oldhuntor.github.io/images/event/img.png&#34;&gt;&lt;/p&gt;
+&lt;img alt=&#34;img.png&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/event/img.png&#34;&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;Websocket and Rest API
@@ -181,9 +183,9 @@ one time connection, but the function from these two types of API are interchang
     </item>
     <item>
       <title>About me</title>
-      <link>https://oldhuntor.github.io/posts/about-me/</link>
+      <link>http://localhost:1313/posts/about-me/</link>
       <pubDate>Sat, 08 Feb 2020 19:12:16 +0100</pubDate>
-      <guid>https://oldhuntor.github.io/posts/about-me/</guid>
+      <guid>http://localhost:1313/posts/about-me/</guid>
       <description>&lt;h1 id=&#34;education-background&#34;&gt;Education Background&lt;/h1&gt;
 &lt;hr&gt;
 &lt;p&gt;&lt;strong&gt;TU dortmund&lt;/strong&gt; 10/2022 - till now&lt;/p&gt;

@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Isolation Forest Visualization</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .visualization-area {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            color: #333;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .controls {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+        
+        canvas {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        input[type="number"] {
+            width: 80px;
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .stats {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .stats h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        
+        .explanation {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .tree-structure {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌲 Online Isolation Forest Algorithm</h1>
+        
+        <div class="main-content">
+            <div class="visualization-area">
+                <canvas id="canvas" width="800" height="600"></canvas>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4CAF50;"></div>
+                        <span>Normal Data</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #F44336;"></div>
+                        <span>Anomalies</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #2196F3;"></div>
+                        <span>Current Point</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(255,215,0,0.5);"></div>
+                        <span>Stable Splits</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(255,165,0,0.6);"></div>
+                        <span>About to Merge</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: rgba(255,0,0,0.8);"></div>
+                        <span>Just Merged</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="stats">
+                    <h3>📊 Algorithm Stats</h3>
+                    <div class="stat-item">
+                        <span>Points Processed:</span>
+                        <span id="pointsProcessed">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Window Size:</span>
+                        <span id="windowSize">50</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Trees in Ensemble:</span>
+                        <span id="numTrees">3</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Current Tree Depth:</span>
+                        <span id="treeDepth">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Anomaly Score:</span>
+                        <span id="anomalyScore">0.000</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Merges Occurred:</span>
+                        <span id="mergeCount">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span>Active Splits:</span>
+                        <span id="activeSplits">0</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label>Window Size (ω): <span id="windowSizeValue">50</span></label>
+                    <input type="range" id="windowSizeSlider" min="20" max="200" value="50">
+                </div>
+                
+                <div class="control-group">
+                    <label>Max Leaf Samples (η): <span id="maxLeafValue">8</span></label>
+                    <input type="range" id="maxLeafSlider" min="4" max="32" value="8">
+                </div>
+                
+                <div class="control-group">
+                    <label>Speed (ms): <span id="speedValue">500</span></label>
+                    <input type="range" id="speedSlider" min="100" max="2000" value="500">
+                </div>
+                
+                <button id="startBtn">▶️ Start Stream</button>
+                <button id="pauseBtn" disabled>⏸️ Pause</button>
+                <button id="resetBtn">🔄 Reset</button>
+                <button id="addAnomalyBtn">⚠️ Add Anomaly</button>
+                
+                <div class="tree-structure">
+                    <h4>🌲 Tree Structure:</h4>
+                    <div id="treeDisplay">No tree built yet...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <h2>🎯 How Online Isolation Forest Works</h2>
+            <p><strong>1. Streaming Processing:</strong> Points arrive one by one from a data stream and are processed in real-time.</p>
+            <p><strong>2. Sliding Window:</strong> Only the most recent ω points are kept in memory, older points are forgotten.</p>
+            <p><strong>3. Dynamic Histograms:</strong> Each tree is a multi-dimensional histogram that splits bins when they reach maximum height η.</p>
+            <p><strong>4. Learning & Forgetting:</strong> New points increase bin heights and create splits, while old points decrease heights and merge bins.</p>
+            <p><strong>5. Anomaly Scoring:</strong> Points that require fewer splits to isolate (shorter path depth) get higher anomaly scores.</p>
+            <p><strong>6. Ensemble Decision:</strong> Multiple trees vote to provide robust anomaly detection.</p>
+            
+            <h3>🔄 Split Merging Conditions</h3>
+            <p><strong>Merge Trigger:</strong> When <code>left_child.height + right_child.height < η</code> (max leaf samples)</p>
+            <p><strong>Why Merging Happens:</strong></p>
+            <ul>
+                <li>📉 <strong>Forgetting Effect:</strong> As old points leave the sliding window, bin heights decrease</li>
+                <li>🎯 <strong>Sparse Regions:</strong> Areas with few data points lose their splits first</li>
+                <li>💾 <strong>Memory Efficiency:</strong> Removes unnecessary splits in low-density regions</li>
+                <li>🔄 <strong>Adaptation:</strong> Allows the tree structure to adapt to changing data patterns</li>
+            </ul>
+            <p><strong>Visual Cues:</strong> Watch the split colors - Yellow (stable) → Orange (about to merge) → Red (just merged)</p>
+        </div>
+    </div>
+
+    <script>
+        class OnlineIsolationForest {
+            constructor(windowSize = 50, maxLeafSamples = 8, numTrees = 3) {
+                this.windowSize = windowSize;
+                this.maxLeafSamples = maxLeafSamples;
+                this.numTrees = numTrees;
+                this.window = [];
+                this.trees = [];
+                this.pointsProcessed = 0;
+                
+                // Initialize trees
+                for (let i = 0; i < numTrees; i++) {
+                    this.trees.push(new OnlineITree(maxLeafSamples));
+                }
+            }
+            
+            processPoint(point) {
+                this.pointsProcessed++;
+                
+                // Add to window
+                this.window.push(point);
+                
+                // Learn point in all trees
+                for (let tree of this.trees) {
+                    tree.learnPoint(point);
+                }
+                
+                // Remove oldest point if window is full
+                if (this.window.length > this.windowSize) {
+                    const oldPoint = this.window.shift();
+                    for (let tree of this.trees) {
+                        tree.forgetPoint(oldPoint);
+                    }
+                }
+                
+                // Calculate anomaly score
+                return this.getAnomalyScore(point);
+            }
+            
+            getAnomalyScore(point) {
+                const depths = [];
+                for (let tree of this.trees) {
+                    depths.push(tree.getPathDepth(point));
+                }
+                
+                const avgDepth = depths.reduce((a, b) => a + b, 0) / depths.length;
+                const c = Math.log2(this.windowSize / this.maxLeafSamples);
+                return Math.pow(2, -avgDepth / c);
+            }
+            
+            reset() {
+                this.window = [];
+                this.pointsProcessed = 0;
+                this.trees = [];
+                for (let i = 0; i < this.numTrees; i++) {
+                    this.trees.push(new OnlineITree(this.maxLeafSamples));
+                }
+            }
+            
+            updateParameters(windowSize, maxLeafSamples) {
+                this.windowSize = windowSize;
+                this.maxLeafSamples = maxLeafSamples;
+                for (let tree of this.trees) {
+                    tree.maxLeafSamples = maxLeafSamples;
+                }
+            }
+        }
+        
+        class OnlineITree {
+            constructor(maxLeafSamples = 8) {
+                this.maxLeafSamples = maxLeafSamples;
+                this.root = new TreeNode(0, [[0, 800], [0, 600]]);
+            }
+            
+            learnPoint(point) {
+                this.root.learnPoint(point, this.maxLeafSamples, 0);
+            }
+            
+            forgetPoint(point) {
+                this.root.forgetPoint(point, this.maxLeafSamples);
+            }
+            
+            getPathDepth(point) {
+                return this.root.getPathDepth(point);
+            }
+            
+            getTreeStructure() {
+                return this.root.getStructure(0);
+            }
+        }
+        
+        class TreeNode {
+            constructor(height = 0, bounds = [[0, 800], [0, 600]]) {
+                this.height = height;
+                this.bounds = bounds; // [[xmin, xmax], [ymin, ymax]]
+                this.splitDim = null;
+                this.splitValue = null;
+                this.left = null;
+                this.right = null;
+                this.isLeaf = true;
+            }
+            
+            learnPoint(point, maxLeafSamples, depth) {
+                this.height++;
+                
+                // Update bounds to include new point
+                this.bounds[0][0] = Math.min(this.bounds[0][0], point.x);
+                this.bounds[0][1] = Math.max(this.bounds[0][1], point.x);
+                this.bounds[1][0] = Math.min(this.bounds[1][0], point.y);
+                this.bounds[1][1] = Math.max(this.bounds[1][1], point.y);
+                
+                if (this.isLeaf) {
+                    const maxHeight = maxLeafSamples * Math.pow(2, depth);
+                    if (this.height >= maxHeight && depth < 10) {
+                        this.split();
+                    }
+                } else {
+                    // Route to appropriate child
+                    if (this.splitDim === 0) {
+                        if (point.x < this.splitValue) {
+                            this.left.learnPoint(point, maxLeafSamples, depth + 1);
+                        } else {
+                            this.right.learnPoint(point, maxLeafSamples, depth + 1);
+                        }
+                    } else {
+                        if (point.y < this.splitValue) {
+                            this.left.learnPoint(point, maxLeafSamples, depth + 1);
+                        } else {
+                            this.right.learnPoint(point, maxLeafSamples, depth + 1);
+                        }
+                    }
+                }
+            }
+            
+            forgetPoint(point, maxLeafSamples) {
+                this.height = Math.max(0, this.height - 1);
+                
+                if (!this.isLeaf) {
+                    // Route to appropriate child
+                    if (this.splitDim === 0) {
+                        if (point.x < this.splitValue) {
+                            this.left.forgetPoint(point, maxLeafSamples);
+                        } else {
+                            this.right.forgetPoint(point, maxLeafSamples);
+                        }
+                    } else {
+                        if (point.y < this.splitValue) {
+                            this.left.forgetPoint(point, maxLeafSamples);
+                        } else {
+                            this.right.forgetPoint(point, maxLeafSamples);
+                        }
+                    }
+                    
+                    // MERGE CONDITION: When combined children height drops below threshold
+                    // This happens when enough points have been forgotten from this region
+                    const combinedHeight = this.left.height + this.right.height;
+                    if (combinedHeight < maxLeafSamples) {
+                        this.merge();
+                        // Visual feedback for merge
+                        this.justMerged = true;
+                        setTimeout(() => this.justMerged = false, 1000);
+                    }
+                }
+            }
+            
+            split() {
+                this.isLeaf = false;
+                
+                // Choose random dimension and split value
+                this.splitDim = Math.floor(Math.random() * 2);
+                const min = this.bounds[this.splitDim][0];
+                const max = this.bounds[this.splitDim][1];
+                this.splitValue = min + Math.random() * (max - min);
+                
+                // Create child bounds
+                const leftBounds = [
+                    [...this.bounds[0]],
+                    [...this.bounds[1]]
+                ];
+                const rightBounds = [
+                    [...this.bounds[0]],
+                    [...this.bounds[1]]
+                ];
+                
+                leftBounds[this.splitDim][1] = this.splitValue;
+                rightBounds[this.splitDim][0] = this.splitValue;
+                
+                // Create children
+                this.left = new TreeNode(Math.floor(this.height / 2), leftBounds);
+                this.right = new TreeNode(this.height - Math.floor(this.height / 2), rightBounds);
+            }
+            
+            merge() {
+                this.isLeaf = true;
+                this.splitDim = null;
+                this.splitValue = null;
+                this.left = null;
+                this.right = null;
+            }
+            
+            getPathDepth(point) {
+                if (this.isLeaf) {
+                    return 1 + Math.log2(Math.max(1, this.height));
+                }
+                
+                if (this.splitDim === 0) {
+                    if (point.x < this.splitValue) {
+                        return 1 + this.left.getPathDepth(point);
+                    } else {
+                        return 1 + this.right.getPathDepth(point);
+                    }
+                } else {
+                    if (point.y < this.splitValue) {
+                        return 1 + this.left.getPathDepth(point);
+                    } else {
+                        return 1 + this.right.getPathDepth(point);
+                    }
+                }
+            }
+            
+            getStructure(depth) {
+                const indent = '  '.repeat(depth);
+                if (this.isLeaf) {
+                    return `${indent}Leaf (h=${this.height})`;
+                } else {
+                    const dim = this.splitDim === 0 ? 'x' : 'y';
+                    return `${indent}Split ${dim} < ${this.splitValue.toFixed(1)} (h=${this.height})\n` +
+                           `${this.left.getStructure(depth + 1)}\n` +
+                           `${this.right.getStructure(depth + 1)}`;
+                }
+            }
+            
+            drawSplits(ctx) {
+                if (!this.isLeaf && this.splitValue) {
+                    // Different colors for different states
+                    if (this.justMerged) {
+                        ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)'; // Red for just merged
+                        ctx.lineWidth = 4;
+                    } else if (this.left.height + this.right.height < this.maxLeafSamples * 0.8) {
+                        ctx.strokeStyle = 'rgba(255, 165, 0, 0.6)'; // Orange for about to merge
+                        ctx.lineWidth = 3;
+                    } else {
+                        ctx.strokeStyle = 'rgba(255, 215, 0, 0.5)'; // Yellow for stable
+                        ctx.lineWidth = 2;
+                    }
+                    
+                    ctx.beginPath();
+                    
+                    if (this.splitDim === 0) {
+                        // Vertical split
+                        ctx.moveTo(this.splitValue, this.bounds[1][0]);
+                        ctx.lineTo(this.splitValue, this.bounds[1][1]);
+                    } else {
+                        // Horizontal split
+                        ctx.moveTo(this.bounds[0][0], this.splitValue);
+                        ctx.lineTo(this.bounds[0][1], this.splitValue);
+                    }
+                    
+                    ctx.stroke();
+                    
+                    // Add height indicators near splits
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                    ctx.font = '10px Arial';
+                    const text = `h:${this.height}`;
+                    if (this.splitDim === 0) {
+                        ctx.fillText(text, this.splitValue + 5, (this.bounds[1][0] + this.bounds[1][1]) / 2);
+                    } else {
+                        ctx.fillText(text, (this.bounds[0][0] + this.bounds[0][1]) / 2, this.splitValue - 5);
+                    }
+                    
+                    // Recursively draw child splits
+                    if (this.left) this.left.drawSplits(ctx);
+                    if (this.right) this.right.drawSplits(ctx);
+                }
+            }
+        }
+        
+        // Visualization class
+        class Visualization {
+            constructor() {
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.forest = new OnlineIsolationForest();
+                this.points = [];
+                this.currentPoint = null;
+                this.isRunning = false;
+                this.intervalId = null;
+                this.speed = 500;
+                this.mergeCount = 0;
+                
+                this.setupEventListeners();
+                this.generateInitialData();
+                this.draw();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('startBtn').addEventListener('click', () => this.start());
+                document.getElementById('pauseBtn').addEventListener('click', () => this.pause());
+                document.getElementById('resetBtn').addEventListener('click', () => this.reset());
+                document.getElementById('addAnomalyBtn').addEventListener('click', () => this.addAnomaly());
+                
+                document.getElementById('windowSizeSlider').addEventListener('input', (e) => {
+                    document.getElementById('windowSizeValue').textContent = e.target.value;
+                    this.forest.updateParameters(parseInt(e.target.value), this.forest.maxLeafSamples);
+                });
+                
+                document.getElementById('maxLeafSlider').addEventListener('input', (e) => {
+                    document.getElementById('maxLeafValue').textContent = e.target.value;
+                    this.forest.updateParameters(this.forest.windowSize, parseInt(e.target.value));
+                });
+                
+                document.getElementById('speedSlider').addEventListener('input', (e) => {
+                    this.speed = parseInt(e.target.value);
+                    document.getElementById('speedValue').textContent = e.target.value;
+                    if (this.isRunning) {
+                        this.pause();
+                        this.start();
+                    }
+                });
+            }
+            
+            generateInitialData() {
+                this.dataStream = [];
+                
+                // Generate normal data clusters
+                for (let i = 0; i < 200; i++) {
+                    // Cluster 1
+                    this.dataStream.push({
+                        x: 200 + Math.random() * 150 + Math.sin(i * 0.1) * 30,
+                        y: 200 + Math.random() * 150 + Math.cos(i * 0.1) * 30,
+                        isAnomaly: false
+                    });
+                    
+                    // Cluster 2
+                    this.dataStream.push({
+                        x: 500 + Math.random() * 120,
+                        y: 350 + Math.random() * 120,
+                        isAnomaly: false
+                    });
+                }
+                
+                // Add some anomalies
+                for (let i = 0; i < 20; i++) {
+                    this.dataStream.push({
+                        x: Math.random() * 800,
+                        y: Math.random() * 600,
+                        isAnomaly: true
+                    });
+                }
+                
+                // Shuffle the data
+                for (let i = this.dataStream.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [this.dataStream[i], this.dataStream[j]] = [this.dataStream[j], this.dataStream[i]];
+                }
+                
+                this.streamIndex = 0;
+            }
+            
+            start() {
+                this.isRunning = true;
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('pauseBtn').disabled = false;
+                
+                this.intervalId = setInterval(() => {
+                    if (this.streamIndex < this.dataStream.length) {
+                        this.processNextPoint();
+                    } else {
+                        this.pause();
+                    }
+                }, this.speed);
+            }
+            
+            pause() {
+                this.isRunning = false;
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('pauseBtn').disabled = true;
+                
+                if (this.intervalId) {
+                    clearInterval(this.intervalId);
+                    this.intervalId = null;
+                }
+            }
+            
+            reset() {
+                this.pause();
+                this.forest.reset();
+                this.points = [];
+                this.currentPoint = null;
+                this.streamIndex = 0;
+                this.mergeCount = 0;
+                this.generateInitialData();
+                this.updateStats();
+                this.draw();
+            }
+            
+            addAnomaly() {
+                const anomaly = {
+                    x: Math.random() * 800,
+                    y: Math.random() * 600,
+                    isAnomaly: true
+                };
+                this.dataStream.splice(this.streamIndex, 0, anomaly);
+            }
+            
+            processNextPoint() {
+                const point = this.dataStream[this.streamIndex];
+                this.currentPoint = point;
+                
+                const anomalyScore = this.forest.processPoint(point);
+                
+                this.points.push({
+                    ...point,
+                    anomalyScore: anomalyScore,
+                    timestamp: this.streamIndex
+                });
+                
+                // Keep only recent points for visualization
+                if (this.points.length > this.forest.windowSize * 2) {
+                    this.points.shift();
+                }
+                
+                this.streamIndex++;
+                this.updateStats();
+                this.draw();
+            }
+            
+            updateStats() {
+                document.getElementById('pointsProcessed').textContent = this.forest.pointsProcessed;
+                document.getElementById('windowSize').textContent = this.forest.windowSize;
+                document.getElementById('numTrees').textContent = this.forest.numTrees;
+                
+                if (this.forest.trees.length > 0) {
+                    const maxDepth = Math.max(...this.forest.trees.map(tree => this.getTreeDepth(tree.root)));
+                    document.getElementById('treeDepth').textContent = maxDepth;
+                    
+                    // Count active splits
+                    const activeSplits = this.forest.trees.reduce((total, tree) => 
+                        total + this.countSplits(tree.root), 0);
+                    document.getElementById('activeSplits').textContent = activeSplits;
+                }
+                
+                document.getElementById('mergeCount').textContent = this.mergeCount;
+                
+                if (this.currentPoint) {
+                    const score = this.forest.getAnomalyScore(this.currentPoint);
+                    document.getElementById('anomalyScore').textContent = score.toFixed(3);
+                }
+                
+                // Update tree structure display
+                if (this.forest.trees.length > 0) {
+                    document.getElementById('treeDisplay').textContent = this.forest.trees[0].getTreeStructure();
+                }
+            }
+            
+            getTreeDepth(node) {
+                if (node.isLeaf) return 1;
+                const leftDepth = node.left ? this.getTreeDepth(node.left) : 0;
+                const rightDepth = node.right ? this.getTreeDepth(node.right) : 0;
+                return 1 + Math.max(leftDepth, rightDepth);
+            }
+            
+            countSplits(node) {
+                if (node.isLeaf) return 0;
+                const leftSplits = node.left ? this.countSplits(node.left) : 0;
+                const rightSplits = node.right ? this.countSplits(node.right) : 0;
+                return 1 + leftSplits + rightSplits;
+            }
+            
+            draw() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw background grid
+                this.ctx.strokeStyle = '#f0f0f0';
+                this.ctx.lineWidth = 1;
+                for (let x = 0; x <= 800; x += 50) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, 600);
+                    this.ctx.stroke();
+                }
+                for (let y = 0; y <= 600; y += 50) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(800, y);
+                    this.ctx.stroke();
+                }
+                
+                // Draw tree splits
+                if (this.forest.trees.length > 0) {
+                    this.forest.trees[0].root.drawSplits(this.ctx);
+                }
+                
+                // Draw points
+                this.points.forEach((point, index) => {
+                    const age = this.points.length - index;
+                    const alpha = Math.max(0.3, 1 - age / (this.forest.windowSize * 2));
+                    
+                    let color;
+                    if (point.isAnomaly) {
+                        color = `rgba(244, 67, 54, ${alpha})`;
+                    } else {
+                        color = `rgba(76, 175, 80, ${alpha})`;
+                    }
+                    
+                    // Size based on anomaly score
+                    const radius = 3 + point.anomalyScore * 5;
+                    
+                    this.ctx.fillStyle = color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(point.x, point.y, radius, 0, 2 * Math.PI);
+                    this.ctx.fill();
+                    
+                    // Highlight high anomaly scores
+                    if (point.anomalyScore > 0.6) {
+                        this.ctx.strokeStyle = '#ff9800';
+                        this.ctx.lineWidth = 2;
+                        this.ctx.beginPath();
+                        this.ctx.arc(point.x, point.y, radius + 3, 0, 2 * Math.PI);
+                        this.ctx.stroke();
+                    }
+                });
+                
+                // Draw current point
+                if (this.currentPoint) {
+                    this.ctx.fillStyle = '#2196F3';
+                    this.ctx.strokeStyle = '#ffffff';
+                    this.ctx.lineWidth = 3;
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.currentPoint.x, this.currentPoint.y, 8, 0, 2 * Math.PI);
+                    this.ctx.fill();
+                    this.ctx.stroke();
+                }
+            }
+        }
+        
+        // Initialize visualization
+        window.addEventListener('load', () => {
+            new Visualization();
+        });
+    </script>
+</body>
+</html>

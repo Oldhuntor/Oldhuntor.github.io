@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>AI on Xuanhao&#39;s Blog</title>
+    <link>http://localhost:1313/tags/ai/</link>
+    <description>Recent content in AI on Xuanhao&#39;s Blog</description>
+    <generator>Hugo -- 0.138.0</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 15 Jan 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/ai/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Understanding Transformer and Attention</title>
+      <link>http://localhost:1313/posts/transformer-attention/</link>
+      <pubDate>Mon, 15 Jan 2024 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/transformer-attention/</guid>
+      <description>&lt;h1 id=&#34;transformer-and-attention&#34;&gt;Transformer and Attention&lt;/h1&gt;
+&lt;h2 id=&#34;whats-attention&#34;&gt;what&amp;rsquo;s Attention？&lt;/h2&gt;
+&lt;p&gt;Attention&lt;/p&gt;
+&lt;h2 id=&#34;interactive&#34;&gt;Interactive&lt;/h2&gt;
+
+&lt;div class=&#34;attention-demo-container&#34;&gt;
+    &lt;div class=&#34;demo-header&#34;&gt;
+        &lt;h3&gt;🎯 Attention权重交互式演示&lt;/h3&gt;
+        &lt;p&gt;点击句子中的任意单词查看注意力权重分布&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&#34;sentence-display&#34;&gt;
+        &lt;div class=&#34;word&#34; data-word=&#34;0&#34;&gt;我&lt;/div&gt;
+        &lt;div class=&#34;word&#34; data-word=&#34;1&#34;&gt;爱&lt;/div&gt;
+        &lt;div class=&#34;word&#34; data-word=&#34;2&#34;&gt;学习&lt;/div&gt;
+        &lt;div class=&#34;word&#34; data-word=&#34;3&#34;&gt;人工&lt;/div&gt;
+        &lt;div class=&#34;word&#34; data-word=&#34;4&#34;&gt;智能&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&#34;attention-weights&#34;&gt;
+        &lt;h4&gt;注意力权重分布：&lt;/h4&gt;
+        &lt;div id=&#34;weight-bars&#34;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&#34;demo-controls&#34;&gt;
+        &lt;button class=&#34;btn btn-primary&#34; onclick=&#34;randomAttention()&#34;&gt;随机注意力&lt;/button&gt;
+        &lt;button class=&#34;btn btn-secondary&#34; onclick=&#34;resetAttention()&#34;&gt;重置&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;div class=&#34;similarity-calc-container&#34;&gt;
+    &lt;div class=&#34;demo-header&#34;&gt;
+        &lt;h3&gt;📐 相似度计算演示&lt;/h3&gt;
+        &lt;p&gt;调整向量值，观察相似度计算过程&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&#34;formula-display&#34;&gt;
+        &lt;div class=&#34;formula&#34;&gt;e&lt;sub&gt;ij&lt;/sub&gt; = Q&lt;sub&gt;i&lt;/sub&gt; · K&lt;sub&gt;j&lt;/sub&gt; / √d&lt;sub&gt;k&lt;/sub&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&#34;vector-demo&#34;&gt;
+        &lt;div class=&#34;vector query-vector&#34;&gt;
+            &lt;h4&gt;Query向量 (Q&lt;sub&gt;i&lt;/sub&gt;)&lt;/h4&gt;
+            &lt;div class=&#34;vector-values&#34;&gt;
+                &lt;input type=&#34;number&#34; value=&#34;0.8&#34; step=&#34;0.1&#34; onchange=&#34;updateCalculation()&#34;&gt;
+                &lt;input type=&#34;number&#34; value=&#34;0.6&#34; step=&#34;0.1&#34; onchange=&#34;updateCalculation()&#34;&gt;
+                &lt;input type=&#34;number&#34; value=&#34;0.4&#34; step=&#34;0.1&#34; onchange=&#34;updateCalculation()&#34;&gt;
+                &lt;input type=&#34;number&#34; value=&#34;0.2&#34; step=&#34;0.1&#34; onchange=&#34;updateCalculation()&#34;&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&#34;operator&#34;&gt;×&lt;/div&gt;
+
+        &lt;div class=&#34;vector key-vector&#34;&gt;
+            &lt;h4&gt;Key向量 (K&lt;sub&gt;j&lt;/sub&gt;)&lt;/h4&gt;
+            &lt;div class=&#34;vector-values&#34;&gt;
+                &lt;input type=&#34;number&#34; value=&#34;0.7&#34; step=&#34;0.1&#34; onchange=&#34;updateCalculation()&#34;&gt;
+                &lt;input type=&#34;number&#34; value=&#34;0.5&#34; step=&#34;0.1&#34; onchange=&#34;updateCalculation()&#34;&gt;
+                &lt;input type=&#34;number&#34; value=&#34;0.3&#34; step=&#34;0.1&#34; onchange=&#34;updateCalculation()&#34;&gt;
+                &lt;input type=&#34;number&#34; value=&#34;0.1&#34; step=&#34;0.1&#34; onchange=&#34;updateCalculation()&#34;&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&#34;calculation-steps&#34;&gt;
+        &lt;div class=&#34;step&#34;&gt;
+            &lt;strong&gt;步骤1：点积计算&lt;/strong&gt;
+            &lt;div id=&#34;dot-product-calc&#34;&gt;0.8×0.7 + 0.6×0.5 + 0.4×0.3 + 0.2×0.1 = 1.00&lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&#34;step&#34;&gt;
+            &lt;strong&gt;步骤2：缩放处理&lt;/strong&gt;
+            &lt;div id=&#34;scaling-calc&#34;&gt;√4 = 2.00&lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&#34;step&#34;&gt;
+            &lt;strong&gt;步骤3：最终结果&lt;/strong&gt;
+            &lt;div id=&#34;final-result&#34;&gt;1.00 / 2.00 = 0.50&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&#34;preset-buttons&#34;&gt;
+        &lt;button class=&#34;btn&#34; onclick=&#34;loadPreset(&#39;similar&#39;)&#34;&gt;相似向量&lt;/button&gt;
+        &lt;button class=&#34;btn&#34; onclick=&#34;loadPreset(&#39;different&#39;)&#34;&gt;不同向量&lt;/button&gt;
+        &lt;button class=&#34;btn&#34; onclick=&#34;loadPreset(&#39;orthogonal&#39;)&#34;&gt;正交向量&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;div class=&#34;softmax-demo-container&#34;&gt;
+    &lt;div class=&#34;demo-header&#34;&gt;
+        &lt;h3&gt;⚡ Softmax饱和现象演示&lt;/h3&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&#34;comparison-container&#34;&gt;
+        &lt;div class=&#34;normal-case&#34;&gt;
+            &lt;h4&gt;✅ 正常情况&lt;/h4&gt;
+            &lt;div class=&#34;input-display&#34;&gt;输入: [2, 1, 3]&lt;/div&gt;
+            &lt;div class=&#34;output-bars&#34; id=&#34;normal-output&#34;&gt;
+                
+            &lt;/div&gt;
+            &lt;div class=&#34;status&#34;&gt;梯度: 有意义&lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&#34;saturated-case&#34;&gt;
+            &lt;h4&gt;❌ 饱和情况&lt;/h4&gt;
+            &lt;div class=&#34;input-display&#34;&gt;输入: [20, 10, 30]&lt;/div&gt;
+            &lt;div class=&#34;output-bars&#34; id=&#34;saturated-output&#34;&gt;
+                
+            &lt;/div&gt;
+            &lt;div class=&#34;status&#34;&gt;梯度: 接近0&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&#34;interactive-section&#34;&gt;
+        &lt;h4&gt;交互式调整&lt;/h4&gt;
+        &lt;div class=&#34;sliders&#34;&gt;
+            &lt;label&gt;值1: &lt;span id=&#34;val1&#34;&gt;2&lt;/span&gt;&lt;/label&gt;
+            &lt;input type=&#34;range&#34; min=&#34;-5&#34; max=&#34;30&#34; value=&#34;2&#34; oninput=&#34;updateSoftmax(0, this.value)&#34;&gt;
+
+            &lt;label&gt;值2: &lt;span id=&#34;val2&#34;&gt;1&lt;/span&gt;&lt;/label&gt;
+            &lt;input type=&#34;range&#34; min=&#34;-5&#34; max=&#34;30&#34; value=&#34;1&#34; oninput=&#34;updateSoftmax(1, this.value)&#34;&gt;
+
+            &lt;label&gt;值3: &lt;span id=&#34;val3&#34;&gt;3&lt;/span&gt;&lt;/label&gt;
+            &lt;input type=&#34;range&#34; min=&#34;-5&#34; max=&#34;30&#34; value=&#34;3&#34; oninput=&#34;updateSoftmax(2, this.value)&#34;&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&#34;live-output&#34; id=&#34;live-output&#34;&gt;
+            
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+
+&lt;link rel=&#34;stylesheet&#34; href=&#34;http://localhost:1313/css/demo-styles.css&#34;&gt;
+&lt;script src=&#34;http://localhost:1313/js/attention-demo.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;http://localhost:1313/js/similarity-calc.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;http://localhost:1313/js/softmax-demo.js&#34;&gt;&lt;/script&gt;
+&lt;h2 id=&#34;similarity&#34;&gt;similarity&lt;/h2&gt;
+&lt;div class=&#34;similarity-calc-container&#34;&gt;
+    &lt;div class=&#34;demo-header&#34;&gt;
+        &lt;h3&gt;📐 相似度计算演示&lt;/h3&gt;
+        &lt;p&gt;调整向量值，观察相似度计算过程&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
