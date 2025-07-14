@@ -2,46 +2,46 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/posts/</loc>
+    <loc>https://oldhuntor.github.io/posts/</loc>
     <lastmod>2027-12-08T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/</loc>
+    <loc>https://oldhuntor.github.io/</loc>
     <lastmod>2027-12-08T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/plotly/</loc>
+    <loc>https://oldhuntor.github.io/posts/plotly/</loc>
     <lastmod>2025-05-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/regime-changing-detection/</loc>
+    <loc>https://oldhuntor.github.io/posts/regime-changing-detection/</loc>
     <lastmod>2025-02-25T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/story-of-arbitrage2/</loc>
+    <loc>https://oldhuntor.github.io/posts/story-of-arbitrage2/</loc>
     <lastmod>2025-02-09T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/story-of-arbitrage1/</loc>
+    <loc>https://oldhuntor.github.io/posts/story-of-arbitrage1/</loc>
     <lastmod>2025-02-08T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/dirichletmultinominal/</loc>
+    <loc>https://oldhuntor.github.io/posts/dirichletmultinominal/</loc>
     <lastmod>2024-11-13T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/poissongamma/</loc>
+    <loc>https://oldhuntor.github.io/posts/poissongamma/</loc>
     <lastmod>2024-11-12T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/betabinomial/</loc>
+    <loc>https://oldhuntor.github.io/posts/betabinomial/</loc>
     <lastmod>2024-11-11T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/gridtrading/</loc>
+    <loc>https://oldhuntor.github.io/posts/gridtrading/</loc>
     <lastmod>2021-06-21T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/event_driven_trading_system/</loc>
+    <loc>https://oldhuntor.github.io/posts/event_driven_trading_system/</loc>
     <lastmod>2021-06-09T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/posts/about-me/</loc>
+    <loc>https://oldhuntor.github.io/posts/about-me/</loc>
     <lastmod>2020-02-08T19:12:16+01:00</lastmod>
   </url><url>
-    <loc>http://localhost:1313/archives/</loc>
+    <loc>https://oldhuntor.github.io/archives/</loc>
   </url><url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://oldhuntor.github.io/categories/</loc>
   </url><url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>https://oldhuntor.github.io/tags/</loc>
   </url>
 </urlset>

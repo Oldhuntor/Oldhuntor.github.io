@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
 
-<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<head><meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="index, follow">
 <title>Trading strategies based on Bayesian theory (Part 3) | Xuanhao&#39;s Blog</title>
 <meta name="keywords" content="">
 <meta name="description" content="In the last essay we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.
 What is Dirichlet Distribution
 The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:">
 <meta name="author" content="">
-<link rel="canonical" href="http://localhost:1313/posts/dirichletmultinominal/">
+<link rel="canonical" href="https://oldhuntor.github.io/posts/dirichletmultinominal/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.947ec63dc116047c53b9829dd2110e5b357888ebd947138524e164bbb12c871f.css" integrity="sha256-lH7GPcEWBHxTuYKd0hEOWzV4iOvZRxOFJOFku7Eshx8=" rel="preload stylesheet" as="style">
-<link rel="icon" href="http://localhost:1313/favicon.ico">
-<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
-<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
-<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<link rel="icon" href="https://oldhuntor.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://oldhuntor.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://oldhuntor.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://oldhuntor.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://oldhuntor.github.io/safari-pinned-tab.svg">
 <meta name="theme-color" content="#2e2e33">
 <meta name="msapplication-TileColor" content="#2e2e33">
-<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/dirichletmultinominal/">
+<link rel="alternate" hreflang="en" href="https://oldhuntor.github.io/posts/dirichletmultinominal/">
 <noscript>
     <style>
         #theme-toggle,
@@ -57,7 +57,72 @@ The Dirichlet distribution is a family of continuous multivariate probability di
         }
 
     </style>
-</noscript>
+</noscript><meta property="og:url" content="https://oldhuntor.github.io/posts/dirichletmultinominal/">
+  <meta property="og:site_name" content="Xuanhao&#39;s Blog">
+  <meta property="og:title" content="Trading strategies based on Bayesian theory (Part 3)">
+  <meta property="og:description" content="In the last essay we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.
+What is Dirichlet Distribution The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-11-13T19:12:16+01:00">
+    <meta property="article:modified_time" content="2024-11-13T19:12:16+01:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Trading strategies based on Bayesian theory (Part 3)">
+<meta name="twitter:description" content="In the last essay we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.
+What is Dirichlet Distribution
+The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://oldhuntor.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Trading strategies based on Bayesian theory (Part 3)",
+      "item": "https://oldhuntor.github.io/posts/dirichletmultinominal/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Trading strategies based on Bayesian theory (Part 3)",
+  "name": "Trading strategies based on Bayesian theory (Part 3)",
+  "description": "In the last essay we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.\nWhat is Dirichlet Distribution The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "In the last essay we talked about using the Gamma-Poisson conjugate distribution to develop trading strategies. In the following article, we will try to use the more complex Dirichlet-Multinominal conjugate distribution.\nWhat is Dirichlet Distribution The Dirichlet distribution is a family of continuous multivariate probability distributions parameterized by a positive real vector. It is often used as a prior distribution for multinomial distributions in Bayesian statistics. The formula for the probability density function of the Dirichlet distribution is as follows:\n$$ P(\\mathbf{x} \\mid \\boldsymbol{\\alpha}) = \\frac{1}{B(\\boldsymbol{\\alpha})} \\prod_{i=1}^{K} x_i^{\\alpha_i - 1} $$where $\\mathbf{x} = (x_1, \\ldots, x_K)$ is a K-dimensional vector representing the probabilities of K different categories or events. The sum of these probabilities must be 1.\n$\\boldsymbol{\\alpha} = (\\alpha_1, \\ldots, \\alpha_K)$ is a positive parameter vector, $\\alpha_i$ represents the prior, or count, of the $i$th category.\n$\\beta(\\alpha)$ is the polynomial Beta function, which serves as a normalization constant to ensure that the total probability integral is 1. It is defined as: $B(\\boldsymbol{\\alpha}) = \\frac{\\prod_{i=1}^{K} \\Gamma(\\alpha_i)}{\\Gamma\\left(\\sum_{i=1}^{K} \\alpha_i\\right)}$, where $\\Gamma$ represents the Gamma function, which is an extension of the factorial function (whose argument is shifted down by 1) to real and complex numbers.\nThe Dirichlet distribution is a generalization of the Beta distribution to higher dimensions. In the two-dimensional case (K=2), the Dirichlet distribution simplifies to the Beta distribution.\nWhat is Multinomial distribution? The multinomial distribution is a generalization of the binomial distribution to more than two categories. It describes the probability of each possible count for rolling a K-sided die n times. In simple terms, it is the distribution of the counts of multiple categories in a fixed number of trials.\nFeatures:\nClass: There are K possible outcomes or classes. Trial: There are n independent trials. Probability: Each trial produces exactly one of the K classes. The probability of each class in each trial is fixed and expressed as: $p_1,p_2,\\dots,p_k$, where $∑p_i=1$ Probability Mass Function(PMF): The pmf of the multinomial distribution of a given outcome $x=(x_1,x_2,\\dots,x_K)$ is: $$P(X = x) = \\frac{n!}{x_1! x_2! \\ldots x_K!} p_1^{x_1} p_2^{x_2} \\ldots p_K^{x_K} $$ Where $x_i$ is the count of the $i$ category, and $\\sum_{i=1}^{K} x_{i} = n$.\nConjugate Prior In Bayesian statistics, a conjugate prior is a prior distribution that, when combined with a likelihood function, produces a posterior distribution of the same family. For multinomial distributions, the conjugate prior is the Dirichlet distribution.\nPrinciple: Prior: Before observing any data, we express our belief about the class probabilities using a Dirichlet distribution (characterized by parameters) with parameters $\\boldsymbol{\\alpha} = (\\alpha_1,\\alpha_2, \\ldots, \\alpha_K)$ Likelihood: Then we observe data which can be modeled as a multinomial distribution. Posterior: After observing the data, the posterior distribution of the class probabilities is again a Dirichlet distribution but with updated parameters.\nUpdate parameters: The parameters of the Dirichlet prior are updated in a simple way based on the observed data. If the original parameters are $\\boldsymbol{\\alpha} = (\\alpha_1,\\alpha_2, \\ldots, \\alpha_K)$, and the observed counts are $x=(x_1,x_2,\\dots,x_K)$, the parameters of the Dirichlet posterior distribution are: $\\boldsymbol{\\alpha} + x = (\\alpha_1+x_1,\\alpha_2+x_2, \\ldots, \\alpha_K+x_K)$\nThe concept of a conjugate prior, such as the Dirichlet-multinomial, is crucial in Bayesian analysis because it simplifies the computation of the posterior distribution, which is the basis of Bayesian inference. This conjugation allows for more straightforward analysis or computational updates to our beliefs in light of new data.\nTips\nThe meaning of parameter $\\alpha_i$: When $\\alpha_i$ is greater than 1, it indicates that the corresponding category $i$ has a higher prior probability. When $\\alpha_i$ is equal to 1, it indicates that there is no special prior knowledge about these categories, which is called uninformative prior. When $\\alpha_i$ is less than 1, it indicates that the corresponding category $i$ has a lower prior probability. Expression of probability: In the Dirichlet distribution, the expected value of $p_i$ (the probability of the $i$th category) is $E[p_i]=\\frac{\\alpha_{i} }{\\sum_{j=1}^{k} \\alpha_{j} }$ . This shows that $\\alpha_i$ affects the probability of the corresponding category, but is not directly equivalent to the probability. Bayesian Update: After the data is observed, the parameters of the Dirichlet distribution are updated to form the posterior distribution. If the number of times category $i$ appears in the observed data is $x_i$, then the parameters of the posterior distribution become $\\alpha_i+x_i$. This means that each $\\alpha_i$ as prior knowledge combined with the observed data jointly affects the posterior probability of category $i$. Therefore, each $\\alpha_i$ can be regarded as a “belief” or expectation of the probability of category $i$ before the data is observed, and these beliefs are updated as the data appears. This is a core feature of the Bayesian method: combining prior beliefs and observed data to form posterior knowledge. Parameter Update Visualization Prior Dirichlet Distribution: This distribution represents our initial beliefs about the probabilities of different outcomes (in the 3-class example). Here, I used a uniform prior with parameters [1,1,1], indicating no initial preference for any class. Posterior Dirichlet Distribution: After observing the data (in this case, [10,5,15] counts for each class), the posterior distribution updates our beliefs. The parameters of the posterior distribution are the sum of the prior parameters and the observed counts, resulting in parameters [11,6,16]. This posterior distribution now reflects our updated beliefs after taking into account the observed data. import numpy as np import matplotlib.pyplot as plt from scipy.stats import dirichlet # Function to plot Dirichlet distributions def plot_dirichlet(parameters, title): # Sample from the Dirichlet distribution samples = dirichlet.rvs(parameters, size=10000) # Plotting plt.figure(figsize=(8, 6)) plt.hist(samples, bins=30, density=True, histtype='step', label=['Component 1', 'Component 2', 'Component 3']) plt.title(title) plt.xlabel('Value') plt.ylabel('Density') plt.legend() plt.show() # Prior Dirichlet distribution parameters (example values) prior_parameters = np.array([1, 1, 1]) plot_dirichlet(prior_parameters, \"Prior Dirichlet Distribution\") # Dirichlet-multinomial conjugation: updating the parameters # Let's say we have observed counts for each category observed_counts = np.array([10, 5, 15]) # example counts for 3 categories posterior_parameters = prior_parameters + observed_counts plot_dirichlet(posterior_parameters, \"Posterior Dirichlet Distribution\") Trading strategy In this strategy, you use long-term data to set the prior parameters, and then use short-term data to update the posterior parameters to make trading decisions. Here is one way to implement this strategy:\nStep 1: Set Prior Parameters\nChoose Long-Term Data: First, you need to decide what kind of data represents the long-term. For example, this could be monthly data for the past year, or any other historical data that fits your strategy. Analyze Long-Term Data: Based on this data, you can estimate the frequency of each category (e.g., “bullish”, “bearish”, “neutral”). Set Dirichlet Prior Parameters: Use these frequencies to set the prior parameters of the Dirichlet distribution $\\boldsymbol{\\alpha} = (\\alpha_1,\\alpha_2, \\ldots, \\alpha_K)$, which reflect your initial beliefs about the long-term market behavior. def on_long_bar(self, long_bar: BarData): self.am_long.update_bar(long_bar) if not self.am_long.inited: return # Calculate the number of bullish, bearish and neutral bars for i in range(self.am_long.size): diff = self.am_long.close[i] - self.am_long.open[i] tick_diff = diff/self.tick_size if tick_diff \u003e self.tick_size_threshold: self.prior_bullish += 1 elif tick_diff \u003c -self.tick_size_threshold: self.prior_bearish += 1 else: self.prior_neutral += 1 self.prior_neutral = self.prior_neutral/self.am_long.size self.prior_bearish = self.prior_bearish/self.am_long.size self.prior_bullish = self.prior_bullish/self.am_long.size self.priors_inited = True Step 2: Update the posterior parameters\nSelect short-term data: Next, select data that represents a short period, such as the data from the last week or month. Calculate category counts: Count the number of occurrences of each category in the short period. Update the posterior parameters: Use the short-term data to update the prior parameters. If the category counts you observe in the short period are $(x_1,x_2,\\dots,x_k)$, then the posterior parameters are $\\boldsymbol{\\alpha_{post}} + x = (\\alpha_1+x_1,\\alpha_2+x_2, \\ldots, \\alpha_K+x_K)$ def on_short_bar(self, short_bar: BarData): self.am_short.update_bar(short_bar) if not self.am_short.inited: return if not self.priors_inited: return buy_signal = False sell_signal = False bullish_count = 0 bearish_count = 0 neutral_count = 0 # Calculate the number of bullish, bearish and neutral bars for i in range(self.am_short.size): diff = self.am_short.close[i] - self.am_short.open[i] tick_diff = diff/self.tick_size if tick_diff \u003e self.tick_size_threshold: bullish_count += 1 elif tick_diff \u003c -self.tick_size_threshold: bearish_count += 1 else: neutral_count += 1 # Parameter updating self.post_bullish = self.prior_bullish + bullish_count self.post_bearish = self.prior_bearish + bearish_count self.post_neutral = self.prior_neutral + neutral_count Step 3: Make a trading decision\nCalculate the posterior mean: Calculate the posterior probability of each class, $\\alpha_{j\\text{post}} = \\frac{\\alpha_{j\\text{post}}}{\\sum_{i=1}^{k} a_{i\\text{post}}}$ Select the class with the highest probability: Based on the posterior mean, determine which class has the highest probability. Develop a trading strategy: Develop your trading strategy based on the class with the highest probability. For example, if the “bullish” class has the highest probability, you might choose to buy; if it is “bearish”, you might choose to sell. sumpost = self.post_bearish+self.post_neutral+self.post_bullish post_prob_bull = self.post_bullish/sumpost post_prob_bear = self.post_bearish/sumpost post_prob_neu = self.post_neutral/sumpost maxValue = max(post_prob_neu,post_prob_bull,post_prob_bear) if maxValue == post_prob_bear: sell_signal = True elif maxValue == post_prob_bull: buy_signal = True else: return if self.dual_side: if buy_signal and sell_signal: return # both long and short if buy_signal: if self.pos \u003e= 0: if abs(self.pos) \u003c self.pyramiding: self.buy(short_bar.close_price, self.fix_size) else: self.cover(short_bar.close_price, abs(self.pos)) self.buy(short_bar.close_price, self.fix_size) if sell_signal: if self.pos \u003c= 0: if abs(self.pos) \u003c self.pyramiding: self.short(short_bar.close_price, self.fix_size) else: self.sell(short_bar.close_price, abs(self.pos)) self.short(short_bar.close_price, self.fix_size) else: if buy_signal: if self.pos \u003e= 0 and self.pos \u003c self.pyramiding: self.buy(short_bar.close_price, self.fix_size) if sell_signal: if self.pos != 0: self.sell(short_bar.close_price, self.pos) Strategy Practice Environment parameter Strategy parameter backtesting result Strategy curve ",
+  "wordCount" : "1512",
+  "inLanguage": "en",
+  "datePublished": "2024-11-13T19:12:16+01:00",
+  "dateModified": "2024-11-13T19:12:16+01:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://oldhuntor.github.io/posts/dirichletmultinominal/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Xuanhao's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://oldhuntor.github.io/favicon.ico"
+    }
+  }
+}
+</script>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/katex.min.css">
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.13/katex.min.js"></script>
@@ -90,7 +155,7 @@ The Dirichlet distribution is a family of continuous multivariate probability di
 <header class="header">
     <nav class="nav">
         <div class="logo">
-            <a href="http://localhost:1313/" accesskey="h" title="Xuanhao&#39;s Blog (Alt + H)">Xuanhao&#39;s Blog</a>
+            <a href="https://oldhuntor.github.io/" accesskey="h" title="Xuanhao&#39;s Blog (Alt + H)">Xuanhao&#39;s Blog</a>
             <div class="logo-switches">
                 <button id="theme-toggle" accesskey="t" title="(Alt + T)">
                     <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
@@ -116,7 +181,7 @@ The Dirichlet distribution is a family of continuous multivariate probability di
         </div>
         <ul id="menu">
             <li>
-                <a href="http://localhost:1313/posts/about-me" title="About Me">
+                <a href="https://oldhuntor.github.io/posts/about-me" title="About Me">
                     <span>About Me</span>
                 </a>
             </li>
@@ -385,7 +450,7 @@ Therefore, each $\alpha_i$ can be regarded as a &ldquo;belief&rdquo; or expectat
 <ul class="share-buttons">
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on x"
-            href="https://x.com/intent/tweet/?text=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fdirichletmultinominal%2f&amp;hashtags=">
+            href="https://x.com/intent/tweet/?text=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f&amp;hashtags=">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
@@ -394,7 +459,7 @@ Therefore, each $\alpha_i$ can be regarded as a &ldquo;belief&rdquo; or expectat
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on linkedin"
-            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fdirichletmultinominal%2f&amp;title=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&amp;summary=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fdirichletmultinominal%2f">
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f&amp;title=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&amp;summary=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&amp;source=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
@@ -403,7 +468,7 @@ Therefore, each $\alpha_i$ can be regarded as a &ldquo;belief&rdquo; or expectat
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on reddit"
-            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fdirichletmultinominal%2f&title=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29">
+            href="https://reddit.com/submit?url=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f&title=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
@@ -412,7 +477,7 @@ Therefore, each $\alpha_i$ can be regarded as a &ldquo;belief&rdquo; or expectat
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on facebook"
-            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fdirichletmultinominal%2f">
+            href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
@@ -421,7 +486,7 @@ Therefore, each $\alpha_i$ can be regarded as a &ldquo;belief&rdquo; or expectat
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on whatsapp"
-            href="https://api.whatsapp.com/send?text=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fdirichletmultinominal%2f">
+            href="https://api.whatsapp.com/send?text=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29%20-%20https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
             <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
@@ -430,7 +495,7 @@ Therefore, each $\alpha_i$ can be regarded as a &ldquo;belief&rdquo; or expectat
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on telegram"
-            href="https://telegram.me/share/url?text=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fdirichletmultinominal%2f">
+            href="https://telegram.me/share/url?text=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&amp;url=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
             <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
                 <path
                     d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
@@ -439,7 +504,7 @@ Therefore, each $\alpha_i$ can be regarded as a &ldquo;belief&rdquo; or expectat
     </li>
     <li>
         <a target="_blank" rel="noopener noreferrer" aria-label="share Trading strategies based on Bayesian theory (Part 3) on ycombinator"
-            href="https://news.ycombinator.com/submitlink?t=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fdirichletmultinominal%2f">
+            href="https://news.ycombinator.com/submitlink?t=Trading%20strategies%20based%20on%20Bayesian%20theory%20%28Part%203%29&u=https%3a%2f%2foldhuntor.github.io%2fposts%2fdirichletmultinominal%2f">
             <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
                 xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
                 <path
@@ -454,7 +519,7 @@ Therefore, each $\alpha_i$ can be regarded as a &ldquo;belief&rdquo; or expectat
     </main>
     
 <footer class="footer">
-        <span>&copy; 2025 <a href="http://localhost:1313/">Xuanhao&#39;s Blog</a></span> · 
+        <span>&copy; 2025 <a href="https://oldhuntor.github.io/">Xuanhao&#39;s Blog</a></span> · 
 
     <span>
         Powered by
