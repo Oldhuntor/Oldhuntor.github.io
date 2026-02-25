@@ -6,8 +6,23 @@
     <description>Recent content in Posts on Xuanhao&#39;s Blog</description>
     <generator>Hugo -- 0.138.0</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 01 May 2025 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 01 Feb 2026 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://oldhuntor.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Wavelet Transform</title>
+      <link>https://oldhuntor.github.io/posts/wavelets/</link>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 +0000</pubDate>
+      <guid>https://oldhuntor.github.io/posts/wavelets/</guid>
+      <description>&lt;p&gt;The wavelet transform is a signal processing tool applicable to both images and time series. The figure below illustrates an example of its application in image processing, where it decomposes an image into multiple frequency channels to achieve signal decomposition and compression. For instance, JPEG 2000 is an image compression standard based on the wavelet transform (&lt;a href=&#34;https://zh.wikipedia.org/wiki/JPEG_2000)&#34;&gt;https://zh.wikipedia.org/wiki/JPEG_2000)&lt;/a&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;figure&gt;
+    &lt;img loading=&#34;lazy&#34; src=&#34;https://i-blog.csdnimg.cn/direct/b495d350d8f8485a82ab9c6671065142.png&#34;
+         alt=&#34;Wavelet Transform Applied to Image Processing&#34;/&gt; &lt;figcaption&gt;
+            &lt;p&gt;Wavelet Transform Applied to Image Processing&lt;/p&gt;
+        &lt;/figcaption&gt;
+&lt;/figure&gt;
+
+In recent years, wavelet transform has become a powerful helper for many deep learning algorithms. Many papers utilize wavelet transform as an important component of feature engineering, such as: wavelet tokenization empowering time series foundation models (WaveToken, ICML 2025), wavelet + Mamba / Diffusion for multi-scale efficient modeling (Wave-Mamba, DiMSUM, WaveDiff), and learnable wavelet layers for end-to-end filter parameter optimization (AdaWaveNet, DeSpaWN). The core advantage lies in parameter efficiency from multi-resolution inductive bias—achieving better performance than traditional methods with fewer parameters and less computation, widely applied to time series forecasting, image generation, speech synthesis, and medical signal analysis.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Plotly </title>
       <link>https://oldhuntor.github.io/posts/plotly/</link>
